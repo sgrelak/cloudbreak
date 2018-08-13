@@ -144,9 +144,7 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
     private SaltOrchestrator saltOrchestratorUnderTest;
 
     public ImageTests() {
-
         Integer gatewayPort = 9443;
-
 
         //GatewayConfig gatewayConfig = new GatewayConfig(connectionAddress,publicAddress,privateAddress,gatewayPort, false);
         gatewayConfig = new GatewayConfig(connectionAddress, publicAddress, privateAddress, hostname, gatewayPort, serverCert, clientCert, clientKey,

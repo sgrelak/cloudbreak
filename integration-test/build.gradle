@@ -51,13 +51,17 @@ dependencies {
   compile (project(':orchestrator-api')) {
     transitive = false;
   }
-  compile (project(':orchestrator-salt')) {
+  compile (project(':orchestrator-salt'))
+  compile (project(':core-model')) {
     transitive = false;
   }
   compile (project(':cloud-api')) {
     transitive = false;
   }
   compile (project(':autoscale-api')) {
+    transitive = false;
+  }
+  compile (project(':blueprint-manager')) {
     transitive = false;
   }
   compile("com.sequenceiq:${ambariClientName}:${ambariClientVersion}") {

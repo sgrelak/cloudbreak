@@ -1,0 +1,135 @@
+import org.ajoberstar.grgit.Grgit
+
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+  }
+}
+
+apply plugin: 'java'
+apply plugin: 'info.solidsoft.pitest'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+jar {
+  baseName = 'orchestrator-salt-test'
+  archiveName = 'orchestrator-salt-test.jar'
+}
+
+shadowJar {
+  baseName = 'shadow'
+  classifier = null
+  version = null
+}
+
+dependencies {
+  compile project(':cloud-common')
+  compile (project(':orchestrator-api')) {
+    transitive = false;
+  }
+  compile (project(':orchestrator-salt'))
+  compile (project(':core-model')) {
+    transitive = false;
+  }
+  compile (project(':cloud-api')) {
+    transitive = false;
+  }
+  compile (project(':blueprint-manager')) {
+    transitive = false;
+  }
+  compile group:  'org.testng',                   name: 'testng',                         version: '6.14.3'
+  compile group:  'org.springframework',          name: 'spring-core',                    version: springFrameworkVersion
+  compile group:  'org.springframework',          name: 'spring-test',                    version: springFrameworkVersion
+  compile group:  'org.springframework.boot',     name: 'spring-boot-starter-test',       version: springBootVersion
+  compile group:  'org.springframework.boot',     name: 'spring-boot-starter',            version: springBootVersion
+  compile group:  'javax.el',                     name: 'javax.el-api',                   version: '3.0.0'
+  runtime group: 'javax.xml.bind',                name: 'jaxb-api',                       version: '2.3.0'
+  shadow 'org.testng:testng:6.14.3'
+  shadow "org.springframework:spring-core:$springFrameworkVersion"
+  shadow "org.springframework:spring-test:$springFrameworkVersion"
+  shadow "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
+  shadow "org.springframework.boot:spring-boot-starter:$springBootVersion"
+  shadow 'javax.el:javax.el-api:3.0.0'
+  shadow project(':cloud-common')
+  shadow (project(':orchestrator-api')) {
+    transitive = false;
+  }
+  shadow (project(':orchestrator-salt'))
+  shadow (project(':core-model')) {
+    transitive = false;
+  }
+  shadow (project(':cloud-api')) {
+    transitive = false;
+  }
+  shadow (project(':blueprint-manager')) {
+    transitive = false;
+  }
+  shadow 'javax.xml.bind:jaxb-api:2.3.0'
+
+}
+
+task buildInfo(type: BuildInfoTask, dependsOn: processResources) {
+  destination = file("$buildDir")
+  applicationPropertiesPath = "$buildDir"
+  basename = jar.baseName
+  buildVersion = version
+}
+
+compileJava.dependsOn buildInfo
+
+class BuildInfoTask extends DefaultTask {
+  File destination = new File("build.info")
+  String applicationPropertiesPath
+  String basename
+  String buildVersion
+
+  @TaskAction
+  def writeBuildInfo() {
+    List<File> applicationDestinations = []
+
+    applicationDestinations += project.file("out/production/resources")
+    applicationDestinations += new File(applicationPropertiesPath + "/resources/main")
+
+    destination.mkdirs()
+    String activeProfile = determineActiveProfile()
+
+    // if using dev environment this condition is true
+    if (buildVersion.contains("+") || buildVersion == "unspecified") {
+      def grgit = Grgit.open(currentDir: project.projectDir)
+      buildVersion = grgit.describe()
+      println "buildVersion from git: " + buildVersion
+    }
+    new File(destination, "build.info").withWriter { out ->
+      [
+              "ARTIFACT_BASENAME=" + basename,
+              "ARTIFACT_VERSION=" + buildVersion,
+      ].each { out.println it }
+    }
+    applicationDestinations.each {
+      it.mkdirs()
+      new File(it, "application.properties").withWriter { out ->
+        [
+                "info.app.name=" + basename,
+                "info.app.version=" + buildVersion,
+                "spring.profiles.active=" + activeProfile
+        ].each { out.println it }
+      }
+    }
+  }
+
+  private String determineActiveProfile() {
+    String activeProfile = "dev"
+    if (buildVersion.contains("dev") || buildVersion.equals("unspecified")) {
+      activeProfile = "dev"
+    } else if (buildVersion.contains("rc")) {
+      activeProfile = "rc"
+    } else {
+      activeProfile = "prod"
+    }
+    return activeProfile
+  }
+}

@@ -1,0 +1,8 @@
+name: "image test"
+parallel: tests
+threadCount: 4
+tests:
+  - name: "imagine"
+    classes:
+      - name: com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTests
+

@@ -126,13 +126,13 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
         }
     };
 
-    private String connectionAddress = "34.243.243.8";
+    private String connectionAddress = "34.255.124.19";
 
     private String publicAddress = connectionAddress;
 
-    private String privateAddress = "172.31.0.213";
+    private String privateAddress = "10.0.1.128";
 
-    private String hostname = "ip-172-31-0-213.eu-west-1.compute.internal";
+    private String hostname = "ip-52-236-62-115.eu-west-1.compute.internal";
 
     private GatewayConfig gatewayConfig;
 

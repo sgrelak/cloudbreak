@@ -126,13 +126,14 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
         }
     };
 
-    private String connectionAddress = "34.255.124.19";
+    //private String connectionAddress = "172.21.250.229";
+    private String connectionAddress = "172.21.250.235";
 
     private String publicAddress = connectionAddress;
 
-    private String privateAddress = "10.0.1.128";
+    private String privateAddress = "10.0.0.3";
 
-    private String hostname = "ip-52-236-62-115.eu-west-1.compute.internal";
+    private String hostname = "host-10-0-0-3";
 
     private GatewayConfig gatewayConfig;
 
@@ -156,9 +157,9 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
     @Test
     void testImage() throws CloudbreakOrchestratorException {
         testIsBootstrapApiAvailable();
-        testBootstrap();
-        testUploadRecipes();
-        testInitServiceRun();
+        //testBootstrap();
+        //testUploadRecipes();
+        //testInitServiceRun();
     }
 
     public void testIsBootstrapApiAvailable() {

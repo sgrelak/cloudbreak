@@ -2,31 +2,24 @@ package com.sequenceiq.cloudbreak.orchestrator.salt.test;
 
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.clientCert;
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.clientKey;
+import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.saltBootPassword;
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.saltPassword;
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.saltSignPrivateKey;
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.saltSignPublicKey;
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.serverCert;
 import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.signatureKey;
-import static com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTestContants.saltBootPassword;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
@@ -37,10 +30,9 @@ import com.sequenceiq.cloudbreak.api.model.rds.RdsType;
 import com.sequenceiq.cloudbreak.api.model.stack.cluster.gateway.SSOType;
 import com.sequenceiq.cloudbreak.blueprint.template.views.RdsView;
 import com.sequenceiq.cloudbreak.cloud.model.AmbariRepo;
-import com.sequenceiq.cloudbreak.concurrent.MDCCleanerTaskDecorator;
+import com.sequenceiq.cloudbreak.domain.RDSConfig;
 import com.sequenceiq.cloudbreak.orchestrator.exception.CloudbreakOrchestratorException;
 import com.sequenceiq.cloudbreak.orchestrator.exception.CloudbreakOrchestratorFailedException;
-import com.sequenceiq.cloudbreak.orchestrator.executor.ParallelOrchestratorComponentRunner;
 import com.sequenceiq.cloudbreak.orchestrator.model.BootstrapParams;
 import com.sequenceiq.cloudbreak.orchestrator.model.GatewayConfig;
 import com.sequenceiq.cloudbreak.orchestrator.model.Node;
@@ -48,11 +40,10 @@ import com.sequenceiq.cloudbreak.orchestrator.model.RecipeModel;
 import com.sequenceiq.cloudbreak.orchestrator.model.SaltConfig;
 import com.sequenceiq.cloudbreak.orchestrator.model.SaltPillarProperties;
 import com.sequenceiq.cloudbreak.orchestrator.salt.SaltOrchestrator;
-import com.sequenceiq.cloudbreak.orchestrator.state.ExitCriteria;
 import com.sequenceiq.cloudbreak.orchestrator.state.ExitCriteriaModel;
 
-@ContextConfiguration
-@SpringBootTest
+//java --add-modules java.xml.bind -cp shadow.jar org.testng.TestNG -testclass com.sequenceiq.cloudbreak.orchestrator.salt.test.ImageTests
+@SpringBootTest(classes = Config.class)
 @TestPropertySource(properties = {
         "rest.debug=true",
 })
@@ -114,20 +105,8 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
 
     public static final String AMBARI_VERSION = "2.6.2.0";
 
-    public static final ExitCriteria EXIT_CRITERIA = new ExitCriteria() {
-        @Override
-        public boolean isExitNeeded(ExitCriteriaModel exitCriteriaModel) {
-            return false;
-        }
-
-        @Override
-        public String exitMessage() {
-            return "No more questions";
-        }
-    };
-
     //private String connectionAddress = "172.21.250.229";
-    private String connectionAddress = "172.21.250.235";
+    private String connectionAddress = "172.21.250.162";
 
     private String publicAddress = connectionAddress;
 
@@ -147,19 +126,18 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
     public ImageTests() {
         Integer gatewayPort = 9443;
 
-        //GatewayConfig gatewayConfig = new GatewayConfig(connectionAddress,publicAddress,privateAddress,gatewayPort, false);
         gatewayConfig = new GatewayConfig(connectionAddress, publicAddress, privateAddress, hostname, gatewayPort, serverCert, clientCert, clientKey,
                 saltPassword, saltBootPassword, signatureKey, false, true, saltSignPrivateKey, saltSignPublicKey);
         node = new Node(privateAddress, publicAddress, hostname, HOST_GROUP);
-        exitModel = new MyExitCriteriaModel();
+        exitModel = new ExitCriteriaModel() {};
     }
 
     @Test
     void testImage() throws CloudbreakOrchestratorException {
         testIsBootstrapApiAvailable();
-        //testBootstrap();
-        //testUploadRecipes();
-        //testInitServiceRun();
+        testBootstrap();
+        testUploadRecipes();
+        testInitServiceRun();
     }
 
     public void testIsBootstrapApiAvailable() {
@@ -189,8 +167,30 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
     }
 
     public void testInitServiceRun() throws CloudbreakOrchestratorException {
+        Map<String, Map<String, String>> grainsProperites = Map.of(privateAddress, Map.of("gateway-address", publicAddress));
+        SaltConfig saltConfig = new SaltConfig(getSaltPillatProperties(), grainsProperites);
+        saltOrchestratorUnderTest.initServiceRun(List.of(gatewayConfig), Set.of(node), saltConfig, exitModel);
+        saltOrchestratorUnderTest.runService(List.of(gatewayConfig), Set.of(node), saltConfig, exitModel);
+    }
+
+    private RDSConfig getRdsConfig() {
+        RDSConfig rdsConfig =
+                new RDSConfig();
+        rdsConfig.setConnectionURL("jdbc:postgresql://" + privateAddress + ":5432/" + AMBARI_DB);
+        rdsConfig.setDatabaseEngine(DatabaseVendor.POSTGRES);
+        rdsConfig.setConnectionPassword(AMBARI_DB_PASSWORD);
+        rdsConfig.setConnectionUserName(AMBARI_USER);
+        rdsConfig.setConnectionDriver("org.postgresql.Driver");
+        rdsConfig.setName(AMBARI_DB);
+        rdsConfig.setType(RdsType.AMBARI.name());
+        return rdsConfig;
+    }
+
+    private Map<String, SaltPillarProperties> getSaltPillatProperties() {
         SaltPillarProperties ambarigpl =
                 new SaltPillarProperties("/ambari/gpl.sls", Map.of("ambari", Map.of("gpl", Map.of("enabled", false))));
+        SaltPillarProperties ambariconfig =
+                new SaltPillarProperties("/ambari/config.sls", Map.of("ambari", Map.of("setup_ldap_and_sso_on_api", false)));
         SaltPillarProperties metadata =
                 new SaltPillarProperties("/metadata/init.sls", Map.of("cluster", Map.of("name", "testcluster")));
         SaltPillarProperties hdp =
@@ -217,15 +217,8 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
                                 "user", AMBARI_USER
                         )
                 )));
-        com.sequenceiq.cloudbreak.domain.RDSConfig rdsConfig =
-                new com.sequenceiq.cloudbreak.domain.RDSConfig();
-        rdsConfig.setConnectionURL("jdbc:postgresql://" + privateAddress + ":5432/" + AMBARI_DB);
-        rdsConfig.setDatabaseEngine(DatabaseVendor.POSTGRES);
-        rdsConfig.setConnectionPassword(AMBARI_DB_PASSWORD);
-        rdsConfig.setConnectionUserName(AMBARI_USER);
-        rdsConfig.setConnectionDriver("org.postgresql.Driver");
-        rdsConfig.setName(AMBARI_DB);
-        rdsConfig.setType(RdsType.AMBARI.name());
+
+        RDSConfig rdsConfig = getRdsConfig();
 
         SaltPillarProperties ambariDb =
                 new SaltPillarProperties("/ambari/database.sls", Map.of("ambari", Map.of(
@@ -274,65 +267,10 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
                 "gateway", gateway,
                 "docker", docker
         );
-        Map<String, Map<String, String>> grainsProperites = Map.of(privateAddress, Map.of("gateway-address", publicAddress));
-        SaltConfig saltConfig = new SaltConfig(servicePillarConfig, grainsProperites);
-        saltOrchestratorUnderTest.initServiceRun(List.of(gatewayConfig), Set.of(node), saltConfig, exitModel);
-        saltOrchestratorUnderTest.runService(List.of(gatewayConfig), Set.of(node), saltConfig, exitModel);
-    }
+        Map<String, SaltPillarProperties> servicePillarConfig2 = new HashMap<>();
+        servicePillarConfig2.putAll(servicePillarConfig);
+        servicePillarConfig2.put("setup-ldap-and-sso-on-api", ambariconfig);
 
-    @Configuration
-    @ComponentScan("com.sequenceiq.cloudbreak.orchestrator.salt")
-    public static class SpringConfig {
-
-        //@Value("${cb.container.threadpool.core.size:}")
-        private int containerCorePoolSize = 2;
-
-        //@Value("${cb.container.threadpool.capacity.size:}")
-        private int containerteQueueCapacity = 2;
-
-        @Bean
-        public SaltOrchestrator saltOrchestrator() {
-            SaltOrchestrator saltOrchestrator = new SaltOrchestrator();
-            saltOrchestrator.init(simpleParallelContainerRunnerExecutor(), clusterDeletionBasedExitCriteria());
-            return saltOrchestrator;
-        }
-
-        @Bean
-        public ParallelOrchestratorComponentRunner simpleParallelContainerRunnerExecutor() {
-            return new TestOrchestratorComponentRunner(containerBootstrapBuilderExecutor());
-        }
-
-        @Bean
-        public ExitCriteria clusterDeletionBasedExitCriteria() {
-            return EXIT_CRITERIA;
-        }
-
-        @Bean
-        public AsyncTaskExecutor containerBootstrapBuilderExecutor() {
-            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-            executor.setCorePoolSize(containerCorePoolSize);
-            executor.setQueueCapacity(containerteQueueCapacity);
-            executor.setThreadNamePrefix("containerBootstrapBuilderExecutor-");
-            executor.setTaskDecorator(new MDCCleanerTaskDecorator());
-            executor.initialize();
-            return executor;
-        }
-    }
-
-    private static class MyExitCriteriaModel extends ExitCriteriaModel {
-    }
-
-    static class TestOrchestratorComponentRunner implements ParallelOrchestratorComponentRunner {
-
-        private final AsyncTaskExecutor asyncTaskExecutor;
-
-        TestOrchestratorComponentRunner(AsyncTaskExecutor asyncTaskExecutor) {
-            this.asyncTaskExecutor = asyncTaskExecutor;
-        }
-
-        @Override
-        public Future<Boolean> submit(Callable<Boolean> callable) {
-            return asyncTaskExecutor.submit(callable);
-        }
+        return servicePillarConfig2;
     }
 }

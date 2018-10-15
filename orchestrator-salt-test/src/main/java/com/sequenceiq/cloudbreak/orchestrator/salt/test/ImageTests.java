@@ -105,14 +105,14 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
 
     public static final String AMBARI_VERSION = "2.6.2.0";
 
-    //private String connectionAddress = "172.21.250.229";
-    private String connectionAddress = "172.21.250.162";
+    //private String connectionAddress = "3.120.198.56";
+    private String connectionAddress = "18.196.197.145";
 
     private String publicAddress = connectionAddress;
 
-    private String privateAddress = "10.0.0.3";
+    private String privateAddress = "172.31.20.84";
 
-    private String hostname = "host-10-0-0-3";
+    private String hostname = "ip-172-31-20-84";
 
     private GatewayConfig gatewayConfig;
 

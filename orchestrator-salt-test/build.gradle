@@ -6,7 +6,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
   }
 }
 
@@ -24,6 +24,9 @@ shadowJar {
   baseName = 'shadow'
   classifier = null
   version = null
+  manifest {
+    attributes 'Main-Class': 'org.testng.TestNG'
+  }
 }
 
 dependencies {
@@ -45,15 +48,18 @@ dependencies {
   compile group:  'org.springframework',          name: 'spring-core',                    version: springFrameworkVersion
   compile group:  'org.springframework',          name: 'spring-test',                    version: springFrameworkVersion
   compile group:  'org.springframework.boot',     name: 'spring-boot-starter-test',       version: springBootVersion
-  compile group:  'org.springframework.boot',     name: 'spring-boot-starter',            version: springBootVersion
+  //compile group:  'org.springframework.boot',     name: 'spring-boot-starter',            version: springBootVersion
   compile group:  'javax.el',                     name: 'javax.el-api',                   version: '3.0.0'
+  compile group:  'com.github.docker-java',       name: 'docker-java',                    version: '3.0.14'
   runtime group: 'javax.xml.bind',                name: 'jaxb-api',                       version: '2.3.0'
   shadow 'org.testng:testng:6.14.3'
   shadow "org.springframework:spring-core:$springFrameworkVersion"
   shadow "org.springframework:spring-test:$springFrameworkVersion"
   shadow "org.springframework.boot:spring-boot-starter-test:$springBootVersion"
-  shadow "org.springframework.boot:spring-boot-starter:$springBootVersion"
+  //shadow "org.springframework.boot:spring-boot-starter:$springBootVersion"
   shadow 'javax.el:javax.el-api:3.0.0'
+  shadow  'com.github.docker-java:docker-java:3.0.14'
+
   shadow project(':cloud-common')
   shadow (project(':orchestrator-api')) {
     transitive = false;

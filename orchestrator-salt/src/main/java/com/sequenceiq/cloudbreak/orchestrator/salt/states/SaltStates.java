@@ -62,6 +62,10 @@ public class SaltStates {
         return sc.run(Glob.ALL, "mine.update", LOCAL, ApplyResponse.class);
     }
 
+    public static ApplyResponse refreshPillar(SaltConnector sc) {
+        return sc.run(Glob.ALL, "saltutil.refresh_pillar", LOCAL, ApplyResponse.class);
+    }
+
     public static String highstate(SaltConnector sc) {
         return sc.run(Glob.ALL, "state.highstate", LOCAL_ASYNC, ApplyResponse.class).getJid();
     }

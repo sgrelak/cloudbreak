@@ -202,6 +202,7 @@ public class SaltOrchestrator implements HostOrchestrator {
 
             runSaltCommand(sc, new SyncGrainsRunner(all, allNodes), exitModel);
             runSaltCommand(sc, new MineUpdateRunner(gatewayTargets, allNodes), exitModel);
+            //runSaltCommand(sc, new RefreshPillarRunner(gatewayTargets, allNodes), exitModel);
         } catch (Exception e) {
             LOGGER.error("Error occurred during ambari bootstrap", e);
             if (e instanceof ExecutionException && e.getCause() instanceof CloudbreakOrchestratorFailedException) {

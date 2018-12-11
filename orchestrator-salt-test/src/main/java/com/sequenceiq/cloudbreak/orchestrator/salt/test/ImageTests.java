@@ -16,14 +16,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientConfig;
+import com.github.dockerjava.core.command.PullImageResultCallback;
 import com.sequenceiq.cloudbreak.api.model.DatabaseVendor;
 import com.sequenceiq.cloudbreak.api.model.RecipeType;
 import com.sequenceiq.cloudbreak.api.model.rds.RdsType;
@@ -89,9 +101,9 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
 
     public static final String HDP_VERSION = "2.6.5.0-292";
 
-    public static final String REDHAT_HDP_REPO_URL = "http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.6.5.0";
+    public static final String REDHAT_HDP_REPO_URL = "http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.5.0";
 
-    public static final String REDHAT_HDP_VDF_URL = "http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.6.5.0/HDP-2.6.5.0-292.xml";
+    public static final String REDHAT_HDP_VDF_URL = "http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.5.0/HDP-2.6.5.0-292.xml";
 
     public static final String HIVE_DB = "hive";
 
@@ -101,16 +113,17 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
 
     public static final String AMBARI_USER = "ambari";
 
-    public static final String REDHAT_AMBARI_REPO_URL = "http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.6.2.0";
+    public static final String REDHAT_AMBARI_REPO_URL = "http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.6.2.0";
 
     public static final String AMBARI_VERSION = "2.6.2.0";
 
-    //private String connectionAddress = "3.120.198.56";
-    private String connectionAddress = "18.196.197.145";
+    private String connectionAddress = "172.22.82.116";
+    //private String connectionAddress = "192.168.99.104";
 
     private String publicAddress = connectionAddress;
 
-    private String privateAddress = "172.31.20.84";
+    //private String privateAddress = "127.0.0.1";
+    private String privateAddress = "172.17.0.2";
 
     private String hostname = "ip-172-31-20-84";
 
@@ -120,8 +133,29 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
 
     private ExitCriteriaModel exitModel;
 
+    private DockerClient dockerClient;
+
+    private CreateContainerResponse container;
+
     @Inject
     private SaltOrchestrator saltOrchestratorUnderTest;
+
+    public DockerClient getDockerClient() {
+        return dockerClient;
+    }
+
+    public void setDockerClient(DockerClient dockerClient) {
+        this.dockerClient = dockerClient;
+    }
+
+    public CreateContainerResponse getContainer() {
+        return container;
+    }
+
+    public void setContainer(CreateContainerResponse container) {
+        this.container = container;
+    }
+
 
     public ImageTests() {
         Integer gatewayPort = 9443;
@@ -129,19 +163,71 @@ public class ImageTests extends AbstractTestNGSpringContextTests {
         gatewayConfig = new GatewayConfig(connectionAddress, publicAddress, privateAddress, hostname, gatewayPort, serverCert, clientCert, clientKey,
                 saltPassword, saltBootPassword, signatureKey, false, true, saltSignPrivateKey, saltSignPublicKey);
         node = new Node(privateAddress, publicAddress, hostname, HOST_GROUP);
-        exitModel = new ExitCriteriaModel() {};
+        exitModel = new ExitCriteriaModel() {
+        };
     }
 
+    @BeforeMethod
+    public void prepareDocker() throws InterruptedException {
+        String dir = System.getProperty("user.dir") + "/mystart.sh:/bootstrap/start-services-script.sh";
+        DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+                .withRegistryUsername("afarsang")
+                .withRegistryPassword("ohrOHR3Qzdt")
+                .withRegistryUrl("registry.eng.hortonworks.com")
+                .build();
+        setDockerClient(DockerClientBuilder.getInstance(config).build());
+        getDockerClient().pullImageCmd("registry.eng.hortonworks.com/cloudbreak/centos-75").withTag("2018-10-25")
+                .exec(new PullImageResultCallback())
+                .awaitCompletion(30, TimeUnit.SECONDS);
+        setContainer(getDockerClient().createContainerCmd("registry.eng.hortonworks.com/cloudbreak/centos-75:2018-10-25")
+                .withPortBindings(PortBinding.parse("9443:9443"))
+                .withExposedPorts(new ExposedPort(9443))
+                .withBinds(Bind.parse(dir))
+                .withPrivileged(true)
+                .exec());
+        getDockerClient().startContainerCmd(container.getId()).exec();
+        int i = 0;
+        while (!isBootstrapApiAvailable() && i < 60) {
+            Thread.sleep(2000);
+            i +=1 ;
+        }
+    }
+
+//    @Parameters({ "publicIp", "privateIp", "hostname" })
+//    @Test
+//    public void testImage(String publicIp, String privateIp, String hostname) throws CloudbreakOrchestratorException {
+//        testIsBootstrapApiAvailable();
+//        testBootstrap();
+//        testUploadRecipes();
+//        testInitServiceRun();
+//    }
+
     @Test
-    void testImage() throws CloudbreakOrchestratorException {
+    public void testImageDefault() throws CloudbreakOrchestratorException {
         testIsBootstrapApiAvailable();
         testBootstrap();
         testUploadRecipes();
         testInitServiceRun();
     }
 
+    @AfterMethod
+    public void teardownDocker() {
+        getDockerClient().stopContainerCmd(getContainer().getId()).exec();
+    }
+
+
     public void testIsBootstrapApiAvailable() {
-        assertTrue(saltOrchestratorUnderTest.isBootstrapApiAvailable(gatewayConfig));
+        assertTrue(isBootstrapApiAvailable());
+    }
+
+    private boolean isBootstrapApiAvailable() {
+        boolean result;
+        try {
+            result = saltOrchestratorUnderTest.isBootstrapApiAvailable(gatewayConfig);
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
     }
 
     public void testGetStateConfigZip() throws IOException {

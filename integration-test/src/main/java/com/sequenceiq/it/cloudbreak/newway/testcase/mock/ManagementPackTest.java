@@ -5,7 +5,6 @@ import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -14,6 +13,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.mpacks.response.ManagementPackV
 import com.sequenceiq.it.cloudbreak.exception.TestFailException;
 import com.sequenceiq.it.cloudbreak.newway.action.mpack.MpackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.AssertionV2;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.mpack.MPackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
@@ -32,6 +32,10 @@ public class ManagementPackTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT)
+    @Description(
+            given = "a valid mpack request",
+            when = "calling create mpack",
+            then = "getting back mpack in mpack list")
     public void testMpackCreation(TestContext testContext) {
         createDefaultUser(testContext);
         testContext
@@ -43,6 +47,10 @@ public class ManagementPackTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT)
+    @Description(
+            given = "an mpack which exist in the database and valid mpack request with the same name",
+            when = "calling create mpack",
+            then = "getting BadRequestException")
     public void testMpackCreateWithSameName(TestContext testContext) {
         createDefaultUser(testContext);
         testContext
@@ -55,6 +63,10 @@ public class ManagementPackTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT)
+    @Description(
+            given = "an mpack which exist in the database",
+            when = "delete mpack with the specified name",
+            then = "getting the list of mpack without that specific mpack")
     public void testMpackDeletion(TestContext testContext) {
         createDefaultUser(testContext);
         testContext
@@ -66,6 +78,10 @@ public class ManagementPackTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT)
+    @Description(
+            given = "an mpack which does not exist in the database",
+            when = "delete mpack with the specified name",
+            then = "getting the list of mpack without that specific mpack")
     public void testDeleteWhenNotExist(TestContext testContext) {
         createDefaultUser(testContext);
         testContext
@@ -76,22 +92,15 @@ public class ManagementPackTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT)
+    @Description(
+            given = "mpacks which are in the database",
+            when = "list mpacks",
+            then = "getting the list of mpacks")
     public void testMpackGetAll(TestContext testContext) {
         createDefaultUser(testContext);
         testContext
                 .given(MPackTestDto.class)
                 .when(MpackTestAction::list)
-                .validate();
-    }
-
-    @Test(dataProvider = TEST_CONTEXT)
-    public void testMpackGetAllHasGivenMpack(TestContext testContext) {
-        createDefaultUser(testContext);
-        testContext
-                .given(MPackTestDto.class)
-                .when(MpackTestAction::create)
-                .when(MpackTestAction::list)
-                .then(assertMpacksHasGiven())
                 .validate();
     }
 
@@ -112,13 +121,6 @@ public class ManagementPackTest extends AbstractIntegrationTest {
                 throw testFailException;
             }
             entity.setResponse(response);
-            return entity;
-        };
-    }
-
-    private AssertionV2<MPackTestDto> assertMpacksHasGiven() {
-        return (testContext, entity, cloudbreakClient) -> {
-            Assert.assertTrue(entity.getResponses().stream().anyMatch(mpack -> mpack.getId().equals(entity.getResponse().getId())));
             return entity;
         };
     }

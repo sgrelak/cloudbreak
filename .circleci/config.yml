@@ -5,6 +5,8 @@ jobs:
       - image: circleci/openjdk:10-jdk
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - restore_cache:
           key: gradle-cache
       - run:
@@ -31,6 +33,8 @@ jobs:
       _JAVA_OPTIONS: "-Xmx2048m"
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - restore_cache:
@@ -55,6 +59,8 @@ jobs:
       _JAVA_OPTIONS: "-Xmx2048m"
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - restore_cache:
@@ -79,6 +85,8 @@ jobs:
       _JAVA_OPTIONS: "-Xmx2048m"
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - restore_cache:
@@ -103,6 +111,8 @@ jobs:
       _JAVA_OPTIONS: "-Xmx2048m"
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - restore_cache:
@@ -129,6 +139,8 @@ jobs:
       _JAVA_OPTIONS: "-Xmx2048m"
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: .
       - restore_cache:
@@ -162,7 +174,8 @@ jobs:
           path: ~/junit
 
   integration-test:
-    machine: true
+    machine:
+      docker_layer_caching: true
     steps:
       - checkout
       - attach_workspace:

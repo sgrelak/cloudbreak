@@ -94,7 +94,7 @@ public class MockVerification implements AssertionV2<StackTestDto> {
     private void checkExactTimes(int times) {
         if (exactTimes != null) {
             if (exactTimes != times) {
-                throw new RuntimeException(path + "with body" + generateBodyTimesLog(bodyContainsList) + " "
+                throw new RuntimeException(path + " with body" + generateBodyTimesLog(bodyContainsList) + " "
                         + "request should have been invoked exactly " + exactTimes + " times, but it was invoked " + times + " times");
             }
         }

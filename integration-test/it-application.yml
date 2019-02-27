@@ -13,4 +13,4 @@ integrationtest:
     outputdir: /it
     command: suites
     cleanup:
-      cleanupBeforeStart: true
+      cleanupBeforeStart: false

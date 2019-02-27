@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.SPIMock;
@@ -39,6 +40,11 @@ public class ClusterStopTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a running cluster",
+            when = "the cluster stop endpoint is called",
+            then = "the cluster shoud stop"
+    )
     public void testClusterStop(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
         mockAmbari(testContext, clusterName);

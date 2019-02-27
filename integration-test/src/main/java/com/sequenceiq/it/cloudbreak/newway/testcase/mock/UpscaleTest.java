@@ -18,6 +18,7 @@ import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackScalePostAction;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
@@ -43,7 +44,11 @@ public class UpscaleTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testStackScaling(TestContext testContext) throws Exception {
+    @Description(
+            given = "a stack with stack scale",
+            when = "upscale to 15 after it downscale to 6",
+            then = "stack is running")
+    public void testStackScaling(TestContext testContext) {
         // GIVEN
         testContext.given(StackTestDto.class)
                 .when(StackTestAction::create)
@@ -56,6 +61,10 @@ public class UpscaleTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a stack with upscale",
+            when = "upscale to 15",
+            then = "stack is running")
     public void testUpscale(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
         int originalWorkedCount = 1;
@@ -89,6 +98,10 @@ public class UpscaleTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a stack",
+            when = "ambari is failing",
+            then = "stack state is failed")
     public void testAmbariFailure(MockedTestContext testContext) {
         mockAmbariClusterDefinitionFail(testContext);
         testContext.given(StackTestDto.class)

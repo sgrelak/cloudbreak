@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
@@ -25,13 +26,22 @@ public class ClouderaManagerStartStopTest extends AbstractClouderaManagerTest {
     private static final String CLOUD_INSTANCE_STATUSES = MOCK_ROOT + SPIMock.CLOUD_INSTANCE_STATUSES;
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateNewRegularCluster(MockedTestContext testContext) {
+    @Description(
+        given = "a Cloudera Manager cluster",
+        when = "the cluster is stoppend and started",
+        then = "the cluster should be available")
+    public void createRegularClouderaManagerClusterThenWaitForAvailableThenStopThenStartThenWaitForAvailableThenNoExceptionOccurs(
+            MockedTestContext testContext) {
         mockSpi(testContext);
-        String name = testContext.get(ClusterDefinitionTestDto.class).getRequest().getName();
+        String ambariKey = getNameGenerator().getRandomNameForResource();
+        String clusterName = testContext.get(ClusterDefinitionTestDto.class).getRequest().getName();
         testContext
-                .given("cm", AmbariEntity.class).withClusterDefinitionName(name).withValidateClusterDefinition(Boolean.FALSE)
-                .given("cmcluster", ClusterEntity.class).withAmbari("cm")
-                .given(StackTestDto.class).withCluster("cmcluster")
+                .given(ambariKey, AmbariEntity.class)
+                .withClusterDefinitionName(clusterName)
+                .withValidateClusterDefinition(Boolean.FALSE)
+                .given(clusterName, ClusterEntity.class)
+                .withAmbari(ambariKey)
+                .given(StackTestDto.class).withCluster(clusterName)
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
                 .when(StackTestAction::stop)

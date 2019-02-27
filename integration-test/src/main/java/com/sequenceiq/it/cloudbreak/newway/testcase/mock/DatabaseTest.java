@@ -106,6 +106,7 @@ public class DatabaseTest extends AbstractIntegrationTest {
             @Description TestCaseDescription testCaseDescription) {
         String databaseName = getNameGenerator().getRandomNameForResource();
         testContext
+                .withDescription(testCaseDescription)
                 .given(DatabaseEntity.class)
                 .withType(type.name())
                 .withName(databaseName)
@@ -129,6 +130,7 @@ public class DatabaseTest extends AbstractIntegrationTest {
             @Description TestCaseDescription testCaseDescription) {
         String generatedKey = getNameGenerator().getRandomNameForResource();
         testContext
+                .withDescription(testCaseDescription)
                 .given(DatabaseEntity.class)
                 .withName(databaseName)
                 .withConnectionUserName(username)
@@ -153,6 +155,7 @@ public class DatabaseTest extends AbstractIntegrationTest {
         String generatedKey = getNameGenerator().getRandomNameForResource();
 
         testContext
+                .withDescription(testCaseDescription)
                 .given(DatabaseTestEntity.class)
                 .withRequest(new DatabaseV4Request())
                 .withName(databaseName)

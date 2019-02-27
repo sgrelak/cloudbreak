@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.mappable.CloudPlatform;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.ImageCatalogTestDto;
+import com.sequenceiq.it.cloudbreak.newway.ImageSettingsEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.InstanceTemplateV4Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.NetworkV2Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.PlacementSettingsEntity;
@@ -22,6 +22,7 @@ import com.sequenceiq.it.cloudbreak.newway.entity.StackAuthenticationEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
 import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
 
 @Component
 public class CloudProviderProxy implements CloudProvider {
@@ -45,16 +46,6 @@ public class CloudProviderProxy implements CloudProvider {
         delegate = cloudProviderMap.get(cloudPlatform);
     }
 
-//    @Override
-//    public InstanceTemplateV4Entity template(TestContext testContext) {
-//        return delegate.template(testContext);
-//    }
-
-//    @Override
-//    public NetworkV2Entity network(TestContext testContext) {
-//        return delegate.network(testContext);
-//    }
-
     @Override
     public String availabilityZone() {
         return delegate.availabilityZone();
@@ -68,6 +59,11 @@ public class CloudProviderProxy implements CloudProvider {
     @Override
     public ImageCatalogTestDto imageCatalog(ImageCatalogTestDto imageCatalog) {
         return delegate.imageCatalog(imageCatalog);
+    }
+
+    @Override
+    public ImageSettingsEntity imageSettings(ImageSettingsEntity imageSettings) {
+        return delegate.imageSettings(imageSettings);
     }
 
     @Override

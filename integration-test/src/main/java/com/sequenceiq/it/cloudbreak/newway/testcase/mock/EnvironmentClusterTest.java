@@ -21,6 +21,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.proxies.responses.ProxyV4Respon
 import com.sequenceiq.it.cloudbreak.exception.TestFailException;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Credential;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.Environment;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
@@ -70,6 +71,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Detach rds proxy and ldap from environment",
+            when = "calling detach environment endpoint",
+            then = "every three resource has to be detached")
     public void testDetachFromEnvWithDeletedCluster(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext.given(StackTestDto.class)
@@ -95,6 +100,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Detach rds proxy and ldap from environment and delete",
+            when = "calling detach environment endpoint and then delete those",
+            then = "every three resource has to be deleted")
     public void testWlClusterNotAttachResourceDetachDeleteOk(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext.given(StackTestDto.class)
@@ -114,12 +123,22 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create cluster with database, ldap and proxy and then delete those",
+            when = "calling create cluster and then delete resources",
+            then = "the test not able to delete resources because those attached to a cluster")
     public void testCreateWlClusterDeleteFails(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext.given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
-                .withCluster(setResources(testContext, testContext.get(DatabaseEntity.class).getName(),
-                        testContext.get(LdapConfigTestDto.class).getName(), testContext.get(ProxyConfigEntity.class).getName()))
+                .withCluster(
+                        setResources(
+                                testContext,
+                                testContext.get(DatabaseEntity.class).getName(),
+                                testContext.get(LdapConfigTestDto.class).getName(),
+                                testContext.get(ProxyConfigEntity.class).getName()
+                        )
+                )
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
 
@@ -132,13 +151,23 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create cluster with database, ldap and proxy and then delete those",
+            when = "calling create cluster and then detach resources",
+            then = "the test not able to detach resources because those attached to a cluster")
     public void testCreateWlClusterDetachFails(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
-                .withCluster(setResources(testContext, testContext.get(DatabaseEntity.class).getName(),
-                        testContext.get(LdapConfigTestDto.class).getName(), testContext.get(ProxyConfigEntity.class).getName()))
+                .withCluster(
+                        setResources(
+                                testContext,
+                                testContext.get(DatabaseEntity.class).getName(),
+                                testContext.get(LdapConfigTestDto.class).getName(),
+                                testContext.get(ProxyConfigEntity.class).getName()
+                        )
+                )
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
                 .given(EnvironmentEntity.class)
@@ -151,8 +180,12 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create two cluster in the same environment",
+            when = "calling create cluster twice",
+            then = "the test should be able to create two cluster")
     public void testSameEnvironmentWithDifferentClusters(TestContext testContext) {
-        String newStack = "newStack";
+        String newStack = getNameGenerator().getRandomNameForResource();
         testContext.given(EnvironmentEntity.class)
                 .when(Environment::post)
                 .given(StackTestDto.class)
@@ -166,12 +199,16 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create two cluster in the same environment with the same database",
+            when = "calling create cluster twice",
+            then = "the test should be able to create two cluster with the same database")
     public void testSameEnvironmentAttachRdsToDifferentClusters(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
         validRds.add(testContext.get(DatabaseEntity.class).getName());
 
-        String newStack = "newStack";
+        String newStack = getNameGenerator().getRandomNameForResource();
         testContext.given(EnvironmentEntity.class)
                 .withRdsConfigs(validRds)
                 .when(Environment::post)
@@ -195,11 +232,15 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create cluster with database and then delete cluster detach database and reattach to different environment",
+            when = "running the whole flow",
+            then = "the second cluster should work as well")
     public void testReuseRdsWithDifferentClustersInDifferentEnvs(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = Set.of(testContext.get(DatabaseEntity.class).getName());
-        String newEnv = "newEnv";
-        String newStack = "newStack";
+        String newEnv = getNameGenerator().getRandomNameForResource();
+        String newStack = getNameGenerator().getRandomNameForResource();
 
         testContext.given(EnvironmentEntity.class)
                 .withRdsConfigs(validRds)
@@ -208,8 +249,14 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
-                .withCluster(setResources(testContext, testContext.get(DatabaseEntity.class).getName(),
-                        null, null))
+                .withCluster(
+                        setResources(
+                                testContext,
+                                testContext.get(DatabaseEntity.class).getName(),
+                                null,
+                                null
+                        )
+                )
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
 
@@ -220,8 +267,14 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
                 .given(newStack, StackTestDto.class)
                 .withEnvironment(newEnv)
-                .withCluster(setResources(testContext, testContext.get(DatabaseEntity.class).getName(),
-                        null, null))
+                .withCluster(
+                        setResources(
+                                testContext,
+                                testContext.get(DatabaseEntity.class).getName(),
+                                null,
+                                null
+                        )
+                )
                 .when(Stack.postV4(), key(newStack))
                 .await(STACK_AVAILABLE, key(newStack))
                 .when(StackActionV4::delete, key(newStack))
@@ -235,6 +288,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create cluster with database which did not attached to any environment",
+            when = "create cluster with database without environment",
+            then = "the cluster should use that database without problem")
     public void testClusterWithRdsWithoutEnvironment(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         testContext.given(EnvironmentEntity.class)
@@ -248,6 +305,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create cluster in environment and then attached a new credential to that",
+            when = "create cluster and modify the credential",
+            then = "the cluster should use the previous credential")
     public void testWlClusterChangeCred(MockedTestContext testContext) {
         testContext.given(EnvironmentEntity.class)
                 .when(Environment::post)
@@ -268,6 +329,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create cluster without environment",
+            when = "create cluster without environment",
+            then = "the cluster create should drop a BadRequestException")
     public void testClusterWithEmptyEnvironmentRequest(TestContext testContext) {
         testContext
                 .given(EnvironmentEntity.class)

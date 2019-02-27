@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
@@ -41,12 +42,18 @@ public class AmbariPasswordUpdateTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testModifyAmbariPasswordThenValidate(MockedTestContext testContext) {
+    @Description(
+        given = "a stack with and Ambari cluster",
+        when = "password of the cluster is modified",
+        then = "the cluster should still be available")
+    public void createAmbariClusterAndModifyThePasswordOnItThenNoExceptionOccursTheStackIsAvailable(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
         mockAmbari(testContext, clusterName);
         mockSpi(testContext);
         testContext
-                .given(StackTestDto.class).valid().withName(clusterName)
+                .given(StackTestDto.class)
+                .valid()
+                .withName(clusterName)
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
                 .when(StackTestAction::modifyAmbariPassword)

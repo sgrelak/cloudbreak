@@ -14,7 +14,7 @@ import com.sequenceiq.it.cloudbreak.newway.Environment;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.audit.AuditTestAction;
-import com.sequenceiq.it.cloudbreak.newway.action.clusterdefinition.ClusterDefinitionTestAction;
+import com.sequenceiq.it.cloudbreak.newway.client.ClusterDefinitionTestClient;
 import com.sequenceiq.it.cloudbreak.newway.action.clustertemplate.ClusterTemplateV4CreateAction;
 import com.sequenceiq.it.cloudbreak.newway.action.credential.CredentialTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.imagecatalog.ImageCatalogPostAction;
@@ -23,6 +23,7 @@ import com.sequenceiq.it.cloudbreak.newway.action.kubernetes.KubernetesTestActio
 import com.sequenceiq.it.cloudbreak.newway.action.mpack.MpackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.audit.AuditTestAssertion;
 import com.sequenceiq.it.cloudbreak.newway.client.LdapConfigTestClient;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.ClusterTemplateEntity;
@@ -43,7 +44,6 @@ import com.sequenceiq.it.cloudbreak.newway.entity.recipe.RecipeTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
 
-// TODO image catalog test missing because the image catalog DTO creation is in progress
 public class AuditTest extends AbstractIntegrationTest {
 
     private static final String VALID_BP = "{\"Blueprints\":{\"blueprint_name\":\"ownbp\",\"stack_name\":\"HDP\",\"stack_version\":\"2.6\"},\"settings\""
@@ -77,7 +77,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForRecipeAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a recipe is created",
+        then = "an and audit record must be available in the database")
+    public void createValidRecipeThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String recipeName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(RecipeTestDto.class)
@@ -93,7 +97,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForKubernetesAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a K8S config is created",
+        then = "an audit record must be available in the database")
+    public void createValidKubernetesConfigThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String kubernetesName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(KubernetesTestDto.class)
@@ -109,13 +117,17 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForBlueprintAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Cluster Definition is created",
+        then = "an audit record must be available in the database")
+    public void createValidClusterDefinitionThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String blueprintName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(ClusterDefinitionTestDto.class)
                 .withName(blueprintName)
                 .withClusterDefinition(VALID_BP)
-                .when(ClusterDefinitionTestAction.postV4(), key(blueprintName))
+                .when(ClusterDefinitionTestClient.postV4(), key(blueprintName))
                 .select(bp -> bp.getResponse().getId(), key(blueprintName))
                 .given(AuditTestDto.class)
                 .withResourceIdByKey(blueprintName)
@@ -126,7 +138,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForClusterTemplateAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Cluster Template is created",
+        then = "and audit record must be available in the database")
+    public void createValidClusterTemplateThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String clusterTemplateName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(EnvironmentEntity.class)
@@ -147,7 +163,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForCredentialAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Credential is created",
+        then = "and audit record must be available in the database")
+    public void createValidCredentialThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String credentialName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(CredentialTestDto.class)
@@ -163,7 +183,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForDatabaseAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Database is created",
+        then = "and audit record must be available in the database")
+    public void createValidDatabaseThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String databaseName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(DatabaseEntity.class)
@@ -179,7 +203,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForEnvironmentAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "an Environment is created",
+        then = "and audit record must be available in the database")
+    public void createValidEnvironmentThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String environmentName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(EnvironmentEntity.class)
@@ -195,7 +223,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForKerberosAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Kerberos is created",
+        then = "and audit record must be available in the database")
+    public void createValidKerberosThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String kerberosName = getNameGenerator().getRandomNameForResource();
         KerberosV4Request request = new KerberosV4Request();
         request.setName("adKerberos");
@@ -224,7 +256,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForLdapAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "an Ldap is created",
+        then = "and audit record must be available in the database")
+    public void createValidLdapThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String ldapName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(LdapConfigTestDto.class)
@@ -240,7 +276,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForMpacksAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "an Mpack is created",
+        then = "and audit record must be available in the database")
+    public void createValidMpackThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String mpackName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(MPackTestDto.class)
@@ -256,7 +296,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForProxiesAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Proxy is created",
+        then = "and audit record must be available in the database")
+    public void createValidProxyThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String proxyName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(ProxyConfigEntity.class)
@@ -272,23 +316,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForRecipesAndThenValidate(TestContext testContext) {
-        String recipeName = getNameGenerator().getRandomNameForResource();
-        testContext
-                .given(RecipeTestDto.class)
-                .withName(recipeName)
-                .when(RecipeTestClient::postV4, key(recipeName))
-                .select(r -> r.getResponse().getId(), key(recipeName))
-                .given(AuditTestDto.class)
-                .withResourceIdByKey(recipeName)
-                .withResourceType("recipes")
-                .when(AuditTestAction::getAuditEvents)
-                .then(AuditTestAssertion.listContainsAtLeast(1))
-                .validate();
-    }
-
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForStacksAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a Stack is created",
+        then = "and audit record must be available in the database")
+    public void createValidStackThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String stackName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(EnvironmentEntity.class)
@@ -307,7 +339,11 @@ public class AuditTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateAuditForImageCatalogAndThenValidate(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "an Image Catalog is created",
+        then = "and audit record must be available in the database")
+    public void createValidImageCatalogThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String catalogName = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(ImageCatalogTestDto.class)

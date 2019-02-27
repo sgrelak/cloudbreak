@@ -1,6 +1,7 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.ConfigFileApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.ITestContext;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -26,7 +28,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 
+import com.google.common.base.Strings;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.Status;
+import com.sequenceiq.it.cloudbreak.exception.TestCaseDescriptionMissingException;
 import com.sequenceiq.it.cloudbreak.newway.Environment;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
@@ -37,9 +41,12 @@ import com.sequenceiq.it.cloudbreak.newway.action.imagecatalog.ImageCatalogCreat
 import com.sequenceiq.it.cloudbreak.newway.action.ldap.LdapConfigCreateIfNotExistsAction;
 import com.sequenceiq.it.cloudbreak.newway.action.proxy.ProxyConfigCreateIfNotExistsAction;
 import com.sequenceiq.it.cloudbreak.newway.actor.Actor;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.PurgeGarbageService;
 import com.sequenceiq.it.cloudbreak.newway.context.SparklessTestContext;
+import com.sequenceiq.it.cloudbreak.newway.context.TestCaseDescription;
+import com.sequenceiq.it.cloudbreak.newway.context.TestCaseDescription.TestCaseDescriptionBuilder;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.ImageCatalogTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.clusterdefinition.ClusterDefinitionTestDto;
@@ -80,8 +87,40 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
     }
 
     @BeforeMethod
-    public void beforeMethod(Method method) {
+    public void beforeTest(Method method, Object[] params) {
         MDC.put("testlabel", method.getDeclaringClass().getSimpleName() + '.' + method.getName());
+        collectTestCaseDescription(method, params);
+    }
+
+    private TestCaseDescription collectTestCaseDescription(Method method, Object[] params) {
+        Description declaredAnnotation = method.getDeclaredAnnotation(Description.class);
+        TestCaseDescription testCaseDescription = null;
+        if (declaredAnnotation != null) {
+            testCaseDescription = new TestCaseDescriptionBuilder()
+                    .given(declaredAnnotation.given())
+                    .when(declaredAnnotation.when())
+                    .then(declaredAnnotation.then());
+            ((TestContext) params[0]).withDescription(testCaseDescription);
+        }
+        if (testCaseDescription == null) {
+            Parameter[] parameters = method.getParameters();
+            for (int i = 1; i < parameters.length; i++) {
+                if (parameters[i].getAnnotation(Description.class) != null) {
+                    Object param = params[i];
+                    if (param instanceof TestCaseDescription) {
+                        testCaseDescription = (TestCaseDescription) param;
+                        ((TestContext) params[0]).withDescription(testCaseDescription);
+                    } else {
+                        throw new IllegalArgumentException("The param annotated with @Description but the type is should be "
+                                + TestCaseDescription.class.getSimpleName());
+                    }
+                }
+            }
+        }
+        if (testCaseDescription == null || Strings.isNullOrEmpty(testCaseDescription.getValue())) {
+            throw new TestCaseDescriptionMissingException();
+        }
+        return testCaseDescription;
     }
 
     @BeforeClass
@@ -94,7 +133,7 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
     }
 
     @AfterMethod
-    public void afterMethod() {
+    public void afterMethod(Method method, ITestResult testResult) {
         MDC.put("testlabel", null);
     }
 
@@ -196,10 +235,11 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
 
     /**
      * Obtains bean from the application context for the given type if both the bean and the application context exists
+     *
      * @param requiredType the class of the expected bean
-     * @param <T> generic for the type of the expected bean
-     * @throws IllegalStateException if no application context exists or bean could not be created
+     * @param <T>          generic for the type of the expected bean
      * @return extracted instance from the application context
+     * @throws IllegalStateException if no application context exists or bean could not be created
      */
     protected <T> T getBean(Class<T> requiredType) {
         if (applicationContext != null) {

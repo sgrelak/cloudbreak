@@ -3,6 +3,7 @@ package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.Stack;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
@@ -10,8 +11,13 @@ import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.clusterdefinition.ClusterDefinitionTestDto;
 
 public class ClouderaManagerStackCreationTest extends AbstractClouderaManagerTest {
+
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateNewRegularCluster(TestContext testContext) {
+    @Description(
+        given = "a working Cloudbreak",
+        when = "a cluster with Cloudera Manager is created",
+        then = "the cluster should be available")
+    public void createRegularClouderaManagerClusterThenWaitForAvailableThenNoExceptionOccurs(TestContext testContext) {
         String name = testContext.get(ClusterDefinitionTestDto.class).getRequest().getName();
         testContext
                 .given("cm", AmbariEntity.class).withClusterDefinitionName(name).withValidateClusterDefinition(Boolean.FALSE)

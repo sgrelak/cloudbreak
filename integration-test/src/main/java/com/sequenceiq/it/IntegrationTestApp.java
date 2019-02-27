@@ -33,6 +33,7 @@ import org.testng.internal.YamlParser;
 import org.testng.xml.IFileParser;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
+import org.testng.xml.XmlSuite.ParallelMode;
 import org.uncommons.reportng.JUnitXMLReporter;
 
 import com.sequenceiq.it.cloudbreak.config.ITProps;
@@ -52,7 +53,7 @@ public class IntegrationTestApp implements CommandLineRunner {
 
     private static final IFileParser<XmlSuite> DEFAULT_FILE_PARSER = XML_PARSER;
 
-    @Value("${integrationtest.testsuite.threadPoolSize}")
+    @Value("${integrationtest.testsuite.threadPoolSize:8}")
     private int suiteThreadPoolSize;
 
     @Value("${integrationtest.command:}")
@@ -66,6 +67,12 @@ public class IntegrationTestApp implements CommandLineRunner {
 
     @Value("${integrationtest.outputdir:.}")
     private String outputDirectory;
+
+    @Value("${integrationtest.threadCount:8}")
+    private int threadCount;
+
+    @Value("${integrationtest.parallel:CLASSES}")
+    private String parallel;
 
     @Inject
     private TestNG testng;
@@ -129,6 +136,7 @@ public class IntegrationTestApp implements CommandLineRunner {
             case "suiteurls":
                 List<String> suitePathes = itProps.getSuiteFiles();
                 testng.setXmlSuites(loadSuites(suitePathes));
+
                 break;
             default:
                 LOG.info("Unknown command: {}", itCommand);
@@ -199,7 +207,10 @@ public class IntegrationTestApp implements CommandLineRunner {
     private XmlSuite loadSuite(String suitePath, InputStreamSource resource) throws IOException {
         IFileParser<XmlSuite> parser = getParser(suitePath);
         try (InputStream inputStream = resource.getInputStream()) {
-            return parser.parse(suitePath, inputStream, true);
+            XmlSuite xmlSuite = parser.parse(suitePath, inputStream, true);
+            xmlSuite.setParallel(ParallelMode.valueOf(parallel.toUpperCase()));
+            xmlSuite.setThreadCount(threadCount);
+            return xmlSuite;
         }
     }
 

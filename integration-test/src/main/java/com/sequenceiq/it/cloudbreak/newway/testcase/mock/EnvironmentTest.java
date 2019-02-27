@@ -27,6 +27,7 @@ import com.sequenceiq.it.cloudbreak.newway.Environment;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.action.credential.CredentialTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.CheckEnvironmentCredential;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.CloudbreakEntity;
@@ -67,6 +68,10 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment valid request",
+            then = "should be created")
     public void testCreateEnvironment(TestContext testContext) {
         testContext
                 .given(EnvironmentEntity.class)
@@ -78,6 +83,10 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment valid request and attach a proxy to environment",
+            then = "should environment and proxy listed")
     public void testCreateEnvironmenWithProxy(TestContext testContext) {
         createDefaultProxyConfig(testContext);
         Set<String> validProxy = new HashSet<>();
@@ -93,6 +102,10 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment valid request and attach an ldap to environment",
+            then = "should environment and proxy listed")
     public void testCreateEnvironmenWithLdap(TestContext testContext) {
         createDefaultLdapConfig(testContext);
         Set<String> validLdap = new HashSet<>();
@@ -108,7 +121,11 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    public void testCreateEnvironmenWithRds(TestContext testContext) {
+    @Description(
+            given = "Create one environment",
+            when = "create environment valid request and attach a database to environment",
+            then = "should environment and proxy listed")
+    public void testCreateEnvironmenWithDatabase(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
         validRds.add(testContext.get(DatabaseEntity.class).getName());
@@ -123,105 +140,154 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with invalid region",
+            then = "should throw BadRequestException")
     public void testCreateEnvironmentInvalidRegion(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
                 .withRegions(INVALID_REGION)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with 'null' region",
+            then = "should throw BadRequestException")
     public void testCreateEnvironmentNoRegion(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
                 .withRegions(null)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing credential",
+            then = "should throw BadRequestException")
     public void testCreateEnvironmentNotExistCredential(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
                 .withCredentialName("notexistingcredendital")
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing proxy",
+            then = "should throw BadRequestException")
     public void testCreateEnvironmentNotExistProxy(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
                 .withProxyConfigs(INVALID_PROXY)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing ldap",
+            then = "should throw BadRequestException")
     public void testCreateEnvironmentNotExistLdap(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
                 .withLdapConfigs(INVALID_LDAP)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing database",
+            then = "should throw BadRequestException")
     public void testCreateEnvironmentNotExistRds(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
                 .withRdsConfigs(INVALID_RDS)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing database and existing one",
+            then = "should throw BadRequestException")
     public void testCreateEnvWithExistingAndNotExistingRds(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         createDefaultRdsConfig(testContext);
         mixedRds.add(testContext.get(DatabaseEntity.class).getName());
         mixedRds.add("invalidRds");
         testContext
                 .init(EnvironmentEntity.class)
                 .withRdsConfigs(mixedRds)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing proxy and existing one",
+            then = "should throw BadRequestException")
     public void testCreateEnvWithExistingAndNotExistingProxy(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         createDefaultProxyConfig(testContext);
         mixedProxy.add(testContext.get(ProxyConfigEntity.class).getName());
         mixedProxy.add("invalidProxy");
         testContext
                 .init(EnvironmentEntity.class)
                 .withProxyConfigs(mixedProxy)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Create one environment",
+            when = "create environment with non existing ldap and existing one",
+            then = "should throw BadRequestException")
     public void testCreateEnvWithExistingAndNotExistingLdap(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         createDefaultLdapConfig(testContext);
         mixedLdap.add(testContext.get(LdapConfigTestDto.class).getName());
         mixedLdap.add("invalidLdap");
         testContext
                 .init(EnvironmentEntity.class)
                 .withLdapConfigs(mixedLdap)
-                .when(Environment::post, key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Environment::post, key(forbiddenKey))
+                .expect(BadRequestException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "delete specified environment",
+            then = "should be deleted")
     public void testDeleteEnvironment(TestContext testContext) {
         testContext
                 .init(EnvironmentEntity.class)
@@ -234,6 +300,10 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment with proxy",
+            when = "delete specified environment",
+            then = "should be deleted")
     public void testDeleteEnvWithProxy(TestContext testContext) {
         createDefaultProxyConfig(testContext);
         Set<String> validProxy = new HashSet<>();
@@ -250,6 +320,10 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment with ldap",
+            when = "delete specified environment",
+            then = "should be deleted")
     public void testDeleteEnvWithLdap(TestContext testContext) {
         createDefaultLdapConfig(testContext);
         Set<String> validLdap = new HashSet<>();
@@ -266,6 +340,10 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment with database",
+            when = "delete specified environment",
+            then = "should be deleted")
     public void testDeleteEnvWithRds(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
@@ -282,15 +360,24 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "delete specified environment which does not exist",
+            then = "should throw ForbiddenException")
     public void testDeleteEnvironmentNotExist(TestContext testContext) {
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .init(EnvironmentEntity.class)
-                .when(Environment::delete, key(FORBIDDEN_KEY))
-                .expect(ForbiddenException.class, key(FORBIDDEN_KEY))
+                .when(Environment::delete, key(forbiddenKey))
+                .expect(ForbiddenException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "attach database to it",
+            then = "should be attached")
     public void testCreateEnvAttachRds(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
@@ -308,13 +395,18 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "attach ldap to it",
+            then = "should be attached")
     public void testCreateEnvAttachLdap(TestContext testContext) {
+        String env = getNameGenerator().getRandomNameForResource();
         createDefaultLdapConfig(testContext);
         Set<String> validLdap = new HashSet<>();
         validLdap.add(testContext.get(LdapConfigTestDto.class).getName());
         testContext
                 .given(EnvironmentEntity.class)
-                .withName("int-ldap-attach")
+                .withName(env)
                 .when(Environment::post)
                 .given(EnvironmentEntity.class)
                 .withLdapConfigs(validLdap)
@@ -324,13 +416,18 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "attach proxy to it",
+            then = "should be attached")
     public void testCreateEnvAttachProxy(TestContext testContext) {
+        String env = getNameGenerator().getRandomNameForResource();
         createDefaultProxyConfig(testContext);
         Set<String> validProxy = new HashSet<>();
         validProxy.add(testContext.get(ProxyConfigEntity.class).getName());
         testContext
                 .given(EnvironmentEntity.class)
-                .withName("int-proxy-attach")
+                .withName(env)
                 .when(Environment::post)
                 .given(EnvironmentEntity.class)
                 .withProxyConfigs(validProxy)
@@ -340,13 +437,18 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "detach database from it",
+            then = "should be detached")
     public void testCreateEnvDetachRds(TestContext testContext) {
+        String env = getNameGenerator().getRandomNameForResource();
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
         validRds.add(testContext.get(DatabaseEntity.class).getName());
         testContext
                 .given(EnvironmentEntity.class)
-                .withName("int-rds-detach")
+                .withName(env)
                 .when(Environment::post)
                 .when(Environment::getAll)
                 .given(EnvironmentEntity.class)
@@ -358,13 +460,18 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "detach ldap from it",
+            then = "should be detached")
     public void testCreateEnvDetachLdap(TestContext testContext) {
+        String env = getNameGenerator().getRandomNameForResource();
         createDefaultLdapConfig(testContext);
         Set<String> validLdap = new HashSet<>();
         validLdap.add(testContext.get(LdapConfigTestDto.class).getName());
         testContext
                 .given(EnvironmentEntity.class)
-                .withName("int-ldap-detach")
+                .withName(env)
                 .when(Environment::post)
                 .when(Environment::getAll)
                 .given(EnvironmentEntity.class)
@@ -376,13 +483,18 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "detach proxy from it",
+            then = "should be detached")
     public void testCreateEnvDetachProxy(TestContext testContext) {
+        String env = getNameGenerator().getRandomNameForResource();
         createDefaultProxyConfig(testContext);
         Set<String> validProxy = new HashSet<>();
         validProxy.add(testContext.get(ProxyConfigEntity.class).getName());
         testContext
                 .given(EnvironmentEntity.class)
-                .withName("int-proxy-detach")
+                .withName(env)
                 .when(Environment::post)
                 .when(Environment::getAll)
                 .given(EnvironmentEntity.class)
@@ -394,56 +506,86 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environments",
+            when = "attach database to it",
+            then = "should be attached")
     public void testAttachRdsToMoreEnvs(TestContext testContext) {
+        String rds1 = getNameGenerator().getRandomNameForResource();
+        String rds2 = getNameGenerator().getRandomNameForResource();
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
         validRds.add(testContext.get(DatabaseEntity.class).getName());
-        attachRdsToEnv(testContext, "int-rds-attach-envs", validRds);
-        attachRdsToEnv(testContext, "int-rds-attach-envs2", validRds);
+        attachRdsToEnv(testContext, rds1, validRds);
+        attachRdsToEnv(testContext, rds2, validRds);
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environments",
+            when = "attach ldap to it",
+            then = "should be attached")
     public void testAttachLdapToMoreEnvs(TestContext testContext) {
+        String ldap1 = getNameGenerator().getRandomNameForResource();
+        String ldap2 = getNameGenerator().getRandomNameForResource();
         createDefaultLdapConfig(testContext);
         Set<String> validLdap = new HashSet<>();
         validLdap.add(testContext.get(LdapConfigTestDto.class).getName());
-        attachLdapToEnv(testContext, "int-ldap-attach-envs", validLdap);
-        attachLdapToEnv(testContext, "int-ldap-attach-envs2", validLdap);
+        attachLdapToEnv(testContext, ldap1, validLdap);
+        attachLdapToEnv(testContext, ldap2, validLdap);
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environments",
+            when = "attach proxy to it",
+            then = "should be attached")
     public void testAttachProxyToMoreEnvs(TestContext testContext) {
+        String proxy1 = getNameGenerator().getRandomNameForResource();
+        String proxy2 = getNameGenerator().getRandomNameForResource();
         createDefaultProxyConfig(testContext);
         Set<String> validProxy = new HashSet<>();
         validProxy.add(testContext.get(ProxyConfigEntity.class).getName());
-        attachProxyToEnv(testContext, "int-proxy-attach-envs", validProxy);
-        attachProxyToEnv(testContext, "int-proxy-attach-envs2", validProxy);
+        attachProxyToEnv(testContext, proxy1, validProxy);
+        attachProxyToEnv(testContext, proxy2, validProxy);
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "attach database to a not existing environment",
+            then = "should throw ForbiddenException")
     public void testAttachRdsToNotExistEnv(TestContext testContext) {
+        String env = getNameGenerator().getRandomNameForResource();
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
         validRds.add(testContext.get(DatabaseEntity.class).getName());
         testContext
                 .init(EnvironmentEntity.class)
-                .withName("int-no-env")
+                .withName(env)
                 .withRdsConfigs(validRds)
-                .when(Environment::putAttachResources, key(FORBIDDEN_KEY))
-                .expect(ForbiddenException.class, key(FORBIDDEN_KEY))
+                .when(Environment::putAttachResources, key(forbiddenKey))
+                .expect(ForbiddenException.class, key(forbiddenKey))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "attach database to a not existing environment",
+            then = "should throw ForbiddenException")
     public void testRdsAttachDetachOther(TestContext testContext) {
+        String notExistingRds = getNameGenerator().getRandomNameForResource();
+        String rds1 = getNameGenerator().getRandomNameForResource();
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
         Set<String> notValidRds = new HashSet<>();
         validRds.add(testContext.get(DatabaseEntity.class).getName());
-        notValidRds.add("not-existing-rds");
+        notValidRds.add(notExistingRds);
         testContext
                 .given(EnvironmentEntity.class)
-                .withName("int-rds-attach-1")
+                .withName(rds1)
                 .when(Environment::post)
                 .when(Environment::getAll)
                 .given(EnvironmentEntity.class)
@@ -451,47 +593,58 @@ public class EnvironmentTest extends AbstractIntegrationTest {
                 .when(Environment::putAttachResources)
                 .then(EnvironmentTest::checkRdsAttachedToEnv)
                 .given(EnvironmentEntity.class)
-                .withName("int-rds-attach-1")
+                .withName(rds1)
                 .withRdsConfigs(notValidRds)
                 .when(Environment::putDetachResources)
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "modify credential",
+            then = "should use the new credential on environment")
     public void testCreateEnvironmentChangeCredWithCredName(TestContext testContext) {
+        String cred1 = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(EnvironmentEntity.class)
                 .when(Environment::post)
-
-                .given("int-env-change-cred", CredentialTestDto.class)
-                .withName("int-env-change-cred")
+                .given(cred1, CredentialTestDto.class)
+                .withName(cred1)
                 .when(CredentialTestAction::create)
-
                 .given(EnvironmentEntity.class)
-                .withCredentialName("int-env-change-cred")
+                .withCredentialName(cred1)
                 .then(Environment::changeCredential)
-                .then(new CheckEnvironmentCredential("int-env-change-cred"))
+                .then(new CheckEnvironmentCredential(cred1))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "modify credential",
+            then = "should use the new credentialRequest on environment")
     public void testCreateEnvironmentChangeCredWithCredRequest(TestContext testContext) {
+        String cred1 = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(EnvironmentEntity.class)
                 .when(Environment::post)
 
-                .given("int-change-cred", CredentialTestDto.class)
-                .withName("int-change-cred")
-
+                .given(cred1, CredentialTestDto.class)
+                .withName(cred1)
                 .given(EnvironmentEntity.class)
                 .withCredentialName(null)
-                .withCredential("int-change-cred")
+                .withCredential(cred1)
                 .then(Environment::changeCredential)
-                .then(new CheckEnvironmentCredential("int-change-cred"))
+                .then(new CheckEnvironmentCredential(cred1))
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "modify credential for the same credential",
+            then = "should use the same credential on environment")
     public void testCreateEnvironmentChangeCredForSame(TestContext testContext) {
         testContext
                 .given(EnvironmentEntity.class)
@@ -503,15 +656,20 @@ public class EnvironmentTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "Created environment",
+            when = "modify credential for a not existing credential",
+            then = "should throw ForbiddenException")
     public void testCreateEnvironmentChangeCredNotExistingName(TestContext testContext) {
+        String notExistingCred = getNameGenerator().getRandomNameForResource();
+        String forbiddenKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(EnvironmentEntity.class)
                 .when(Environment::post)
-
                 .given(EnvironmentEntity.class)
-                .withCredentialName("not-existing-cred")
-                .then(Environment::changeCredential, key(FORBIDDEN_KEY))
-                .expect(ForbiddenException.class, key(FORBIDDEN_KEY))
+                .withCredentialName(notExistingCred)
+                .then(Environment::changeCredential, key(forbiddenKey))
+                .expect(ForbiddenException.class, key(forbiddenKey))
                 .validate();
     }
 

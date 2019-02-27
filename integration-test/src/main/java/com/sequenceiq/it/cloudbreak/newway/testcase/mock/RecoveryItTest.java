@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.sequenceiq.cloudbreak.common.type.HostMetadataState;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.InstanceGroupEntity;
@@ -35,6 +36,10 @@ public class RecoveryItTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Description(
+            given = "a created cluster",
+            when = "calling test action which says there is an unhealthy node",
+            then = "cluster status should be CREATE_FAILED")
     public void testWhenSyncTellsNodesAreUnhealthyThenClusterStatusHaveToChange(MockedTestContext testContext) {
         String stackName = getNameGenerator().getRandomNameForResource();
         mockAmbari(testContext);

@@ -11,7 +11,9 @@ import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.action.credential.CredentialTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.gateway.PlatformGatewaysTestAction;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
+import com.sequenceiq.it.cloudbreak.newway.context.TestCaseDescription;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.gateway.PlatformGatewaysTestDto;
@@ -25,6 +27,10 @@ public class GatewaysTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "created a MOCK credential",
+            when = "calling gateways endpoint with that credential for getting cloud gateways",
+            then = "getting a list with mock gateways")
     public void testGetPlatformGatewaysByCredentialName(MockedTestContext testContext) {
         String credentialName = getNameGenerator().getRandomNameForResource();
         testContext
@@ -37,8 +43,9 @@ public class GatewaysTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = "contextWithCredentialNameAndException")
-    public void testGetPlatformGatewaysByCredentialNameWhenCredentialIsInvalid(MockedTestContext testContext, String credentialName, String exceptionKey,
-            Class<Exception> exception) {
+    public void testGetPlatformGatewaysByCredentialNameWhenCredentialIsInvalid(MockedTestContext testContext, String credentialName,
+        Class<Exception> exception, @Description TestCaseDescription testCaseDescription) {
+        String exceptionKey = getNameGenerator().getRandomNameForResource();
         testContext
                 .given(PlatformGatewaysTestDto.class)
                 .withCredentialName(credentialName)
@@ -50,9 +57,33 @@ public class GatewaysTest extends AbstractIntegrationTest {
     @DataProvider(name = "contextWithCredentialNameAndException")
     public Object[][] provideInvalidAttributes() {
         return new Object[][]{
-                {getBean(MockedTestContext.class), "", "badRequest", BadRequestException.class},
-                {getBean(MockedTestContext.class), null, "badRequest", BadRequestException.class},
-                {getBean(MockedTestContext.class), "andNowForSomethingCompletelyDifferent", "forbidden", ForbiddenException.class}
+                {
+                    getBean(MockedTestContext.class),
+                    "",
+                    BadRequestException.class,
+                    new TestCaseDescription.TestCaseDescriptionBuilder()
+                        .given("created a MOCK credential")
+                        .when("calling gateways endpoint with a non existing credential for getting cloud gateways")
+                        .then("getting a BadRequestException")
+                },
+                {
+                    getBean(MockedTestContext.class),
+                    null,
+                    BadRequestException.class,
+                    new TestCaseDescription.TestCaseDescriptionBuilder()
+                        .given("Testing database with unsupported database type")
+                        .when("calling gateways endpoint with a 'null' credential for getting cloud gateways")
+                        .then("getting a BadRequestException")
+                },
+                {
+                    getBean(MockedTestContext.class),
+                    "andNowForSomethingCompletelyDifferent",
+                    ForbiddenException.class,
+                    new TestCaseDescription.TestCaseDescriptionBuilder()
+                        .given("Testing database with unsupported database type")
+                        .when("calling gateways endpoint with a credential which not related to that account for getting cloud gateways")
+                        .then("getting a  ForbiddenException")
+                }
         };
     }
 

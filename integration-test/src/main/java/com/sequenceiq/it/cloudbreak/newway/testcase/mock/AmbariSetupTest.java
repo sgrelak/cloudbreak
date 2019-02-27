@@ -8,6 +8,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.Stack;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
@@ -22,6 +23,10 @@ public class AmbariSetupTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a working environment",
+            when = "a stack is created",
+            then = "Ambari user endpoints should be invoked with the proper requests")
     public void verifyCallsAgainstAmbariUserCreation(TestContext testContext) {
         testContext
                 // create stack

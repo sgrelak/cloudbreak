@@ -3,5 +3,6 @@ parallel: TESTS
 threadCount: 8
 tests:
   - name: "newway mock testcases"
-    packages:
-      - com.sequenceiq.it.cloudbreak.newway.testcase.mock.*
+    classes:
+#      - com.sequenceiq.it.cloudbreak.newway.testcase.mock.*
+      - com.sequenceiq.it.cloudbreak.newway.testcase.mock.ImageCatalogTest

@@ -9,12 +9,17 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status.Family;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sequenceiq.cloudbreak.client.RestClientUtil;
 
 public class ImageCatalogValidator implements ConstraintValidator<ValidImageCatalog, String> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImageCatalogValidator.class);
 
     private static final Client CLIENT = RestClientUtil.get();
 
@@ -39,6 +44,7 @@ public class ImageCatalogValidator implements ConstraintValidator<ValidImageCata
                 }
             }
         } catch (Throwable ignore) {
+            LOGGER.info("Image catlog failed to rretrive: " + ignore.getMessage(), ignore);
         }
         return false;
     }

@@ -3,6 +3,7 @@ package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 import static com.sequenceiq.cloudbreak.cloud.model.InstanceStatus.STARTED;
 import static com.sequenceiq.cloudbreak.cloud.model.InstanceStatus.STOPPED;
 import static com.sequenceiq.it.cloudbreak.newway.Mock.gson;
+import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 import static com.sequenceiq.it.spark.ITResponse.MOCK_ROOT;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -25,7 +26,7 @@ public class ClouderaManagerStartStopTest extends AbstractClouderaManagerTest {
 
     private static final String CLOUD_INSTANCE_STATUSES = MOCK_ROOT + SPIMock.CLOUD_INSTANCE_STATUSES;
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
     @Description(
         given = "a Cloudera Manager cluster",
         when = "the cluster is stoppend and started",
@@ -41,13 +42,14 @@ public class ClouderaManagerStartStopTest extends AbstractClouderaManagerTest {
                 .withValidateClusterDefinition(Boolean.FALSE)
                 .given(clusterName, ClusterEntity.class)
                 .withAmbari(ambariKey)
-                .given(StackTestDto.class).withCluster(clusterName)
-                .when(Stack.postV4())
-                .await(STACK_AVAILABLE)
-                .when(StackTestAction::stop)
-                .await(STACK_STOPPED)
-                .when(StackTestAction::start)
-                .await(STACK_AVAILABLE)
+                .given(StackTestDto.class)
+                .withCluster(clusterName)
+                .when(Stack.postV4(), key(ambariKey))
+                .await(STACK_AVAILABLE, key(ambariKey))
+                .when(StackTestAction::stop, key(ambariKey))
+                .await(STACK_STOPPED, key(ambariKey))
+                .when(StackTestAction::start, key(ambariKey))
+                .await(STACK_AVAILABLE, key(ambariKey))
                 .validate();
     }
 

@@ -44,8 +44,12 @@ public class SSHKeysTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = "contextWithCredentialNameAndException")
-    public void testGetSSHKeysByCredentialNameWhenCredentialIsInvalid(MockedTestContext testContext, String credentialName, String exceptionKey,
-            Class<Exception> exception, @Description TestCaseDescription testCaseDescription) {
+    public void testGetSSHKeysByCredentialNameWhenCredentialIsInvalid(
+            MockedTestContext testContext,
+            String credentialName,
+            String exceptionKey,
+            Class<Exception> exception,
+            @Description TestCaseDescription testCaseDescription) {
         testContext
                 .given(PlatformSshKeysTestDto.class)
                 .withCredentialName(credentialName)
@@ -57,13 +61,16 @@ public class SSHKeysTest extends AbstractIntegrationTest {
     @DataProvider(name = "contextWithCredentialNameAndException")
     public Object[][] provideInvalidAttributes() {
         return new Object[][]{
-                {getBean(MockedTestContext.class), "", "badRequest", BadRequestException.class, createWithGiven("platform ssh keys")
+                {getBean(MockedTestContext.class), "", "badRequest", BadRequestException.class,
+                        createWithGiven("platform ssh keys")
                         .when("credential name is empty")
                         .then("get bad request ecxeption")},
-                {getBean(MockedTestContext.class), null, "badRequest", BadRequestException.class, createWithGiven("platform ssh keys")
+                {getBean(MockedTestContext.class), null, "badRequest", BadRequestException.class,
+                        createWithGiven("platform ssh keys")
                         .when("credential name is null")
                         .then("get bad request ecxeption")},
-                {getBean(MockedTestContext.class), "andNowForSomethingCompletelyDifferent", "forbidden", ForbiddenException.class, createWithGiven("platform ssh keys")
+                {getBean(MockedTestContext.class), "andNowForSomethingCompletelyDifferent", "forbidden",
+                        ForbiddenException.class, createWithGiven("platform ssh keys")
                         .when("credential name is not exists")
                         .then("get forbidden ecxeption")}
         };

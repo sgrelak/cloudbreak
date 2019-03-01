@@ -3,6 +3,7 @@ package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 import static com.sequenceiq.cloudbreak.cloud.model.InstanceStatus.STARTED;
 import static com.sequenceiq.cloudbreak.cloud.model.InstanceStatus.STOPPED;
 import static com.sequenceiq.it.cloudbreak.newway.Mock.gson;
+import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 import static com.sequenceiq.it.spark.ITResponse.MOCK_ROOT;
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -48,16 +49,18 @@ public class AmbariPasswordUpdateTest extends AbstractIntegrationTest {
         then = "the cluster should still be available")
     public void createAmbariClusterAndModifyThePasswordOnItThenNoExceptionOccursTheStackIsAvailable(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         mockAmbari(testContext, clusterName);
         mockSpi(testContext);
         testContext
-                .given(StackTestDto.class)
+                .given(generatedKey, StackTestDto.class)
                 .valid()
                 .withName(clusterName)
-                .when(Stack.postV4())
-                .await(STACK_AVAILABLE)
-                .when(StackTestAction::modifyAmbariPassword)
-                .await(STACK_AVAILABLE)
+                .when(Stack.postV4(), key(generatedKey))
+                .await(STACK_AVAILABLE, key(generatedKey))
+                .when(StackTestAction::modifyAmbariPassword, key(generatedKey))
+                .await(STACK_AVAILABLE, key(generatedKey))
                 .validate();
     }
 

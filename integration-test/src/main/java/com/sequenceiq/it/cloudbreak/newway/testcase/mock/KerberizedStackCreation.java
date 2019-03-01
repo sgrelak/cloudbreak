@@ -1,4 +1,4 @@
- package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
+package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
 import static com.sequenceiq.it.cloudbreak.newway.assertion.kerberos.KerberosTestAssertion.validateCustomDomain;
 

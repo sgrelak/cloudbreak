@@ -28,16 +28,23 @@ public class AmbariSetupTest extends AbstractIntegrationTest {
             when = "a stack is created",
             then = "Ambari user endpoints should be invoked with the proper requests")
     public void verifyCallsAgainstAmbariUserCreation(TestContext testContext) {
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         testContext
                 // create stack
-                .given(StackTestDto.class)
-                .when(Stack.postV4(), key("stack-post"))
-                .await(STACK_AVAILABLE)
-                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users").exactTimes(2).bodyContains("\"Users/active\": true"))
-                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users").exactTimes(2).bodyContains("\"Users/admin\": true"))
-                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users").exactTimes(1).bodyContains("\"Users/user_name\": \"cloudbreak\""))
-                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users").exactTimes(1).bodyContains("\"Users/user_name\": \"dpapps\""))
-                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users").atLeast(1).bodyContains("Users/password"))
+                .given(generatedKey, StackTestDto.class)
+                .when(Stack.postV4(), key(generatedKey))
+                .await(STACK_AVAILABLE, key(generatedKey))
+                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")
+                        .exactTimes(2).bodyContains("\"Users/active\": true"), key(generatedKey))
+                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")
+                        .exactTimes(2).bodyContains("\"Users/admin\": true"), key(generatedKey))
+                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")
+                        .exactTimes(1).bodyContains("\"Users/user_name\": \"cloudbreak\""), key(generatedKey))
+                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")
+                        .exactTimes(1).bodyContains("\"Users/user_name\": \"dpapps\""), key(generatedKey))
+                .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")
+                        .atLeast(1).bodyContains("Users/password"), key(generatedKey))
                 .validate();
     }
 }

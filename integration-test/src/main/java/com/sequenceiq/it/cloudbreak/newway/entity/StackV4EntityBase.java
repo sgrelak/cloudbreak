@@ -29,6 +29,7 @@ import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.ImageSettingsEntity;
 import com.sequenceiq.it.cloudbreak.newway.SecurityRulesEntity;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
+import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
 
 public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends AbstractCloudbreakEntity<StackV4Request, StackV4Response, T> {
 
@@ -96,10 +97,10 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
     }
 
     public StackV4EntityBase<T> withEnvironment(Class<EnvironmentEntity> environmentKey) {
-        return withEnvironment(environmentKey.getSimpleName());
+        return withEnvironmentKey(environmentKey.getSimpleName());
     }
 
-    public StackV4EntityBase<T> withEnvironment(String environmentKey) {
+    public StackV4EntityBase<T> withEnvironmentKey(String environmentKey) {
         EnvironmentEntity env = getTestContext().get(environmentKey);
         if (env == null) {
             throw new IllegalArgumentException("Env is null with given key: " + environmentKey);

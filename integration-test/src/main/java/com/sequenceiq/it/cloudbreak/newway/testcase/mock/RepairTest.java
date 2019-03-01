@@ -23,6 +23,7 @@ import com.sequenceiq.it.cloudbreak.newway.action.database.DatabaseCreateIfNotEx
 import com.sequenceiq.it.cloudbreak.newway.action.kerberos.KerberosTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
 import com.sequenceiq.it.cloudbreak.newway.cloud.HostGroupType;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
@@ -69,6 +70,10 @@ public class RepairTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a MOCK cluster without kerberos",
+            when = "repair the master node on the cluster",
+            then = "after the process the master has to be available")
     public void testRepairMasterNodeNoKerberos(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
         String ambariRdsName = getNameGenerator().getRandomNameForResource();
@@ -108,6 +113,10 @@ public class RepairTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a MOCK cluster with kerberos",
+            when = "repair the master node on the cluster",
+            then = "after the process the master has to be available")
     public void testRepairMasterNodeWithKerberos(MockedTestContext testContext) {
         String ambariRdsName = getNameGenerator().getRandomNameForResource();
         createEnvWithResources(testContext, ambariRdsName);

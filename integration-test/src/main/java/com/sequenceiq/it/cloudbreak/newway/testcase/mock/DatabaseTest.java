@@ -61,9 +61,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Database recreate test",
-            when = "calling create and then delete and recreate Database",
-            then = "the second create should be successful as well")
+            given = "there is a prepared database",
+            when = "the database is deleted and then a create request is sent with the same database name",
+            then = "the database should be created again")
     public void createAndDeleteAndCreateWithSameNameThenShouldRecreatedDatabase(TestContext testContext) {
         String databaseName = getNameGenerator().getRandomNameForResource();
         testContext
@@ -83,9 +83,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Database create twice with same name test",
-            when = "calling create and then recreate Database",
-            then = "the second create should fail fail because duplicated record")
+            given = "there is a prepared database",
+            when = "when a database create request is sent with the same database name",
+            then = "the create should return a BadRequestException")
     public void createAndCreateWithSameNameThenShouldThrowBadRequestException(TestContext testContext) {
         String databaseName = getNameGenerator().getRandomNameForResource();
         testContext
@@ -172,15 +172,14 @@ public class DatabaseTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Database test with non existing name",
-            when = "calling test Database",
-            then = "the test connection should throw access denied")
+            given = "there is a running cloudbreak",
+            when = "calling test database endpoint with a non-existent database name",
+            then = "the test connection should return access denied")
     public void testDatabaseTestConnectionWithNonExistingDbName(TestContext testContext) {
         String generatedKey = getNameGenerator().getRandomNameForResource();
-
         testContext
                 .given(DatabaseTestEntity.class)
-                .withExistingName("aNonExistingDb")
+                .withExistingName("aNonExistentDb")
                 .when(DatabaseTestEntity.testConnection(), key(generatedKey))
                 .then(DatabaseTestAccessDeniedAssertion.getAssertion(), key(generatedKey))
                 .validate();
@@ -189,16 +188,16 @@ public class DatabaseTest extends AbstractIntegrationTest {
     @DataProvider(name = DB_TYPE_PROVIDER, parallel = true)
     public Object[][] provideTypes() {
         List<DatabaseType> databaseTypeList = Arrays.asList(DatabaseType.values());
-        Object[][] objects = new Object[databaseTypeList.size()][2];
+        Object[][] objects = new Object[databaseTypeList.size()][3];
         databaseTypeList
                 .forEach(databaseType -> {
                     objects[databaseTypeList.indexOf(databaseType)][0] = getBean(TEST_CONTEXT_CLASS);
                     objects[databaseTypeList.indexOf(databaseType)][1] = databaseType;
                     objects[databaseTypeList.indexOf(databaseType)][2] =
                             new TestCaseDescription.TestCaseDescriptionBuilder()
-                            .given("Testing databaseType with" + databaseType + " type")
-                            .when("calling create endpoint")
-                            .then("returns successful creation");
+                            .given("there is a running cloudbreak")
+                            .when("sending database create request with databaseType '" + databaseType + '\'')
+                            .then("creation should be successful");
                 });
         return objects;
     }
@@ -213,9 +212,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         DATABASE_PROTOCOL + DATABASE_HOST_PORT_DB,
                         "The length of the name has to be in range of 4 to 50",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
-                                .given("Testing database with too long name")
-                                .when("calling create endpoint")
-                                .then("returns with BadRequestException")
+                                .given("there is a running cloudbreak")
+                                .when("calling database create endpoint with 51 characters long name")
+                                .then("a BadRequestException should be returned")
                 },
                 {
                         getBean(TEST_CONTEXT_CLASS),
@@ -225,9 +224,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         DATABASE_PROTOCOL + DATABASE_HOST_PORT_DB,
                         "The length of the name has to be in range of 4 to 50",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
-                                .given("Testing database with too short name")
-                                .when("calling create endpoint")
-                                .then("returns with BadRequestException")
+                                .given("there is a running cloudbreak")
+                                .when("calling database create endpoint with 3 characcters long name")
+                                .then("a BadRequestException should be returned")
                 },
                 {
                         getBean(TEST_CONTEXT_CLASS),
@@ -238,9 +237,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         "The database's name can only contain lowercase alphanumeric characters and "
                                 + "hyphens and has start with an alphanumeric character",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
-                                .given("Testing database with mixed characters name")
-                                .when("calling create endpoint")
-                                .then("returns with BadRequestException")
+                                .given("there is a running cloudbreak")
+                                .when("calling database create endpoint with invalid characters in the name")
+                                .then("a BadRequestException should be returned")
                 },
                 {
                         getBean(TEST_CONTEXT_CLASS),
@@ -250,9 +249,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         DATABASE_PROTOCOL + DATABASE_HOST_PORT_DB,
                         "connectionUserName: null, error: must not be null",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
-                                .given("Testing database with 'null' connectionUserName")
-                                .when("calling create endpoint")
-                                .then("returns with BadRequestException")
+                                .given("there is a running cloudbreak")
+                                .when("calling database create endpoint with 'null' connectionUserName")
+                                .then("a BadRequestException should be returned")
                 },
                 {
                         getBean(TEST_CONTEXT_CLASS),
@@ -262,9 +261,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         DATABASE_PROTOCOL + DATABASE_HOST_PORT_DB,
                         "connectionPassword: null, error: must not be null",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
-                                .given("Testing database with 'null' password")
-                                .when("calling create endpoint")
-                                .then("returns with BadRequestException")
+                                .given("there is a running cloudbreak")
+                                .when("calling database create endpoint with 'null' connectionPassword")
+                                .then("a BadRequestException should be returned")
                 },
                 {
                         getBean(TEST_CONTEXT_CLASS),
@@ -274,9 +273,9 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         DATABASE_HOST_PORT_DB,
                         "Unsupported database type",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
-                                .given("Testing database with unsupported database type")
-                                .when("calling create endpoint")
-                                .then("returns with BadRequestException")
+                                .given("there is a running cloudbreak")
+                                .when("calling database create endpoint with unsupported database type")
+                                .then("a BadRequestException should be returned")
                 }
         };
     }

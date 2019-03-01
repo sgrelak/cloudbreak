@@ -1,5 +1,7 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
+import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -27,18 +29,20 @@ public class RepoConfigValidationTest extends AbstractIntegrationTest {
             MockedTestContext testContext,
             RepoConfigValidationTestData testData,
             @Description TestCaseDescription testCaseDescription) {
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         testContext
-                .given(RepoConfigValidationTestDto.class)
+                .given(generatedKey, RepoConfigValidationTestDto.class)
                 .withRequest(testData.request())
-                .when(RepoConfigValidationTestAction::postRepositoryConfigValidation)
-                .then(testData::resultValidation)
+                .when(RepoConfigValidationTestAction::postRepositoryConfigValidation, key(generatedKey))
+                .then(testData::resultValidation, key(generatedKey))
                 .validate();
     }
 
     @DataProvider(name = DATA_PROVIDER_FOR_REPO_CONFIG_TEST)
     public Object[][] dataProvider() {
         var testDataValues = RepoConfigValidationTestData.values();
-        var data = new Object[testDataValues.length][2];
+        var data = new Object[testDataValues.length][3];
         var testContext = getBean(MockedTestContext.class);
         for (int i = 0; i < testDataValues.length; i++) {
             data[i][0] = testContext;

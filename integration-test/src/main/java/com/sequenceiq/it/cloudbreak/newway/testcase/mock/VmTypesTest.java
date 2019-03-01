@@ -46,30 +46,44 @@ public class VmTypesTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = "contextWithCredentialNameAndException")
-    public void testGetPlatformVmtypesByCredentialNameWhenCredentialIsInvalid(MockedTestContext testContext, String credentialName, String exceptionKey,
-            Class<Exception> exception, @Description TestCaseDescription description) {
+    public void testGetPlatformVmtypesByCredentialNameWhenCredentialIsInvalid(
+            MockedTestContext testContext,
+            String credentialName,
+            Class<Exception> exception,
+            @Description TestCaseDescription description) {
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         testContext
                 .given(RegionTestDto.class)
                 .withCredentialName(credentialName)
-                .when(RegionTestAction::getRegions, key(exceptionKey))
-                .expect(exception, key(exceptionKey))
+                .when(RegionTestAction::getRegions, key(generatedKey))
+                .expect(exception, key(generatedKey))
                 .validate();
     }
 
     @DataProvider(name = "contextWithCredentialNameAndException")
     public Object[][] provideInvalidAttributes() {
         return new Object[][]{
-                {getBean(MockedTestContext.class), "", "badRequest", BadRequestException.class,
+                {
+                        getBean(MockedTestContext.class),
+                        "",
+                        BadRequestException.class,
                         new TestCaseDescriptionBuilder()
                                 .given("a region")
                                 .when("without credential name")
                                 .then("throw bad request exception")},
-                {getBean(MockedTestContext.class), null, "badRequest", BadRequestException.class,
+                {
+                        getBean(MockedTestContext.class),
+                        null,
+                        BadRequestException.class,
                         new TestCaseDescriptionBuilder()
                                 .given("a region")
                                 .when("credential name is empty")
                                 .then("throw bad request exception")},
-                {getBean(MockedTestContext.class), "andNowForSomethingCompletelyDifferent", "forbidden", ForbiddenException.class,
+                {
+                        getBean(MockedTestContext.class),
+                        "andNowForSomethingCompletelyDifferent",
+                        ForbiddenException.class,
                         new TestCaseDescriptionBuilder()
                                 .given("a region")
                                 .when("credential name is null")

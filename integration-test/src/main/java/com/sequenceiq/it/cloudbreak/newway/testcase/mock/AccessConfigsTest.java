@@ -37,7 +37,7 @@ public class AccessConfigsTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create)
+                .when(CredentialTestAction::create, key(credentialName))
                 .given(PlatformAccessConfigsTestDto.class)
                 .withCredentialName(credentialName)
                 .when(PlatformAccessConfigsTestAction::getAccessConfigs, key(credentialName))

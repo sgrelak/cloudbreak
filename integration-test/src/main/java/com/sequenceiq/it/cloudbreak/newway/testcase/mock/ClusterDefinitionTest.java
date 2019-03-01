@@ -51,7 +51,7 @@ public class ClusterDefinitionTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT)
     @Description(
-            given = "a working Cloudbreak",
+            given = "there is a running cloudbreak",
             when = "a valid cluster definition create request is sent",
             then = "the cluster definition should be in the response")
     public void testCreateClusterDefinition(TestContext testContext) {
@@ -76,7 +76,7 @@ public class ClusterDefinitionTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT)
     @Description(
-            given = "a working Cloudbreak",
+            given = "there is a running cloudbreak",
             when = "a cluster definition create request with invalid name is sent",
             then = "a BadRequestException should be returned")
     public void testCreateClusterDefinitionWithInvalidCharacterName(TestContext testContext) {
@@ -91,7 +91,7 @@ public class ClusterDefinitionTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT)
     @Description(
-            given = "a working Cloudbreak",
+            given = "there is a running cloudbreak",
             when = "a cluster definition create request is sent with an invalid JSON",
             then = "a BadRequestException should be returned with 'Failed to parse JSON' message")
     public void testCreateClusterDefinitionWithInvalidJson(TestContext testContext) {
@@ -106,7 +106,7 @@ public class ClusterDefinitionTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT)
     @Description(
-            given = "a working Cloudbreak",
+            given = "there is a running cloudbreak",
             when = "the list cluster definition",
             then = "returns with cluster definition list")
     public void testListClusterDefinition(TestContext testContext) {
@@ -118,7 +118,7 @@ public class ClusterDefinitionTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "a working Cloudbreak",
+            given = "there is a running cloudbreak",
             when = "the get cluster definition endpoint is called",
             then = "the cluster definition should be returned")
     public void testGetSpecificClusterDefinition(TestContext testContext) {

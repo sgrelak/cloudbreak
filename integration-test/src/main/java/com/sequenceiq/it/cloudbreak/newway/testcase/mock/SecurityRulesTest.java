@@ -25,8 +25,10 @@ public class SecurityRulesTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = DATA_PROVIDER_FOR_SECURITY_RULES_TEST)
-    public void getSecurityRulesWithDifferentConfigurations(MockedTestContext testContext, Boolean knoxEnabled,
-        @Description TestCaseDescription testCaseDescription) {
+    public void getSecurityRulesWithDifferentConfigurations(
+            MockedTestContext testContext,
+            Boolean knoxEnabled,
+            @Description TestCaseDescription testCaseDescription) {
         testContext
                 .given(SecurityRulesTestDto.class)
                 .withKnoxEnabled(knoxEnabled)

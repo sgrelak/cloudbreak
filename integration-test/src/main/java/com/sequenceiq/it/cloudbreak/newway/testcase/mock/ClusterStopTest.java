@@ -3,6 +3,7 @@ package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 import static com.sequenceiq.cloudbreak.cloud.model.InstanceStatus.STARTED;
 import static com.sequenceiq.cloudbreak.cloud.model.InstanceStatus.STOPPED;
 import static com.sequenceiq.it.cloudbreak.newway.Mock.gson;
+import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 import static com.sequenceiq.it.spark.ITResponse.MOCK_ROOT;
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -15,8 +16,8 @@ import org.testng.annotations.Test;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
-import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.SPIMock;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
 import com.sequenceiq.it.spark.StatefulRoute;
@@ -50,11 +51,13 @@ public class ClusterStopTest extends AbstractIntegrationTest {
         mockAmbari(testContext, clusterName);
         mockSpi(testContext);
         testContext
-                .given(StackTestDto.class).valid().withName(clusterName)
-                .when(Stack.postV4())
-                .await(STACK_AVAILABLE)
-                .when(StackTestAction::stop)
-                .await(STACK_STOPPED)
+                .given(clusterName, StackTestDto.class)
+                .valid()
+                .withName(clusterName)
+                .when(Stack.postV4(), key(clusterName))
+                .await(STACK_AVAILABLE, key(clusterName))
+                .when(StackTestAction::stop, key(clusterName))
+                .await(STACK_STOPPED, key(clusterName))
                 .validate();
     }
 

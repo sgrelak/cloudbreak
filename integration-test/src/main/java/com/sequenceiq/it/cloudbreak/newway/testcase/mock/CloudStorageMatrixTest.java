@@ -1,5 +1,7 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
+import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -24,11 +26,13 @@ public class CloudStorageMatrixTest extends AbstractIntegrationTest {
         when = "the cloudstorage endpoint is called",
         then = "a matrix with the supported cloud storages is returned")
     public void getCloudStorageMatrixThenReturnSupportedCloudStorages(MockedTestContext testContext) {
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         testContext
                 .given(CloudStorageMatrixTestDto.class)
-                .when(CloudStorageMatrixTestAction::getCloudStorageMatrix)
-                .then(CommonAssert::responsesExists)
-                .then(CloudStorageMatrixAssertion::matrixIsNotEmpty)
+                .when(CloudStorageMatrixTestAction::getCloudStorageMatrix, key(generatedKey))
+                .then(CommonAssert::responsesExists, key(generatedKey))
+                .then(CloudStorageMatrixAssertion::matrixIsNotEmpty, key(generatedKey))
                 .validate();
     }
 

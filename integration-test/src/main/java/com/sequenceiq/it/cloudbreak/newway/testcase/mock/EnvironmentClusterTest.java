@@ -266,7 +266,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
                 .then(EnvironmentTest::checkRdsAttachedToEnv)
 
                 .given(newStack, StackTestDto.class)
-                .withEnvironment(newEnv)
+                .withEnvironmentKey(newEnv)
                 .withCluster(
                         setResources(
                                 testContext,

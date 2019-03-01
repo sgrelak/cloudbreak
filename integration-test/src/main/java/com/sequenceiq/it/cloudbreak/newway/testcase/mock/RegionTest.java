@@ -27,6 +27,10 @@ public class RegionTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Description(
+            given = "a MOCK credential name",
+            when = "calling get region on provider side",
+            then = "getting back MOCK regions")
     public void testGetRegionsByCredentialName(MockedTestContext testContext) {
         String credentialName = getNameGenerator().getRandomNameForResource();
         testContext

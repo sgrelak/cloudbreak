@@ -59,4 +59,8 @@ public class MockedTestContext extends TestContext {
         return model.getAmbariMock().getDynamicRouteStack();
     }
 
+    @Override
+    protected String getIdentityUrl() {
+        return sparkServer.getEndpoint();
+    }
 }

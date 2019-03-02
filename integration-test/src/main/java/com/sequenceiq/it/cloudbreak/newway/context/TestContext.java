@@ -189,7 +189,7 @@ public abstract class TestContext implements ApplicationContextAware {
         checkShutdown();
         CloudbreakUser acting = actor.acting(testParameter);
         if (clients.get(acting.getToken()) == null) {
-            CloudbreakClient cloudbreakClient = CloudbreakClient.createProxyCloudbreakClient(testParameter, acting);
+            CloudbreakClient cloudbreakClient = CloudbreakClient.createProxyCloudbreakClient(testParameter, acting, getIdentityUrl());
             clients.put(acting.getToken(), cloudbreakClient);
             Optional<WorkspaceV4Response> workspace = cloudbreakClient.getCloudbreakClient()
                     .workspaceV4Endpoint().list().getResponses().stream()
@@ -198,6 +198,10 @@ public abstract class TestContext implements ApplicationContextAware {
             workspace.ifPresent(workspaceResponse -> cloudbreakClient.setWorkspaceId(workspaceResponse.getId()));
         }
         return this;
+    }
+
+    protected String getIdentityUrl() {
+        return null;
     }
 
     protected String getDefaultUser() {

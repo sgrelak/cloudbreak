@@ -13,6 +13,7 @@ import com.sequenceiq.cloudbreak.cloud.model.InstanceStatus;
 import com.sequenceiq.cloudbreak.cloud.model.InstanceTemplate;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.AmbariMock;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.ClouderaManagerMock;
+import com.sequenceiq.it.cloudbreak.newway.mock.model.IdentityMock;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.SPIMock;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.SaltMock;
 import com.sequenceiq.it.util.ServerAddressGenerator;
@@ -34,6 +35,8 @@ public class DefaultModel extends MockModel {
 
     private SaltMock saltMock;
 
+    private IdentityMock identityMock;
+
     private ClouderaManagerMock clouderaManagerMock;
 
     @Override
@@ -44,11 +47,13 @@ public class DefaultModel extends MockModel {
         ambariMock = new AmbariMock(sparkService, this);
         spiMock = new SPIMock(sparkService, this);
         saltMock = new SaltMock(sparkService, this);
+        identityMock = new IdentityMock(sparkService, this);
         clouderaManagerMock = new ClouderaManagerMock(sparkService, this);
 
         ambariMock.addAmbariMappings();
         spiMock.addSPIEndpoints();
         saltMock.addSaltMappings();
+        identityMock.addIdentityMappings();
         clouderaManagerMock.addClouderaManagerMappings();
     }
 

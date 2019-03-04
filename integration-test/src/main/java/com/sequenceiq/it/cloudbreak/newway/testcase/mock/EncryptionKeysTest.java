@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.sequenceiq.it.cloudbreak.newway.action.credential.CredentialTestAction;
+import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
 import com.sequenceiq.it.cloudbreak.newway.action.encryptionkeys.PlatformEncryptionKeysTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
@@ -36,7 +36,7 @@ public class EncryptionKeysTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create, key(credentialName))
+                .when(CredentialTestClient::create, key(credentialName))
                 .given(PlatformEncryptionKeysTestDto.class)
                 .withCredentialName(credentialName)
                 .when(PlatformEncryptionKeysTestAction::getEncryptionKeys, key(credentialName))

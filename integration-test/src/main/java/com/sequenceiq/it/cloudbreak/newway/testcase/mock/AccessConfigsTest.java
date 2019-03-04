@@ -10,7 +10,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.action.accessconfig.PlatformAccessConfigsTestAction;
-import com.sequenceiq.it.cloudbreak.newway.action.credential.CredentialTestAction;
+import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestCaseDescription;
@@ -37,7 +37,7 @@ public class AccessConfigsTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create, key(credentialName))
+                .when(CredentialTestClient::create, key(credentialName))
                 .given(PlatformAccessConfigsTestDto.class)
                 .withCredentialName(credentialName)
                 .when(PlatformAccessConfigsTestAction::getAccessConfigs, key(credentialName))

@@ -456,14 +456,15 @@ public abstract class TestContext implements ApplicationContextAware {
         checkShutdown();
         Map<String, Exception> exceptionsDuringTest = getErrors();
         if (!exceptionsDuringTest.isEmpty()) {
-            StringBuilder br = new StringBuilder("All Exceptions during test are logged before this message").append(System.lineSeparator());
+            StringBuilder builder = new StringBuilder("All Exceptions that occurred during the test are logged before this message")
+                    .append(System.lineSeparator());
             exceptionsDuringTest.forEach((msg, ex) -> {
                 LOGGER.error(msg, ex);
-                br.append(msg).append(": ").append(getErrorMessage(ex)).append(System.lineSeparator());
+                builder.append(msg).append(": ").append(getErrorMessage(ex)).append(System.lineSeparator());
             });
             exceptionsDuringTest.clear();
             if (!silently) {
-                throw new TestFailException(br.toString());
+                throw new TestFailException(builder.toString());
             }
         }
     }
@@ -512,7 +513,7 @@ public abstract class TestContext implements ApplicationContextAware {
     public void cleanupTestContextEntity() {
         if (!validated) {
             throw new IllegalStateException(
-                    "Should be validate the context! Maybe do you forget to call .validate() end of the test? See other tests for example");
+                    "Test context should be validated! Maybe do you forgot to call .validate() end of the test? See other tests as an example.");
         }
         checkShutdown();
         handleExecptionsDuringTest(true);

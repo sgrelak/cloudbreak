@@ -21,9 +21,9 @@ public class StackCreationTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "a stack with and Ambari cluster",
-            when = "password of the cluster is modified",
-            then = "the cluster should still be available")
+            given = "there is a running cloudbreak",
+            when = "a valid stack create request is sent",
+            then = "the stack should become available")
     public void testCreateWorkloadCluster(TestContext testContext) {
         testContext.given(StackTestDto.class)
                 .when(StackTestAction::create)

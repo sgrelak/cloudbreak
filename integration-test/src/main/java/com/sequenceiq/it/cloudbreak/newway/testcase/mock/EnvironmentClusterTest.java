@@ -15,6 +15,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.sequenceiq.cloudbreak.api.endpoint.v4.database.base.DatabaseV4Base;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.database.responses.DatabaseV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.ldaps.responses.LdapV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.proxies.responses.ProxyV4Response;
@@ -22,6 +23,7 @@ import com.sequenceiq.it.cloudbreak.exception.TestFailException;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Credential;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
+import com.sequenceiq.it.cloudbreak.newway.entity.CloudbreakEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.Environment;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
@@ -38,6 +40,7 @@ import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapConfigTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.proxy.ProxyConfig;
 import com.sequenceiq.it.cloudbreak.newway.entity.proxy.ProxyConfigEntity;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
+import com.sequenceiq.it.cloudbreak.newway.util.EnvironmentTestUtils;
 import com.sequenceiq.it.cloudbreak.newway.v3.StackActionV4;
 
 public class EnvironmentClusterTest extends AbstractIntegrationTest {
@@ -212,7 +215,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
         testContext.given(EnvironmentEntity.class)
                 .withRdsConfigs(validRds)
                 .when(Environment::post)
-                .then(EnvironmentTest::checkRdsAttachedToEnv)
+                .then(EnvironmentTestUtils::checkRdsAttachedToEnv)
 
                 .given(StackTestDto.class).given(EnvironmentSettingsV4Entity.class)
                 .given(StackTestDto.class)
@@ -245,7 +248,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
         testContext.given(EnvironmentEntity.class)
                 .withRdsConfigs(validRds)
                 .when(Environment::post)
-                .then(EnvironmentTest::checkRdsAttachedToEnv)
+                .then(EnvironmentTestUtils::checkRdsAttachedToEnv)
 
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
@@ -263,7 +266,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
                 .given(newEnv, EnvironmentEntity.class)
                 .withRdsConfigs(validRds)
                 .when(Environment::post)
-                .then(EnvironmentTest::checkRdsAttachedToEnv)
+                .then(EnvironmentTestUtils::checkRdsAttachedToEnv)
 
                 .given(newStack, StackTestDto.class)
                 .withEnvironmentKey(newEnv)
@@ -282,7 +285,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
                 .given(newEnv, EnvironmentEntity.class)
                 .when(Environment::putDetachResources, key(newEnv))
-                .then((tc, env, cbClient) -> EnvironmentTest.checkRdsDetachedFromEnv(tc, env, DatabaseEntity.class, cbClient))
+                .then((tc, env, cbClient) -> checkRdsDetachedFromEnv(tc, env, DatabaseEntity.class, cbClient))
 
                 .validate();
     }
@@ -429,6 +432,29 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
         String credentialName = environment.getResponse().getCredentialName();
         if (!credentialName.equals(testContext.get(NEW_CREDENTIAL_KEY).getName())) {
             throw new TestFailException("Credential is not attached to environment");
+        }
+        return environment;
+    }
+
+     private <T extends CloudbreakEntity> EnvironmentEntity checkRdsDetachedFromEnv(TestContext testContext,
+            EnvironmentEntity environment, Class<T> rdsKey, CloudbreakClient cloudbreakClient) {
+        String rdsName = testContext.get(rdsKey).getName();
+        return checkRdsDetachedFromEnv(environment, rdsName);
+    }
+
+    private EnvironmentEntity checkRdsDetachedFromEnv(TestContext testContext, EnvironmentEntity environment,
+            String rdsKey, CloudbreakClient cloudbreakClient) {
+        String rdsName = testContext.get(rdsKey).getName();
+        return checkRdsDetachedFromEnv(environment, rdsName);
+    }
+
+    private EnvironmentEntity checkRdsDetachedFromEnv(EnvironmentEntity environment, String rdsName) {
+        Set<DatabaseV4Response> rdsConfigs = environment.getResponse().getDatabases();
+        boolean attached = rdsConfigs.stream().map(DatabaseV4Base::getName)
+                .anyMatch(rds -> rds.equals(rdsName));
+
+        if (attached) {
+            throw new TestFailException("Rds is attached to environment");
         }
         return environment;
     }

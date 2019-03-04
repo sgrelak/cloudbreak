@@ -11,7 +11,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.sequenceiq.it.cloudbreak.newway.action.credential.CredentialTestAction;
+import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
 import com.sequenceiq.it.cloudbreak.newway.assertion.credential.CredentialTestAssertion;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
@@ -51,8 +51,8 @@ public class CredentialTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::create)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.listContains(credentialName, 1))
                 .validate();
     }
@@ -68,14 +68,14 @@ public class CredentialTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::create)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.listContains(credentialName, 1))
-                .when(CredentialTestAction::delete)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::delete)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.listContains(credentialName, 0))
-                .when(CredentialTestAction::create)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::create)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.listContains(credentialName, 1))
                 .validate();
     }
@@ -91,11 +91,11 @@ public class CredentialTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::create)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.listContains(credentialName, 1))
                 .withName(credentialName)
-                .when(CredentialTestAction::create, key(BAD_REQUEST_KEY))
+                .when(CredentialTestClient::create, key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
     }
@@ -112,13 +112,13 @@ public class CredentialTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::create)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.listContains(credentialName, 1))
                 .withName(credentialName)
                 .withDescription(modifiedDescription)
-                .when(CredentialTestAction::modify)
-                .when(CredentialTestAction::list)
+                .when(CredentialTestClient::modify)
+                .when(CredentialTestClient::list)
                 .then(CredentialTestAssertion.validateModifcation(modifiedDescription))
                 .validate();
     }
@@ -133,7 +133,7 @@ public class CredentialTest extends AbstractIntegrationTest {
         testContext
                 .given(CredentialTestDto.class)
                 .withName(credentialName)
-                .when(CredentialTestAction::create, key(requestKey))
+                .when(CredentialTestClient::create, key(requestKey))
                 .expect(BadRequestException.class, expectedMessage(expectedExceptionMessage).withKey(requestKey))
                 .validate();
     }

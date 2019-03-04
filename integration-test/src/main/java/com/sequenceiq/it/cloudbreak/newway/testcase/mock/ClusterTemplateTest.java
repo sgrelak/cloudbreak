@@ -196,58 +196,43 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "a prepared cluster template with many properties",
             when = "a stack is created from the prepared cluster template",
             then = "the stack starts properly and can be deleted"
     )
     public void testLaunchClusterFromTemplateWithProperties(MockedTestContext testContext) {
-        String generatedKey = getNameGenerator().getRandomNameForResource();
-        String environment = getNameGenerator().getRandomNameForResource();
-        String stackTemplate = getNameGenerator().getRandomNameForResource();
-        String mpack = getNameGenerator().getRandomNameForResource();
-        String ldap = getNameGenerator().getRandomNameForResource();
-        String recipe = getNameGenerator().getRandomNameForResource();
-        String rds =  getNameGenerator().getRandomNameForResource();
-
         testContext.getModel().getAmbariMock().putConfigureLdap();
         testContext.getModel().getAmbariMock().postSyncLdap();
         testContext.getModel().getAmbariMock().putConfigureSso();
         testContext
-                .given(LdapConfigTestDto.class)
-                .withName(ldap)
-                .when(ldapConfigTestClient.createIfNotExists(), key(ldap))
-                .given(RecipeTestDto.class)
-                .withName(recipe)
-                .when(RecipeTestClient::postV4, key(recipe))
-                .given(DatabaseEntity.class)
-                .withName(rds)
-                .when(new DatabaseCreateIfNotExistsAction(), key(rds))
-                .given(MPackTestDto.class)
-                .withName(mpack)
-                .when(MpackTestAction::create, key(mpack))
-                .given(environment, EnvironmentEntity.class)
+                .given(LdapConfigTestDto.class).withName("mock-test-ldap")
+                .when(ldapConfigTestClient.createIfNotExists())
+                .given(RecipeTestDto.class).withName("mock-test-recipe")
+                .when(RecipeTestClient::postV4)
+                .given(DatabaseEntity.class).withName("mock-test-rds")
+                .when(new DatabaseCreateIfNotExistsAction())
+                .given("mpack", MPackTestDto.class).withName("mock-test-mpack")
+                .when(MpackTestAction::create)
+                .given("environment", EnvironmentEntity.class)
                 .withRegions(VALID_REGION)
                 .withLocation(LONDON)
-                .when(Environment::post, key(environment))
-                .given(stackTemplate, StackTemplateEntity.class)
-                .withName(stackTemplate)
-                .withEnvironmentKey(environment)
+                .when(Environment::post)
+                .given("stackTemplate", StackTemplateEntity.class)
+                .withEnvironmentKey("environment")
                 .withEveryProperties()
                 .given(ClusterTemplateEntity.class)
-                .withStackTemplate(stackTemplate)
-                .capture(ClusterTemplateEntity::count, key(generatedKey))
-                .when(new ClusterTemplateV4CreateAction(), key(stackTemplate))
-                .verify(ct -> ct.count() - 1, key(generatedKey))
-                .when(new ClusterTemplateGetAction(), key(stackTemplate))
-                .then(new CheckStackTemplateAfterClusterTemplateCreationWithProperties(), key(stackTemplate))
-                .when(new LaunchClusterFromTemplateAction(stackTemplate), key(stackTemplate))
-                .await(STACK_AVAILABLE, key(stackTemplate))
-                .when(new DeleteClusterFromTemplateAction(stackTemplate), force()
-                        .withKey(stackTemplate))
-                .await(STACK_DELETED, key(stackTemplate)
-                        .withSkipOnFail(false))
+                .withStackTemplate("stackTemplate")
+                .capture(ClusterTemplateEntity::count, key("ctSize"))
+                .when(new ClusterTemplateV4CreateAction())
+                .verify(ct -> ct.count() - 1, key("ctSize"))
+                .when(new ClusterTemplateGetAction())
+                .then(new CheckStackTemplateAfterClusterTemplateCreationWithProperties())
+                .when(new LaunchClusterFromTemplateAction("stackTemplate"))
+                .await(STACK_AVAILABLE, key("stackTemplate"))
+                .when(new DeleteClusterFromTemplateAction("stackTemplate"), force())
+                .await(STACK_DELETED, key("stackTemplate").withSkipOnFail(false))
                 .validate();
     }
 

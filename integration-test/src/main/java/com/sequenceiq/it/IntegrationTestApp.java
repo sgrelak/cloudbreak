@@ -33,7 +33,6 @@ import org.testng.internal.YamlParser;
 import org.testng.xml.IFileParser;
 import org.testng.xml.SuiteXmlParser;
 import org.testng.xml.XmlSuite;
-import org.testng.xml.XmlSuite.ParallelMode;
 import org.uncommons.reportng.JUnitXMLReporter;
 
 import com.sequenceiq.it.cloudbreak.config.ITProps;
@@ -68,7 +67,7 @@ public class IntegrationTestApp implements CommandLineRunner {
     @Value("${integrationtest.outputdir:.}")
     private String outputDirectory;
 
-    @Value("${integrationtest.threadCount:20}")
+    @Value("${integrationtest.threadCount:8}")
     private int threadCount;
 
     @Value("${integrationtest.parallel:CLASSES}")
@@ -208,8 +207,9 @@ public class IntegrationTestApp implements CommandLineRunner {
         IFileParser<XmlSuite> parser = getParser(suitePath);
         try (InputStream inputStream = resource.getInputStream()) {
             XmlSuite xmlSuite = parser.parse(suitePath, inputStream, true);
-            xmlSuite.setParallel(ParallelMode.valueOf(parallel.toUpperCase()));
+            xmlSuite.setParallel(XmlSuite.ParallelMode.valueOf(parallel.toUpperCase()));
             xmlSuite.setThreadCount(threadCount);
+            LOG.info("Test are running in: {} type of parallel mode", parallel.toUpperCase());
             return xmlSuite;
         }
     }

@@ -13,11 +13,11 @@ import org.testng.annotations.Test;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
-import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.clusterdefinition.ClusterDefinitionTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.SPIMock;
 import com.sequenceiq.it.spark.StatefulRoute;
 import com.sequenceiq.it.spark.spi.CloudVmInstanceStatuses;
@@ -26,7 +26,7 @@ public class ClouderaManagerStartStopTest extends AbstractClouderaManagerTest {
 
     private static final String CLOUD_INSTANCE_STATUSES = MOCK_ROOT + SPIMock.CLOUD_INSTANCE_STATUSES;
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
         given = "a Cloudera Manager cluster",
         when = "the cluster is stoppend and started",
@@ -34,22 +34,25 @@ public class ClouderaManagerStartStopTest extends AbstractClouderaManagerTest {
     public void createRegularClouderaManagerClusterThenWaitForAvailableThenStopThenStartThenWaitForAvailableThenNoExceptionOccurs(
             MockedTestContext testContext) {
         mockSpi(testContext);
-        String ambariKey = getNameGenerator().getRandomNameForResource();
-        String clusterName = testContext.get(ClusterDefinitionTestDto.class).getRequest().getName();
+        String name = testContext.get(ClusterDefinitionTestDto.class).getRequest().getName();
+        String cm = getNameGenerator().getRandomNameForResource();
+        String cmcluster = getNameGenerator().getRandomNameForResource();
+        String stack = getNameGenerator().getRandomNameForResource();
+
         testContext
-                .given(ambariKey, AmbariEntity.class)
-                .withClusterDefinitionName(clusterName)
+                .given(cm, AmbariEntity.class)
+                .withClusterDefinitionName(name)
                 .withValidateClusterDefinition(Boolean.FALSE)
-                .given(clusterName, ClusterEntity.class)
-                .withAmbari(ambariKey)
-                .given(StackTestDto.class)
-                .withCluster(clusterName)
-                .when(Stack.postV4(), key(ambariKey))
-                .await(STACK_AVAILABLE, key(ambariKey))
-                .when(StackTestAction::stop, key(ambariKey))
-                .await(STACK_STOPPED, key(ambariKey))
-                .when(StackTestAction::start, key(ambariKey))
-                .await(STACK_AVAILABLE, key(ambariKey))
+                .given(cmcluster, ClusterEntity.class)
+                .withAmbari(cm)
+                .given(stack, StackTestDto.class)
+                .withCluster(cmcluster)
+                .when(Stack.postV4(), key(stack))
+                .await(STACK_AVAILABLE, key(stack))
+                .when(StackTestAction::stop, key(stack))
+                .await(STACK_STOPPED, key(stack))
+                .when(StackTestAction::start, key(stack))
+                .await(STACK_AVAILABLE, key(stack))
                 .validate();
     }
 

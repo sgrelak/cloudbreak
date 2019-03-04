@@ -59,25 +59,26 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         ((TestContext) data[0]).cleanupTestContextEntity();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog valid URL",
             when = "calling create image catalog with that URL",
             then = "getting image catalog response so the creation success")
     public void testImageCatalogCreationWhenURLIsValidAndExists(TestContext testContext) {
         String imgCatalogName = getNameGenerator().getRandomNameForResource();
+        String generatedKey = getNameGenerator().getRandomNameForResource();
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
-                .when(new ImageCatalogPostAction())
-                .when(new ImageCatalogGetByNameAction(Boolean.FALSE))
+                .when(new ImageCatalogPostAction(), key(imgCatalogName))
+                .when(new ImageCatalogGetByNameAction(Boolean.FALSE), key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog invalid URL but too short name",
             when = "calling create image catalog with that URL and name",
@@ -86,7 +87,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String imgCatalogName = getNameGenerator().getRandomNameForResource().substring(0, 4);
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(IMG_CATALOG_URL)
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -95,7 +96,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog invalid URL but too long name",
             when = "calling create image catalog with that URL and name",
@@ -104,7 +105,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String imgCatalogName = getNameGenerator().getRandomNameForResource().concat(longStringGeneratorUtil.stringGenerator(100));
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(IMG_CATALOG_URL)
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -113,7 +114,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog invalid name contains specific characters",
             when = "calling create image catalog with that URL and name",
@@ -122,7 +123,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String imgCatalogName = getNameGenerator().getRandomNameForResource().concat(IMAGECATALOG_NAME_WITH_SPECIAL_CHARS);
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(IMG_CATALOG_URL)
                 .when(new ImageCatalogPostWithoutNameLoggingAction(), key(imgCatalogName))
@@ -130,7 +131,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog invalid url",
             when = "calling create image catalog with that URL",
@@ -140,7 +141,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String invalidURL = "https:/google.com/imagecatalog";
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(invalidURL)
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -149,7 +150,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog valid url but does not contain a catalog",
             when = "calling create image catalog with that URL",
@@ -158,7 +159,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String imgCatalogName = getNameGenerator().getRandomNameForResource();
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(IMG_CATALOG_URL + "/notanimagecatalog")
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -167,7 +168,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog valid url but the JSON is invalid",
             when = "calling create image catalog with that URL",
@@ -176,7 +177,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String imgCatalogName = getNameGenerator().getRandomNameForResource();
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(INVALID_IMAGECATALOG_JSON_URL)
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -185,7 +186,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog in the database",
             when = "calling delete on the existing one and create a new one with the same name",
@@ -195,25 +196,25 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
-                .when(new ImageCatalogPostAction())
+                .when(new ImageCatalogPostAction(), key(imgCatalogName))
                 .select(imgCatalog -> imgCatalog.getResponse().getId(), key(imgCatalogName))
-                .when(new ImageCatalogDeleteAction())
-                .when(new ImageCatalogPostAction())
-                .when(new ImageCatalogGetByNameAction(Boolean.FALSE))
+                .when(new ImageCatalogDeleteAction(), key(imgCatalogName))
+                .when(new ImageCatalogPostAction(), key(imgCatalogName))
+                .when(new ImageCatalogGetByNameAction(Boolean.FALSE), key(imgCatalogName))
                 .then((testContext1, entity, cloudbreakClient) -> {
                     Long firstPostEntityId = testContext1.getSelected(imgCatalogName);
                     if (entity.getResponse().getId().equals(firstPostEntityId)) {
                         throw new IllegalArgumentException("The re-created ImageCatalog should have a different id.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog deletion",
             when = "calling delete on the existing one",
@@ -224,7 +225,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(catalogKey))
@@ -235,7 +236,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog deletion on the default catalog",
             when = "calling delete on the existing default",
@@ -253,7 +254,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get the default catalog",
             when = "calling get on the default",
@@ -262,13 +263,13 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         String imgCatalogName = getNameGenerator().getRandomNameForResource();
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(CB_DEFAULT_IMG_CATALOG_NAME)
                 .when(new ImageCatalogGetByNameAction(Boolean.FALSE), key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get the default catalog with MOCK provider",
             when = "calling get on the default",
@@ -278,7 +279,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -289,11 +290,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException("The Images response should contain results for MOCK provider.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get the default catalog with AWS provider but catalog does not contain AWS entry",
             when = "calling get on the default",
@@ -303,7 +304,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -314,11 +315,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException("The Images response should NOT contain results for AWS provider.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get with a non existing name",
             when = "calling get with that name",
@@ -328,7 +329,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogGetImagesByNameAction(), key(imgCatalogName))
@@ -336,7 +337,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get with AWS provider if exist in catalog",
             when = "calling get AWS provider",
@@ -346,7 +347,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -357,11 +358,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException("The Images response should contain results for AWS provider.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get with AWS provider if exist in catalog",
             when = "calling get AWS provider",
@@ -371,7 +372,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -382,11 +383,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException("The Images response should NOT contain results for MOCK provider.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog create with a new default",
             when = "calling create with default=true flag",
@@ -396,7 +397,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -408,11 +409,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException("The Images should have been set as default.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog create with a new catalog without default=true",
             when = "calling create with default=false flag",
@@ -422,7 +423,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -437,11 +438,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException(format("The catalog should not have been set as default with name: '%s'", imgCatalogName));
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog get request",
             when = "calling get request on catalog endpoint",
@@ -451,7 +452,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -463,18 +464,18 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                             .getRequest(cloudbreakClient.getWorkspaceId(), imgCatalogName);
                     entity.setRequest(request);
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .then((testContext1, entity, cloudbreakClient) -> {
                     ImageCatalogV4Request imgCatReq = testContext1.getSelected(imgCatalogName);
                     if (entity.getRequest().equals(imgCatReq)) {
                         throw new IllegalArgumentException("The requests are not identical.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog update request",
             when = "calling update request with new url",
@@ -484,7 +485,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
@@ -502,25 +503,27 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                             .update(cloudbreakClient.getWorkspaceId(), updateRequest);
                     entity.setResponse(updateResponse);
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .then((testContext1, entity, cloudbreakClient) -> {
                     ImageCatalogV4Response originalRepsonse = testContext1.getSelected(imgCatalogName);
                     if (originalRepsonse.getUrl().equals(entity.getResponse().getUrl())) {
                         throw new IllegalArgumentException("The catalog URL should not be the same after update.");
                     }
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "image catalog list",
             when = "calling list all the catalog",
             then = "getting back the account related catalogs")
     public void testGetListOfImageCatalogs(TestContext testContext) {
+        String imgCatalogName = getNameGenerator().getRandomNameForResource();
+
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(CB_DEFAULT_IMG_CATALOG_NAME)
                 .when((testContext1, entity, cloudbreakClient) -> {
                     ImageCatalogV4Responses list = cloudbreakClient
@@ -528,11 +531,11 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                             .imageCatalogV4Endpoint()
                             .list(cloudbreakClient.getWorkspaceId());
                     return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
             given = "get prewarmed image if stack info is presented",
             when = "posting a stack with all the repository version",
@@ -542,23 +545,24 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         initializeDefaultClusterDefinitions(testContext);
 
         String imgCatalogName = getNameGenerator().getRandomNameForResource();
+        String environmentName = getNameGenerator().getRandomNameForResource();
         String stackName = getNameGenerator().getRandomNameForResource();
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getPreWarmedImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
                 .when(new ImageCatalogSetAsDefaultAction(), key(imgCatalogName))
                 .given(EnvironmentEntity.class)
-                .when(Environment::post, key(imgCatalogName))
+                .when(Environment::post, key(environmentName))
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
                 .withName(stackName)
                 .when(Stack.postV4(), key(imgCatalogName))
                 .await(STACK_AVAILABLE)
-                .given(ImageCatalogTestDto.class)
+                .given(imgCatalogName, ImageCatalogTestDto.class)
                 .when(new ImageCatalogGetImagesByNameAction(stackName), key(imgCatalogName))
                 .then((testContext1, entity, cloudbreakClient) -> {
                     ImagesV4Response catalog = entity.getResponseByProvider();
@@ -567,46 +571,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                         throw new IllegalArgumentException(msg);
                     }
                     return entity;
-                })
-                .validate();
-    }
-
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
-    @Description(
-            given = "get base image because the catalog does not contain prewarmed image with that specific version",
-            when = "posting a stack with all the repository version",
-            then = "getting back a stack which using a base image")
-    public void testGetImageCatalogByNameAndStackWhenBaseImageHasBeenUsed(TestContext testContext) {
-        createDefaultCredential(testContext);
-        initializeDefaultClusterDefinitions(testContext);
-
-        String imgCatalogName = getNameGenerator().getRandomNameForResource();
-        String stackName = getNameGenerator().getRandomNameForResource();
-        MockedTestContext mockedTestContext = (MockedTestContext) testContext;
-
-        testContext
-                .given(ImageCatalogTestDto.class)
-                .withName(imgCatalogName)
-                .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
-                .when(new ImageCatalogPostAction(), key(imgCatalogName))
-                .when(new ImageCatalogSetAsDefaultAction(), key(imgCatalogName))
-                .given(EnvironmentEntity.class)
-                .when(Environment::post, key(imgCatalogName))
-                .given(StackTestDto.class)
-                .withEnvironment(EnvironmentEntity.class)
-                .withName(stackName)
-                .when(Stack.postV4(), key(imgCatalogName))
-                .await(STACK_AVAILABLE)
-                .given(ImageCatalogTestDto.class)
-                .when(new ImageCatalogGetImagesByNameAction(stackName), key(imgCatalogName))
-                .then((testContext1, entity, cloudbreakClient) -> {
-                    ImagesV4Response catalog = entity.getResponseByProvider();
-                    if (catalog.getBaseImages().isEmpty() && catalog.getHdpImages().isEmpty() && catalog.getHdfImages().isEmpty()) {
-                        String msg = format("The Images response should contain results for MOCK provider and stack with name: '%s'.", stackName);
-                        throw new IllegalArgumentException(msg);
-                    }
-                    return entity;
-                })
+                }, key(imgCatalogName))
                 .validate();
     }
 }

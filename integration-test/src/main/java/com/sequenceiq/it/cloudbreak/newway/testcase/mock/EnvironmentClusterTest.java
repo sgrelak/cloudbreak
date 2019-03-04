@@ -72,9 +72,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Detach rds proxy and ldap from environment",
-            when = "calling detach environment endpoint",
-            then = "every three resource has to be detached")
+            given = "there is an available environment with attached rds, ldap and proxy configs",
+            when = "a cluster is created and deleted in the env and detach environment endpoint is called for the attached resources",
+            then = "all of the three resources should be detached")
     public void testDetachFromEnvWithDeletedCluster(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext.given(StackTestDto.class)
@@ -101,9 +101,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Detach rds proxy and ldap from environment and delete",
-            when = "calling detach environment endpoint and then delete those",
-            then = "every three resource has to be deleted")
+            given = "there is an environment with a attached shared resources and a running cluster that is not using these resources",
+            when = "calling detach environment endpoint for the resources and deleting those",
+            then = "all three resources should be be deleted")
     public void testWlClusterNotAttachResourceDetachDeleteOk(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext.given(StackTestDto.class)
@@ -124,9 +124,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create cluster with database, ldap and proxy and then delete those",
-            when = "calling create cluster and then delete resources",
-            then = "the test not able to delete resources because those attached to a cluster")
+            given = "there is an environment with a attached shared resources and a running cluster that is using these resources",
+            when = "the resource delete endpoints and environment delete endpoints are called",
+            then = "non of the operations should succeed")
     public void testCreateWlClusterDeleteFails(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext.given(StackTestDto.class)
@@ -152,9 +152,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create cluster with database, ldap and proxy and then delete those",
-            when = "calling create cluster and then detach resources",
-            then = "the test not able to detach resources because those attached to a cluster")
+            given = "there is an environment with a attached shared resources and a running cluster that is using these resources",
+            when = "the detach resources from environment endpoint is called",
+            then = "the resources should not be detached from the environment")
     public void testCreateWlClusterDetachFails(TestContext testContext) {
         createEnvWithResources(testContext);
         testContext
@@ -181,9 +181,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create two cluster in the same environment",
-            when = "calling create cluster twice",
-            then = "the test should be able to create two cluster")
+            given = "there is an environment with a cluster in it",
+            when = "calling create cluster with a different cluster name",
+            then = "the second cluster should be created")
     public void testSameEnvironmentWithDifferentClusters(TestContext testContext) {
         String newStack = getNameGenerator().getRandomNameForResource();
         testContext.given(EnvironmentEntity.class)
@@ -200,9 +200,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create two cluster in the same environment with the same database",
-            when = "calling create cluster twice",
-            then = "the test should be able to create two cluster with the same database")
+            given = "there is an environment and attached database and a cluster in it which uses the database",
+            when = "the cluster create endpoint is called with a cluster that is using the same attached database",
+            then = "the second cluster should be created, using the same attached database")
     public void testSameEnvironmentAttachRdsToDifferentClusters(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = new HashSet<>();
@@ -233,9 +233,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create cluster with database and then delete cluster detach database and reattach to different environment",
-            when = "running the whole flow",
-            then = "the second cluster should work as well")
+            given = "there is a database that is attached to 2 environment",
+            when = "2 separate clusters are created in the 2 envs, both using the same database",
+            then = "both cluster creation should work")
     public void testReuseRdsWithDifferentClustersInDifferentEnvs(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         Set<String> validRds = Set.of(testContext.get(DatabaseEntity.class).getName());
@@ -289,26 +289,26 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create cluster with database which did not attached to any environment",
-            when = "create cluster with database without environment",
-            then = "the cluster should use that database without problem")
+            given = "there is an environment and a database which in not attached to the environment",
+            when = "a cluster is created in the environment and with the non-attached database",
+            then = "the cluster create should succeed")
     public void testClusterWithRdsWithoutEnvironment(TestContext testContext) {
         createDefaultRdsConfig(testContext);
         testContext.given(EnvironmentEntity.class)
+                .when(Environment::post)
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
                 .withCluster(setResources(testContext, testContext.get(DatabaseEntity.class).getName(),
                         null, null))
-                .when(Stack.postV4(), key(FORBIDDEN_KEY))
-                .expect(BadRequestException.class, key(FORBIDDEN_KEY))
+                .when(Stack.postV4())
                 .validate();
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create cluster in environment and then attached a new credential to that",
-            when = "create cluster and modify the credential",
-            then = "the cluster should use the previous credential")
+            given = "there is an environment with a cluster in it",
+            when = "a change credential request is sent for the environment",
+            then = "the credential of the cluster should be changed too")
     public void testWlClusterChangeCred(MockedTestContext testContext) {
         testContext.given(EnvironmentEntity.class)
                 .when(Environment::post)
@@ -330,9 +330,9 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "Create cluster without environment",
-            when = "create cluster without environment",
-            then = "the cluster create should drop a BadRequestException")
+            given = "there is an available environment",
+            when = "create cluster request is sent with missing environment settings",
+            then = "a BadRequestException should be returned")
     public void testClusterWithEmptyEnvironmentRequest(TestContext testContext) {
         testContext
                 .given(EnvironmentEntity.class)

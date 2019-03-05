@@ -326,10 +326,10 @@ public class AuditTest extends AbstractIntegrationTest {
 
         testContext
                 .given(EnvironmentEntity.class)
-                .when(Environment::post, key(stackName))
-                .given(stackName, StackTestDto.class)
-                .when(Stack.postV4(), key(stackName))
-                .await(STACK_AVAILABLE, key(stackName))
+                .when(Environment::post)
+                .given(StackTestDto.class)
+                .when(Stack.postV4())
+                .await(STACK_AVAILABLE)
                 .select(env -> env.getResponse().getId(), key(stackName))
                 .given(AuditTestDto.class)
                 .withResourceIdByKey(stackName)

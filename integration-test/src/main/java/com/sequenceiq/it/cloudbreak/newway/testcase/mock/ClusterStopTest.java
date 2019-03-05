@@ -52,7 +52,6 @@ public class ClusterStopTest extends AbstractIntegrationTest {
         mockSpi(testContext);
         testContext
                 .given(clusterName, StackTestDto.class)
-                .valid()
                 .withName(clusterName)
                 .when(Stack.postV4(), key(clusterName))
                 .await(STACK_AVAILABLE, key(clusterName))

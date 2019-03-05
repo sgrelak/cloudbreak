@@ -70,7 +70,7 @@ public class IntegrationTestApp implements CommandLineRunner {
     @Value("${integrationtest.threadCount:8}")
     private int threadCount;
 
-    @Value("${integrationtest.parallel:CLASSES}")
+    @Value("${integrationtest.parallel:METHODS}")
     private String parallel;
 
     @Inject
@@ -83,6 +83,7 @@ public class IntegrationTestApp implements CommandLineRunner {
     private ITProps itProps;
 
     public static void main(String[] args) {
+        long start = System.currentTimeMillis();
         SpringApplication springApp = new SpringApplication(IntegrationTestApp.class);
         springApp.setWebApplicationType(WebApplicationType.NONE);
         try {
@@ -96,6 +97,7 @@ public class IntegrationTestApp implements CommandLineRunner {
             threadSet.stream().forEach(t -> LOG.info("Runnning threads: {}", t.getName()));
             System.exit(1);
         }
+        LOG.info("run successfully: {}", System.currentTimeMillis() - start);
         System.exit(0);
     }
 

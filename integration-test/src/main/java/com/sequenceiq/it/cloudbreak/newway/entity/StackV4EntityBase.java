@@ -51,7 +51,8 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
                 .withNetwork(getTestContext().given(NetworkV2Entity.class))
                 .withStackAuthentication(getCloudProvider().stackAuthentication(given(StackAuthenticationEntity.class)))
                 .withGatewayPort(getCloudProvider().gatewayPort(this))
-                .withCluster(getTestContext().given(ClusterEntity.class).withName(name));
+                .withCluster(getTestContext().given(ClusterEntity.class).withName(name))
+                .withImageCatalog(getTestContext().get(ImageCatalogTestDto.class.getSimpleName()).getName());
     }
 
     public StackV4EntityBase<T> withEveryProperties() {
@@ -165,16 +166,6 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
             getRequest().setImage(new ImageSettingsV4Request());
         }
         getRequest().getImage().setCatalog(imageCatalog);
-        return this;
-    }
-
-    public StackV4EntityBase<T> withImageCatalogClass(Class<ImageCatalogTestDto> imageCatalog) {
-        if (getRequest().getImage() == null) {
-            getRequest().setImage(new ImageSettingsV4Request());
-        }
-        ImageCatalogTestDto imageCatalogTestDto = (ImageCatalogTestDto) getTestContext()
-                .getResources().get(imageCatalog.getSimpleName());
-        getRequest().getImage().setCatalog(imageCatalogTestDto.getName());
         return this;
     }
 

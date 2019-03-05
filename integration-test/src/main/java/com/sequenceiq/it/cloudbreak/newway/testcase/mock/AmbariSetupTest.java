@@ -34,13 +34,12 @@ public class AmbariSetupTest extends AbstractIntegrationTest {
         String envName = getNameGenerator().getRandomNameForResource();
 
         testContext
-                .given(envName, EnvironmentEntity.class)
+                .given(EnvironmentEntity.class)
                 .withName(envName)
-                .then(Environment::post, key(envName))
-                .given(generatedKey, StackTestDto.class)
-                .withEnvironmentKey(envName)
-                .when(Stack.postV4(), key(generatedKey))
-                .await(STACK_AVAILABLE, key(generatedKey))
+                .then(Environment::post)
+                .given(StackTestDto.class)
+                .when(Stack.postV4())
+                .await(STACK_AVAILABLE)
                 .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")
                         .exactTimes(2).bodyContains("\"Users/active\": true"), key(generatedKey))
                 .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")

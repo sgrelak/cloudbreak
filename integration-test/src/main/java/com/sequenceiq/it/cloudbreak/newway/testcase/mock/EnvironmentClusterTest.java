@@ -320,14 +320,12 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
                 .given(NEW_CREDENTIAL_KEY, CredentialTestDto.class)
-                .withName("int-change-cred-cl")
                 .given(EnvironmentEntity.class)
                 .withName(testContext.get(EnvironmentEntity.class).getName())
                 .withCredentialName(null)
                 .withCredential(NEW_CREDENTIAL_KEY)
                 .when(Environment::changeCredential)
-                .then(EnvironmentClusterTest::checkNewCredentialAttachedToEnv)
-                .validate();
+                .then(EnvironmentClusterTest::checkNewCredentialAttachedToEnv);
         checkCredentialAttachedToCluster(testContext);
     }
 

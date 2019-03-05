@@ -45,14 +45,21 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
 
     public StackV4EntityBase<T> valid() {
         String name = getNameCreator().getRandomNameForResource();
+        ImageCatalogTestDto imageCatalogTestDto = getTestContext().get(ImageCatalogTestDto.class);
+        if (imageCatalogTestDto != null) {
+            String imageCatalog = imageCatalogTestDto.getName();
+            ImageSettingsV4Request image = new ImageSettingsV4Request();
+            image.setId("f6e778fc-7f17-4535-9021-515351df3691");
+            image.setCatalog(imageCatalog);
+            getRequest().setImage(image);
+        }
         return withName(name)
                 .withPlacement(getTestContext().given(PlacementSettingsEntity.class))
                 .withInstanceGroupsEntity(InstanceGroupEntity.defaultHostGroup(getTestContext()))
                 .withNetwork(getTestContext().given(NetworkV2Entity.class))
                 .withStackAuthentication(getCloudProvider().stackAuthentication(given(StackAuthenticationEntity.class)))
                 .withGatewayPort(getCloudProvider().gatewayPort(this))
-                .withCluster(getTestContext().given(ClusterEntity.class).withName(name))
-                .withImageCatalog(getTestContext().get(ImageCatalogTestDto.class.getSimpleName()).getName());
+                .withCluster(getTestContext().given(ClusterEntity.class).withName(name));
     }
 
     public StackV4EntityBase<T> withEveryProperties() {
@@ -163,10 +170,17 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
 
     public StackV4EntityBase<T> withImageCatalog(String imageCatalog) {
         if (getRequest().getImage() == null) {
-            getRequest().setImage(new ImageSettingsV4Request());
+            ImageSettingsV4Request image = new ImageSettingsV4Request();
+            getRequest().setImage(image);
         }
-        getRequest().getImage().setCatalog(imageCatalog);
+        ImageCatalogTestDto imageCatalogTestDto = getTestContext().get(ImageCatalogTestDto.class);
+        getRequest().getImage().setCatalog(imageCatalogTestDto.getName());
+        getRequest().getImage().setId("f6e778fc-7f17-4535-9021-515351df3691");
         return this;
+    }
+
+    public StackV4EntityBase<T> withImageCatalogClass() {
+        return withImageCatalog(ImageCatalogTestDto.class.getSimpleName());
     }
 
     public StackV4EntityBase<T> withInputs(Map<String, Object> inputs) {

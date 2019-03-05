@@ -13,11 +13,11 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.common.mappable.CloudPlatform;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.parameters.mock.MockCredentialV4Parameters;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.network.MockNetworkV4Parameters;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
+import com.sequenceiq.it.cloudbreak.newway.ImageSettingsEntity;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.parameter.MockParameters;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.InstanceTemplateV4Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.NetworkV2Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.PlacementSettingsEntity;
@@ -25,6 +25,7 @@ import com.sequenceiq.it.cloudbreak.newway.entity.StackAuthenticationEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
 import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
 
 @Component
 public class MockCloudProvider extends AbstractCloudProvider {
@@ -73,7 +74,7 @@ public class MockCloudProvider extends AbstractCloudProvider {
                 .withCloudPlatform(MOCK_CAPITAL);
     }
 
-    //    @Override
+    @Override
     public String availabilityZone() {
         String availabilityZone = "eu-west-1a";
         String availabilityZoneParam = getTestParameter().get("mockAvailabilityZone");
@@ -125,7 +126,15 @@ public class MockCloudProvider extends AbstractCloudProvider {
 
     @Override
     public ImageCatalogTestDto imageCatalog(ImageCatalogTestDto imageCatalog) {
+        MockedTestContext mockedTestContext = (MockedTestContext) imageCatalog.getTestContext();
+        imageCatalog.withUrl(mockedTestContext.getImageCatalogMockServerSetup().getPreWarmedImageCatalogUrl());
         return imageCatalog;
+    }
+
+    @Override
+    public ImageSettingsEntity imageSettings(ImageSettingsEntity imageSettings) {
+        return imageSettings.withImageId("f6e778fc-7f17-4535-9021-515351df3691")
+                .withImageCatalog(imageSettings.getTestContext().given(ImageSettingsEntity.class).getName());
     }
 
     @Override

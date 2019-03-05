@@ -323,7 +323,6 @@ public class AuditTest extends AbstractIntegrationTest {
     public void createValidStackThenAuditRecordMustBeAvailableForTheResource(TestContext testContext) {
         String stackName = getNameGenerator().getRandomNameForResource();
         String auditName = getNameGenerator().getRandomNameForResource();
-
         testContext
                 .given(EnvironmentEntity.class)
                 .when(Environment::post)

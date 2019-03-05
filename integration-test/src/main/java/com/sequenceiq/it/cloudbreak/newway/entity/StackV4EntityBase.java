@@ -19,7 +19,6 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.authentication.S
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ClusterV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.sharedservice.SharedServiceV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.environment.EnvironmentSettingsV4Request;
-import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.image.ImageSettingsV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.instancegroup.InstanceGroupV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.tags.TagsV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.StackV4Response;
@@ -45,15 +44,8 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
 
     public StackV4EntityBase<T> valid() {
         String name = getNameCreator().getRandomNameForResource();
-        ImageCatalogTestDto imageCatalogTestDto = getTestContext().get(ImageCatalogTestDto.class);
-        if (imageCatalogTestDto != null) {
-            String imageCatalog = imageCatalogTestDto.getName();
-            ImageSettingsV4Request image = new ImageSettingsV4Request();
-            image.setId("f6e778fc-7f17-4535-9021-515351df3691");
-            image.setCatalog(imageCatalog);
-            getRequest().setImage(image);
-        }
         return withName(name)
+                .withImageSettings(getCloudProvider().imageSettings(getTestContext().given(ImageSettingsEntity.class)))
                 .withPlacement(getTestContext().given(PlacementSettingsEntity.class))
                 .withInstanceGroupsEntity(InstanceGroupEntity.defaultHostGroup(getTestContext()))
                 .withNetwork(getTestContext().given(NetworkV2Entity.class))
@@ -168,19 +160,11 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
         return this;
     }
 
-    public StackV4EntityBase<T> withImageCatalog(String imageCatalog) {
-        if (getRequest().getImage() == null) {
-            ImageSettingsV4Request image = new ImageSettingsV4Request();
-            getRequest().setImage(image);
-        }
-        ImageCatalogTestDto imageCatalogTestDto = getTestContext().get(imageCatalog);
+    public StackV4EntityBase<T> withImageSettings(ImageSettingsEntity imageSettings) {
+        getRequest().setImage(imageSettings.getRequest());
+        ImageCatalogTestDto imageCatalogTestDto = getTestContext().get(ImageCatalogTestDto.class);
         getRequest().getImage().setCatalog(imageCatalogTestDto.getName());
-        getRequest().getImage().setId("f6e778fc-7f17-4535-9021-515351df3691");
         return this;
-    }
-
-    public StackV4EntityBase<T> withImageCatalogClass() {
-        return withImageCatalog(ImageCatalogTestDto.class.getSimpleName());
     }
 
     public StackV4EntityBase<T> withInputs(Map<String, Object> inputs) {

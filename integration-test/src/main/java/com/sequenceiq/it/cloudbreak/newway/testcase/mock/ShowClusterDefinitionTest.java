@@ -31,7 +31,8 @@ public class ShowClusterDefinitionTest extends AbstractIntegrationTest {
     public void testGetClusterDefinitionWhenClusterIsNotAliveThenShouldReturnWithClusterDefinition(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
         testContext
-                .given(StackTestDto.class).valid()
+                .given(StackTestDto.class)
+                .valid()
                 .withName(clusterName)
                 .when(Stack.generatedClusterDefinition())
                 .then(ShowClusterDefinitionUtil::checkFutureClusterDefinition)
@@ -43,7 +44,8 @@ public class ShowClusterDefinitionTest extends AbstractIntegrationTest {
     public void testGetClusterDefinitionWhenClusterIsAliveThenShouldReturnWithClusterDefinition(MockedTestContext testContext) {
         String clusterName = getNameGenerator().getRandomNameForResource();
         testContext
-                .given(StackTestDto.class).valid()
+                .given(StackTestDto.class)
+                .valid()
                 .withName(clusterName)
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)

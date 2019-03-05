@@ -52,7 +52,8 @@ public class ImageCatalogTestDto extends AbstractCloudbreakEntity<ImageCatalogV4
 
     public ImageCatalogTestDto valid() {
         MockedTestContext mockedTestContext = (MockedTestContext) getTestContext();
-        return getCloudProvider().imageCatalog(withName(getNameCreator().getRandomNameForResource())
+        return getCloudProvider()
+                .imageCatalog(withName(getNameCreator().getRandomNameForResource())
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl()));
     }
 

@@ -4,6 +4,8 @@ import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 
 import org.testng.annotations.Test;
 
+import com.sequenceiq.it.cloudbreak.newway.Environment;
+import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
@@ -24,8 +26,12 @@ public class ClouderaManagerStackCreationTest extends AbstractClouderaManagerTes
         String cluster = getNameGenerator().getRandomNameForResource();
         String cm = getNameGenerator().getRandomNameForResource();
         String stack = getNameGenerator().getRandomNameForResource();
+        String env = getNameGenerator().getRandomNameForResource();
 
         testContext
+                .given(env, EnvironmentEntity.class)
+                .withName(env)
+                .when(Environment::post, key(env))
                 .given(cm, AmbariEntity.class)
                 .withClusterDefinitionName(name)
                 .withValidateClusterDefinition(Boolean.FALSE)
@@ -33,6 +39,7 @@ public class ClouderaManagerStackCreationTest extends AbstractClouderaManagerTes
                 .withAmbari(cm)
                 .given(stack, StackTestDto.class)
                 .withCluster(cluster)
+                .withEnvironmentKey(env)
                 .when(Stack.postV4(), key(stack))
                 .await(STACK_AVAILABLE, key(stack))
                 .validate();

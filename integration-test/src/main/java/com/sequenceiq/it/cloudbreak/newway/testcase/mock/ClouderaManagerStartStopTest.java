@@ -10,6 +10,8 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 import org.testng.annotations.Test;
 
+import com.sequenceiq.it.cloudbreak.newway.Environment;
+import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
 import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
@@ -38,14 +40,19 @@ public class ClouderaManagerStartStopTest extends AbstractClouderaManagerTest {
         String cm = getNameGenerator().getRandomNameForResource();
         String cmcluster = getNameGenerator().getRandomNameForResource();
         String stack = getNameGenerator().getRandomNameForResource();
+        String enironment = getNameGenerator().getRandomNameForResource();
 
         testContext
+                .given(enironment, EnvironmentEntity.class)
+                .withName(enironment)
+                .when(Environment::post, key(enironment))
                 .given(cm, AmbariEntity.class)
                 .withClusterDefinitionName(name)
                 .withValidateClusterDefinition(Boolean.FALSE)
                 .given(cmcluster, ClusterEntity.class)
                 .withAmbari(cm)
                 .given(stack, StackTestDto.class)
+                .withEnvironmentKey(enironment)
                 .withCluster(cmcluster)
                 .when(Stack.postV4(), key(stack))
                 .await(STACK_AVAILABLE, key(stack))

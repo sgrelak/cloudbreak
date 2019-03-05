@@ -168,6 +168,16 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
         return this;
     }
 
+    public StackV4EntityBase<T> withImageCatalogClass(Class<ImageCatalogTestDto> imageCatalog) {
+        if (getRequest().getImage() == null) {
+            getRequest().setImage(new ImageSettingsV4Request());
+        }
+        ImageCatalogTestDto imageCatalogTestDto = (ImageCatalogTestDto) getTestContext()
+                .getResources().get(imageCatalog.getSimpleName());
+        getRequest().getImage().setCatalog(imageCatalogTestDto.getName());
+        return this;
+    }
+
     public StackV4EntityBase<T> withInputs(Map<String, Object> inputs) {
         if (inputs == null) {
             getRequest().setInputs(Collections.emptyMap());

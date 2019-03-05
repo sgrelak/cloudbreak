@@ -71,7 +71,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
         initializeDefaultClusterDefinitions(testContext);
     }
 
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false)
     @Description(
             given = "a prepared environment",
             when = "a valid cluster template create request is sent",

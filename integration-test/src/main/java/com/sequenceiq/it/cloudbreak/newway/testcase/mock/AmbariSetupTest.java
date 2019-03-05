@@ -7,12 +7,14 @@ import org.springframework.http.HttpMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.sequenceiq.it.cloudbreak.newway.Environment;
+import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.Stack;
-import com.sequenceiq.it.cloudbreak.newway.context.Description;
-import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
 
 public class AmbariSetupTest extends AbstractIntegrationTest {
@@ -29,10 +31,14 @@ public class AmbariSetupTest extends AbstractIntegrationTest {
             then = "Ambari user endpoints should be invoked with the proper requests")
     public void verifyCallsAgainstAmbariUserCreation(TestContext testContext) {
         String generatedKey = getNameGenerator().getRandomNameForResource();
+        String envName = getNameGenerator().getRandomNameForResource();
 
         testContext
-                // create stack
+                .given(envName, EnvironmentEntity.class)
+                .withName(envName)
+                .then(Environment::post, key(envName))
                 .given(generatedKey, StackTestDto.class)
+                .withEnvironmentKey(envName)
                 .when(Stack.postV4(), key(generatedKey))
                 .await(STACK_AVAILABLE, key(generatedKey))
                 .then(MockVerification.verify(HttpMethod.POST, AMBARI_API_ROOT + "/users")

@@ -6,6 +6,7 @@ import static com.sequenceiq.cloudbreak.api.endpoint.v4.recipes.requests.RecipeV
 import static com.sequenceiq.cloudbreak.api.endpoint.v4.recipes.requests.RecipeV4Type.PRE_TERMINATION;
 import static com.sequenceiq.it.cloudbreak.newway.cloud.HostGroupType.COMPUTE;
 import static com.sequenceiq.it.cloudbreak.newway.cloud.HostGroupType.WORKER;
+import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 import static com.sequenceiq.it.cloudbreak.newway.mock.model.SaltMock.SALT_RUN;
 
 import javax.inject.Inject;
@@ -29,7 +30,6 @@ import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
 import com.sequenceiq.it.cloudbreak.newway.client.LdapConfigTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
-import com.sequenceiq.it.cloudbreak.newway.context.RunningParameter;
 import com.sequenceiq.it.cloudbreak.newway.context.TestCaseDescription;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
@@ -75,21 +75,24 @@ public class RecipeClusterTest extends AbstractIntegrationTest {
             @Description TestCaseDescription testCaseDescription) {
         LOGGER.info("testing recipe execution for type: {}", type.name());
         String recipeName = creator.getRandomNameForResource();
+        String stackName = creator.getRandomNameForResource();
+        String instanceGroupName = creator.getRandomNameForResource();
+
         testContext
-                .given(RecipeTestDto.class)
+                .given(recipeName, RecipeTestDto.class)
                 .withName(recipeName)
                 .withContent(RECIPE_CONTENT)
                 .withRecipeType(type)
-                .when(RecipeTestClient::postV4)
-                .given(INSTANCE_GROUP_ID, InstanceGroupEntity.class)
+                .when(RecipeTestClient::postV4, key(recipeName))
+                .given(instanceGroupName, InstanceGroupEntity.class)
                 .withHostGroup(WORKER)
                 .withNodeCount(NODE_COUNT)
                 .withRecipes(recipeName)
-                .given(StackTestDto.class)
-                .replaceInstanceGroups(INSTANCE_GROUP_ID)
-                .when(Stack.postV4())
-                .await(STACK_AVAILABLE)
-                .then(MockVerification.verify(HttpMethod.POST, SALT_RUN).bodyContains(HIGHSTATE).atLeast(executionTime))
+                .given(stackName, StackTestDto.class)
+                .replaceInstanceGroups(instanceGroupName)
+                .when(Stack.postV4(), key(stackName))
+                .await(STACK_AVAILABLE, key(stackName))
+                .then(MockVerification.verify(HttpMethod.POST, SALT_RUN).bodyContains(HIGHSTATE).atLeast(executionTime), key(stackName))
                 .validate();
     }
 
@@ -129,9 +132,11 @@ public class RecipeClusterTest extends AbstractIntegrationTest {
     public void testWhenThereIsNoRecipeButLdapHasAttachedThenThePostAmbariRecipeShouldRunWhichResultThreeHighStateCall(TestContext testContext) {
         String ldapName = creator.getRandomNameForResource();
         testContext
-                .given(LdapConfigTestDto.class).withName(ldapName)
+                .given(LdapConfigTestDto.class)
+                .withName(ldapName)
                 .when(ldapConfigTestClient.post())
-                .given(StackTestDto.class).withCluster(new ClusterEntity(testContext).valid().withLdapConfigName(ldapName))
+                .given(StackTestDto.class)
+                .withCluster(new ClusterEntity(testContext).valid().withLdapConfigName(ldapName))
                 .when(Stack.postV4())
                 .await(STACK_AVAILABLE)
                 .then(MockVerification.verify(HttpMethod.POST, SALT_RUN).bodyContains(HIGHSTATE).exactTimes(3))
@@ -209,8 +214,8 @@ public class RecipeClusterTest extends AbstractIntegrationTest {
                 .await(STACK_AVAILABLE)
 
                 .given(RecipeTestDto.class)
-                .when(RecipeTestClient::deleteV4, RunningParameter.key("delete-failed-recipe"))
-                .expect(BadRequestException.class, RunningParameter.key("delete-failed-recipe")
+                .when(RecipeTestClient::deleteV4, key("delete-failed-recipe"))
+                .expect(BadRequestException.class, key("delete-failed-recipe")
                         .withExpectedMessage("There is a cluster \\['.*'\\] which uses recipe '.*'. "
                                 + "Please remove this cluster before deleting the recipe"))
                 .validate();

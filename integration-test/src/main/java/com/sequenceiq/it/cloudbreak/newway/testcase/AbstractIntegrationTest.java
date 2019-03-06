@@ -90,6 +90,7 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
     public void beforeTest(Method method, Object[] params) {
         MDC.put("testlabel", method.getDeclaringClass().getSimpleName() + '.' + method.getName());
         collectTestCaseDescription(method, params);
+
     }
 
     private TestCaseDescription collectTestCaseDescription(Method method, Object[] params) {

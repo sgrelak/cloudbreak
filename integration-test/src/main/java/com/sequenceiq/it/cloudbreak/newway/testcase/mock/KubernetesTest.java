@@ -125,7 +125,7 @@ public class KubernetesTest extends AbstractIntegrationTest {
                         getBean(TestContext.class),
                         longStringGeneratorUtil.stringGenerator(101),
                         KUBERNETES_CONTENT,
-                        " The length of the config's name has to be in range of 5 to 100",
+                        "The length of the config's name has to be in range of 5 to 100",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a kubernetes config with too long name")
                                 .when("calling create kubernetes configuration")
@@ -135,7 +135,7 @@ public class KubernetesTest extends AbstractIntegrationTest {
                         getBean(TestContext.class),
                         "abc",
                         KUBERNETES_CONTENT,
-                        " The length of the config's name has to be in range of 5 to 100",
+                        "The length of the config's name has to be in range of 5 to 100",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a kubernetes config with too short name")
                                 .when("calling create kubernetes configuration")
@@ -145,7 +145,7 @@ public class KubernetesTest extends AbstractIntegrationTest {
                         getBean(TestContext.class),
                         "a-@#$%|:&*;",
                         KUBERNETES_CONTENT,
-                        " The config's name can only contain lowercase alphanumeric characters and hyphens and has start with an alphanumeric character",
+                        "The config's name can only contain lowercase alphanumeric characters and hyphens and has start with an alphanumeric character",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a kubernetes config with specific character in the name")
                                 .when("calling create kubernetes configuration")
@@ -155,7 +155,7 @@ public class KubernetesTest extends AbstractIntegrationTest {
                         getBean(TestContext.class),
                         getNameGenerator().getRandomNameForResource(),
                         null,
-                        "post.arg1.content: null, error: must not be null",
+                        "must not be null",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a valid stack request and a Active Directory based kerberos configuration")
                                 .when("calling calling create kerberos configuration and a cluster creation with that kerberos configuration")

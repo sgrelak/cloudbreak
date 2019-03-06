@@ -28,9 +28,9 @@ public class SSHKeysTest extends AbstractIntegrationTest {
     }
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    @Description(given = "",
-            when = "",
-            then = "")
+    @Description(given = "a valid MOCK credential",
+            when = "get ssh keys",
+            then = "getting back the MOCK related ssh keys")
     public void testGetSSHKeysByCredentialName(MockedTestContext testContext) {
         String credentialName = getNameGenerator().getRandomNameForResource();
         testContext

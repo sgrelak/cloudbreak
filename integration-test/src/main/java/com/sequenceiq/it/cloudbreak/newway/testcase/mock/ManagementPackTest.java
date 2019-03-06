@@ -53,12 +53,17 @@ public class ManagementPackTest extends AbstractIntegrationTest {
             then = "getting BadRequestException")
     public void testMpackCreateWithSameName(TestContext testContext) {
         createDefaultUser(testContext);
+        String name = getNameGenerator().getRandomNameForResource();
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         testContext
-                .given(MPackTestDto.class).withName(SAME_NAME)
+                .given(MPackTestDto.class)
+                .withName(name)
                 .when(MpackTestAction::create)
-                .given(MPackTestDto.class).withName(SAME_NAME)
-                .when(MpackTestAction::create, key(ANOTHER_MPACK))
-                .expect(BadRequestException.class, key(ANOTHER_MPACK))
+                .given(MPackTestDto.class)
+                .withName(name)
+                .when(MpackTestAction::create, key(generatedKey))
+                .expect(BadRequestException.class, key(generatedKey))
                 .validate();
     }
 
@@ -84,10 +89,12 @@ public class ManagementPackTest extends AbstractIntegrationTest {
             then = "getting the list of mpack without that specific mpack")
     public void testDeleteWhenNotExist(TestContext testContext) {
         createDefaultUser(testContext);
+        String generatedKey = getNameGenerator().getRandomNameForResource();
+
         testContext
                 .given(MPackTestDto.class)
-                .when(MpackTestAction::delete, key(FORBIDDEN))
-                .expect(ForbiddenException.class, key(FORBIDDEN))
+                .when(MpackTestAction::delete, key(generatedKey))
+                .expect(ForbiddenException.class, key(generatedKey))
                 .validate();
     }
 

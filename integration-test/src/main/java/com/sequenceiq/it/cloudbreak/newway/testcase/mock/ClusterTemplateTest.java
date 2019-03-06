@@ -383,9 +383,9 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withName("")
                 .when(new ClusterTemplateV4CreateAction(), key(generatedKey2)
                         .withSkipOnFail(false))
-                .expect(BadRequestException.class, key(generatedKey1).withExpectedMessage("post.arg1.name: null, error: must not be null"))
+                .expect(BadRequestException.class, key(generatedKey1).withExpectedMessage("must not be null"))
                 .expect(BadRequestException.class, key(generatedKey2)
-                        .withExpectedMessage("post.arg1.name: , error: The length of the cluster's name has to be in range of 5 to 40"))
+                        .withExpectedMessage("The length of the cluster's name has to be in range of 5 to 40"))
                 .validate();
     }
 

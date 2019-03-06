@@ -100,6 +100,15 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
         return withEnvironmentKey(environmentKey.getSimpleName());
     }
 
+    public StackV4EntityBase<T> withCatalog(Class<ImageCatalogTestDto> imageCatalogTestDt) {
+        ImageCatalogTestDto catalog = getTestContext().get(imageCatalogTestDt.getSimpleName());
+        if (catalog == null) {
+            throw new IllegalArgumentException("Catalog is null with given key: " + catalog);
+        }
+        getRequest().getImage().setCatalog(catalog.getName());
+        return this;
+    }
+
     public StackV4EntityBase<T> withEnvironmentKey(String environmentKey) {
         EnvironmentEntity env = getTestContext().get(environmentKey);
         if (env == null) {
@@ -145,6 +154,11 @@ public abstract class StackV4EntityBase<T extends StackV4EntityBase<T>> extends 
     }
 
     public StackV4EntityBase<T> withClusterRequest(ClusterV4Request clusterRequest) {
+        getRequest().setCluster(clusterRequest);
+        return this;
+    }
+
+    public StackV4EntityBase<T> withCatalog(ClusterV4Request clusterRequest) {
         getRequest().setCluster(clusterRequest);
         return this;
     }

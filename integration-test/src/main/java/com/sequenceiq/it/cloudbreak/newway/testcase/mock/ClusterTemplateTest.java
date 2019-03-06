@@ -205,14 +205,18 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
         testContext.getModel().getAmbariMock().putConfigureLdap();
         testContext.getModel().getAmbariMock().postSyncLdap();
         testContext.getModel().getAmbariMock().putConfigureSso();
+        String mockLdap = getNameGenerator().getRandomNameForResource();
+        String mockRecipe = getNameGenerator().getRandomNameForResource();
+        String mockRds = getNameGenerator().getRandomNameForResource();
+
         testContext
-                .given(LdapConfigTestDto.class).withName("mock-test-ldap")
+                .given(LdapConfigTestDto.class).withName(mockLdap)
                 .when(ldapConfigTestClient.createIfNotExists())
-                .given(RecipeTestDto.class).withName("mock-test-recipe")
+                .given(RecipeTestDto.class).withName(mockRecipe)
                 .when(RecipeTestClient::postV4)
-                .given(DatabaseEntity.class).withName("mock-test-rds")
+                .given(DatabaseEntity.class).withName(mockRds)
                 .when(new DatabaseCreateIfNotExistsAction())
-                .given("mpack", MPackTestDto.class).withName("mock-test-mpack")
+                .given("mpack", MPackTestDto.class).withName(mockLdap)
                 .when(MpackTestAction::create)
                 .given("environment", EnvironmentEntity.class)
                 .withRegions(VALID_REGION)
@@ -248,8 +252,8 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .given(ClusterTemplateEntity.class)
                 .withName(ILLEGAL_CT_NAME)
                 .when(new ClusterTemplateV4CreateAction(), key(generatedKey))
-                .expect(BadRequestException.class, key(generatedKey).withExpectedMessage("post.arg1.name: Illegal template name ;, error: "
-                        + "The length of the cluster template's name has to be in range of 1 to 100 and should not contain semicolon"))
+                .expect(BadRequestException.class, key(generatedKey)
+                        .withExpectedMessage("The length of the cluster template's name has to be in range of 1 to 100 and should not contain semicolon"))
                 .validate();
     }
 
@@ -342,8 +346,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withDescription(invalidLongDescripton)
                 .when(new ClusterTemplateV4CreateAction(), key(generatedKey))
                 .expect(BadRequestException.class, key(generatedKey)
-                        .withExpectedMessage("post.arg1.description: "
-                        + invalidLongDescripton + ", error: size must be between 0 and 1000"))
+                        .withExpectedMessage("size must be between 0 and 1000"))
                 .validate();
     }
 
@@ -360,7 +363,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withoutStackTemplate()
                 .when(new ClusterTemplateV4CreateAction(), key(generatedKey))
                 .expect(BadRequestException.class, key(generatedKey)
-                        .withExpectedMessage("post.arg1.stackTemplate: null, error: must not be null"))
+                        .withExpectedMessage("must not be null"))
                 .validate();
     }
 

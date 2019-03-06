@@ -144,7 +144,7 @@ public class CredentialTest extends AbstractIntegrationTest {
                 {
                         getBean(MockedTestContext.class),
                         longStringGeneratorUtil.stringGenerator(101),
-                        " The length of the credential's name has to be in range of 5 to 100",
+                        "The length of the credential's name has to be in range of 5 to 100",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a credential with too long name")
                                 .when("calling create credential")
@@ -153,7 +153,7 @@ public class CredentialTest extends AbstractIntegrationTest {
                 {
                         getBean(MockedTestContext.class),
                         "abc",
-                        " The length of the credential's name has to be in range of 5 to 100",
+                        "The length of the credential's name has to be in range of 5 to 100",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a credential with too short name")
                                 .when("calling create credential")
@@ -162,7 +162,7 @@ public class CredentialTest extends AbstractIntegrationTest {
                 {
                         getBean(MockedTestContext.class),
                         "a-@#$%|:&*;",
-                        " The name of the credential can only contain lowercase alphanumeric characters and "
+                        "The name of the credential can only contain lowercase alphanumeric characters and "
                                 + "hyphens and has start with an alphanumeric character",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a credential with specific character in the name")
@@ -172,7 +172,7 @@ public class CredentialTest extends AbstractIntegrationTest {
                 {
                         getBean(MockedTestContext.class),
                         null,
-                        "error: must not be null",
+                        "must not be null",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("a credential with null name")
                                 .when("calling create credential")

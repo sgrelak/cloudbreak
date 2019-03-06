@@ -247,7 +247,7 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         null,
                         DATABASE_PASSWORD,
                         DATABASE_PROTOCOL + DATABASE_HOST_PORT_DB,
-                        "connectionUserName: null, error: must not be null",
+                        "must not be null",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("there is a running cloudbreak")
                                 .when("calling database create endpoint with 'null' connectionUserName")
@@ -259,7 +259,7 @@ public class DatabaseTest extends AbstractIntegrationTest {
                         DATABASE_USERNAME,
                         null,
                         DATABASE_PROTOCOL + DATABASE_HOST_PORT_DB,
-                        "connectionPassword: null, error: must not be null",
+                        "must not be null",
                         new TestCaseDescription.TestCaseDescriptionBuilder()
                                 .given("there is a running cloudbreak")
                                 .when("calling database create endpoint with 'null' connectionPassword")

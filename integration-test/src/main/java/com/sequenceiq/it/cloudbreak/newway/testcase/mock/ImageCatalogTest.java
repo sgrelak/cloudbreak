@@ -146,7 +146,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .withUrl(invalidURL)
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
                 .expect(BadRequestException.class, key(imgCatalogName)
-                        .withExpectedMessage(".* " + invalidURL + ", error: A valid image catalog must be available on the given URL"))
+                        .withExpectedMessage("A valid image catalog must be available on the given URL"))
                 .validate();
     }
 
@@ -182,7 +182,7 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 .withUrl(INVALID_IMAGECATALOG_JSON_URL)
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
                 .expect(BadRequestException.class, key(imgCatalogName)
-                        .withExpectedMessage(".*" + INVALID_IMAGECATALOG_JSON_URL + ", error: A valid image catalog must be available on the given URL.*"))
+                        .withExpectedMessage("A valid image catalog must be available on the given URL"))
                 .validate();
     }
 
@@ -389,32 +389,6 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
 
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     @Description(
-            given = "image catalog create with a new default",
-            when = "calling create with default=true flag",
-            then = "the image catalog should contains the new default catalog")
-    public void testCreateADefaultImageCatalog(TestContext testContext) {
-        String imgCatalogName = getNameGenerator().getRandomNameForResource();
-        MockedTestContext mockedTestContext = (MockedTestContext) testContext;
-
-        testContext
-                .given(imgCatalogName, ImageCatalogTestDto.class)
-                .withName(imgCatalogName)
-                .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
-                .when(new ImageCatalogPostAction(), key(imgCatalogName))
-                .when(new ImageCatalogSetAsDefaultAction(), key(imgCatalogName))
-                .when(new ImageCatalogGetByNameAction(), key(imgCatalogName))
-                .then((testContext1, entity, cloudbreakClient) -> {
-                    ImageCatalogV4Response catalog = entity.getResponse();
-                    if (!catalog.isUsedAsDefault()) {
-                        throw new IllegalArgumentException("The Images should have been set as default.");
-                    }
-                    return entity;
-                }, key(imgCatalogName))
-                .validate();
-    }
-
-    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
-    @Description(
             given = "image catalog create with a new catalog without default=true",
             when = "calling create with default=false flag",
             then = "the image catalog should contains same default as before")
@@ -550,19 +524,22 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
         MockedTestContext mockedTestContext = (MockedTestContext) testContext;
 
         testContext
-                .given(imgCatalogName, ImageCatalogTestDto.class)
+                .given(ImageCatalogTestDto.class)
                 .withName(imgCatalogName)
                 .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getPreWarmedImageCatalogUrl())
                 .when(new ImageCatalogPostAction(), key(imgCatalogName))
-                .when(new ImageCatalogSetAsDefaultAction(), key(imgCatalogName))
+
                 .given(EnvironmentEntity.class)
                 .when(Environment::post, key(environmentName))
+
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
                 .withName(stackName)
+                .withCatalog(ImageCatalogTestDto.class)
                 .when(Stack.postV4(), key(imgCatalogName))
                 .await(STACK_AVAILABLE)
-                .given(imgCatalogName, ImageCatalogTestDto.class)
+
+                .given(ImageCatalogTestDto.class)
                 .when(new ImageCatalogGetImagesByNameAction(stackName), key(imgCatalogName))
                 .then((testContext1, entity, cloudbreakClient) -> {
                     ImagesV4Response catalog = entity.getResponseByProvider();
@@ -574,4 +551,45 @@ public class ImageCatalogTest extends AbstractIntegrationTest {
                 }, key(imgCatalogName))
                 .validate();
     }
+
+    @Test(dataProvider = TEST_CONTEXT_WITH_MOCK, enabled = false,
+            description = "CLOUD-")
+    public void testGetImageCatalogByNameAndStackWhenBaseImageHasBeenUsed(TestContext testContext) {
+        createDefaultCredential(testContext);
+        initializeDefaultClusterDefinitions(testContext);
+
+        String imgCatalogName = getNameGenerator().getRandomNameForResource();
+        String stackName = getNameGenerator().getRandomNameForResource();
+        MockedTestContext mockedTestContext = (MockedTestContext) testContext;
+
+        testContext
+                .given(ImageCatalogTestDto.class)
+                .withName(imgCatalogName)
+                .withUrl(mockedTestContext.getImageCatalogMockServerSetup().getImageCatalogUrl())
+                .when(new ImageCatalogPostAction())
+                .when(new ImageCatalogSetAsDefaultAction())
+
+                .given(EnvironmentEntity.class)
+                .when(Environment::post)
+
+                .given(StackTestDto.class)
+                .withCatalog(ImageCatalogTestDto.class)
+                .withEnvironment(EnvironmentEntity.class)
+                .withName(stackName)
+                .when(Stack.postV4())
+                .await(STACK_AVAILABLE)
+
+                .given(ImageCatalogTestDto.class)
+                .when(new ImageCatalogGetImagesByNameAction(stackName))
+                .then((testContext1, entity, cloudbreakClient) -> {
+                    ImagesV4Response catalog = entity.getResponseByProvider();
+                    if (catalog.getBaseImages().isEmpty() && catalog.getHdpImages().isEmpty() && catalog.getHdfImages().isEmpty()) {
+                        String msg = format("The Images response should contain results for MOCK provider and stack with name: '%s'.", stackName);
+                        throw new IllegalArgumentException(msg);
+                    }
+                    return entity;
+                })
+                .validate();
+    }
+
 }

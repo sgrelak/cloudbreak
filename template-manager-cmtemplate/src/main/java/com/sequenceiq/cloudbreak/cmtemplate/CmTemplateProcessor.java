@@ -101,12 +101,14 @@ public class CmTemplateProcessor implements ClusterDefinitionTextProcessor {
                 attr -> cmTemplate.getInstantiator().addHostsItem(new ApiClusterTemplateHostInfo().hostName(attr.get("fqdn")).hostTemplateRefName(hostGroup))
         ));
     }
+
     public void addProduct(String product, String version) {
         ApiProductVersion productVersion = new ApiProductVersion();
         productVersion.setProduct(product);
         productVersion.setVersion(version);
         cmTemplate.addProductsItem(productVersion);
     }
+
     public void addRepositoryItem(String repositoriesItem) {
         cmTemplate.addRepositoriesItem(repositoriesItem);
     }

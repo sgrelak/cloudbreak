@@ -269,15 +269,6 @@ public class EnvironmentDatalakeClusterTest extends AbstractIntegrationTest {
         return new HashSet<>(Collections.singletonList(testContext.get(DatabaseEntity.class).getName()));
     }
 
-    private ClusterEntity setResources(TestContext testContext, Set<String> rdsConfigs, String ldapName, String proxyName, String cdName) {
-
-        testContext.given(ClusterEntity.class).valid()
-                .withRdsConfigNames(rdsConfigs)
-                .withClusterDefinitionName(cdName)
-                .withAmbari(testContext.given(AmbariEntity.class));
-        return testContext.get(ClusterEntity.class);
-    }
-
     private Collection<InstanceGroupEntity> setInstanceGroup(TestContext testContext) {
         Collection<InstanceGroupEntity> instanceGroupEntity = new ArrayList<>();
         InstanceGroupEntity ig = InstanceGroupEntity.hostGroup(testContext, HostGroupType.MASTER);

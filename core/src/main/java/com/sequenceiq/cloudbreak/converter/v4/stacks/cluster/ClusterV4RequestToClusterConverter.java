@@ -98,7 +98,6 @@ public class ClusterV4RequestToClusterConverter extends AbstractConversionServic
             KerberosConfig kerberosConfig = kerberosService.getByNameForWorkspaceId(source.getKerberosName(), workspace.getId());
             cluster.setKerberosConfig(kerberosConfig);
         }
-        cluster.setConfigStrategy(source.getAmbari().getConfigStrategy());
         cluster.setCloudbreakAmbariUser(ambariUserName);
         cluster.setCloudbreakAmbariPassword(PasswordUtil.generatePassword());
         cluster.setDpAmbariUser(dpUsername);
@@ -114,12 +113,19 @@ public class ClusterV4RequestToClusterConverter extends AbstractConversionServic
         } catch (JsonProcessingException ignored) {
             cluster.setCustomContainerDefinition(null);
         }
-        cluster.setAmbariSecurityMasterKey(source.getAmbari().getSecurityMasterKey());
         updateDatabases(source, cluster, workspace);
-        extractAmbariAndHdpRepoConfig(cluster, source.getAmbari());
+        convertAmbariSpecificPart(source, cluster);
         cluster.setProxyConfig(getProxyConfig(source.getProxyName(), workspace));
         cluster.setLdapConfig(getLdap(source.getLdapName(), workspace));
         return cluster;
+    }
+
+    private void convertAmbariSpecificPart(ClusterV4Request source, Cluster cluster) {
+        if (source.getAmbari() != null) {
+            cluster.setConfigStrategy(source.getAmbari().getConfigStrategy());
+            cluster.setAmbariSecurityMasterKey(source.getAmbari().getSecurityMasterKey());
+            extractAmbariAndHdpRepoConfig(cluster, source.getAmbari());
+        }
     }
 
     private void convertGateway(ClusterV4Request source, Cluster cluster) {

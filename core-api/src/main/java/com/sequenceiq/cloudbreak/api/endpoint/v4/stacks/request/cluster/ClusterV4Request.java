@@ -204,4 +204,12 @@ public class ClusterV4Request implements JsonEntity {
     public void setValidateClusterDefinition(Boolean validateClusterDefinition) {
         this.validateClusterDefinition = validateClusterDefinition;
     }
+
+    public ClouderaManagerV4Request getCm() {
+        return cm;
+    }
+
+    public void setCm(ClouderaManagerV4Request cm) {
+        this.cm = cm;
+    }
 }

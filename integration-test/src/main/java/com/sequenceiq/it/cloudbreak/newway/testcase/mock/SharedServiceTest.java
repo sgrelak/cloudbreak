@@ -102,9 +102,14 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)
                 .when(ClusterDefinitionTestAction.postV4())
                 .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(ClusterEntity.class)
+                .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withLdapConfigName(ldapName)
+                .withCloudStorage(cloudStorage())
                 .given(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
-                .withCluster(datalakeReadyCluster(testContext, hiveRdsName, rangerRdsName, ldapName, clusterDefinitionName, cloudStorage()))
                 .capture(SharedServiceTest::rdsConfigNamesFromRequest, key(RDS_KEY))
                 .capture(SharedServiceTest::ldapNameFromRequest, key(LDAP_KEY))
                 .when(Stack.postV4())
@@ -137,8 +142,13 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .withTag(of(SHARED_SERVICE_TAG), of(true))
                 .withClusterDefinition(VALID_DL_BP)
                 .when(ClusterDefinitionTestAction.postV4())
+                .given(ClusterEntity.class)
+                .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withLdapConfigName(ldapName)
+                .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
-                .withCluster(datalakeReadyCluster(testContext, hiveRdsName, rangerRdsName, ldapName, clusterDefinitionName, cloudStorage))
                 .when(Stack.postV4(), key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
@@ -159,9 +169,13 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)
                 .when(ClusterDefinitionTestAction.postV4())
                 .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(ClusterEntity.class)
+                .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
-                .withCluster(datalakeReadyCluster(testContext, hiveRdsName, rangerRdsName, null, clusterDefinitionName, cloudStorage))
                 .when(Stack.postV4(), key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
@@ -182,9 +196,14 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .given(LdapConfigTestDto.class).withName(ldapName)
                 .when(ldapConfigTestClient.post())
                 .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(ClusterEntity.class)
+                .withRdsConfigNames(createSetOfNotNulls(hiveRdsName))
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withLdapConfigName(ldapName)
+                .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
-                .withCluster(datalakeReadyCluster(testContext, hiveRdsName, null, ldapName, clusterDefinitionName, cloudStorage))
                 .when(Stack.postV4(), key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
@@ -205,9 +224,14 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .given(LdapConfigTestDto.class).withName(ldapName)
                 .when(ldapConfigTestClient.post())
                 .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(ClusterEntity.class)
+                .withRdsConfigNames(createSetOfNotNulls(rangerRdsName))
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withLdapConfigName(ldapName)
+                .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
-                .withCluster(datalakeReadyCluster(testContext, null, rangerRdsName, ldapName, clusterDefinitionName, cloudStorage))
                 .when(Stack.postV4(), key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
@@ -225,9 +249,13 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .given(LdapConfigTestDto.class).withName(ldapName)
                 .when(ldapConfigTestClient.post())
                 .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(ClusterEntity.class)
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withLdapConfigName(ldapName)
+                .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
-                .withCluster(datalakeReadyCluster(testContext, null, null, ldapName, clusterDefinitionName, cloudStorage))
                 .when(Stack.postV4(), key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
@@ -242,9 +270,12 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)
                 .when(ClusterDefinitionTestAction.postV4())
                 .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(ClusterEntity.class)
+                .withClusterDefinitionName(clusterDefinitionName)
+                .withAmbari(testContext.given(AmbariEntity.class))
+                .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
-                .withCluster(datalakeReadyCluster(testContext, null, null, null, clusterDefinitionName, cloudStorage))
                 .when(Stack.postV4(), key(BAD_REQUEST_KEY))
                 .expect(BadRequestException.class, key(BAD_REQUEST_KEY))
                 .validate();
@@ -268,22 +299,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
         storageLocation.setPropertyName("NameOfThisProperty");
         storageLocation.setPropertyFile("SomePropertyHere");
         return storageLocation;
-    }
-
-    private ClusterEntity datalakeReadyCluster(TestContext testContext, String hiveRdsName, String rangerRdsName, String ldapName, String clusterDefinitionName,
-            CloudStorageV4Request cloudStorage) {
-        ClusterEntity cluster = new ClusterEntity(testContext)
-                .valid()
-                .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
-                .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class));
-        if (ldapName != null) {
-            cluster.withLdapConfigName(ldapName);
-        }
-        if (cloudStorage != null) {
-            cluster.withCloudStorage(cloudStorage);
-        }
-        return cluster;
     }
 
     private Set<String> createSetOfNotNulls(String... elements) {

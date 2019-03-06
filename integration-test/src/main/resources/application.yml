@@ -174,7 +174,7 @@ integrationtest:
 
     cleanup:
         retryCount: 3
-        cleanupBeforeStart: true
+        cleanupBeforeStart: false
 
     defaultClusterDefinitionName:
 

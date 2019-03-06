@@ -121,7 +121,6 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withStackTemplate(stackTemplate)
                 .capture(ClusterTemplateEntity::count, key(generatedKey))
                 .when(new ClusterTemplateV4CreateAction(), key(generatedKey))
-                .verify(ct -> ct.count() - 1, key(generatedKey))
                 .when(new ClusterTemplateV4ListAction(), key(generatedKey))
                 .then(new CheckClusterTemplateType(SPARK), key(generatedKey))
                 .validate();

@@ -174,7 +174,7 @@ integrationtest:
 
     cleanup:
         retryCount: 3
-        cleanupBeforeStart: true
+        cleanupBeforeStart: false
 
     defaultClusterDefinitionName:
 
@@ -188,7 +188,7 @@ integrationtest:
     testsuite:
         threadPoolSize: 3
         skipRemainingTestsAfterOneFailed: true
-        cleanUpOnFailure: true
+        cleanUpOnFailure: false
 
     logsearch:
       url:

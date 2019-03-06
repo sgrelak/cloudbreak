@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -35,12 +34,12 @@ import com.sequenceiq.it.cloudbreak.newway.Environment;
 import com.sequenceiq.it.cloudbreak.newway.EnvironmentEntity;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.action.clusterdefinition.ClusterDefinitionGetListAction;
-import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
 import com.sequenceiq.it.cloudbreak.newway.action.database.DatabaseCreateIfNotExistsAction;
 import com.sequenceiq.it.cloudbreak.newway.action.imagecatalog.ImageCatalogCreateIfNotExistsAction;
 import com.sequenceiq.it.cloudbreak.newway.action.ldap.LdapConfigCreateIfNotExistsAction;
 import com.sequenceiq.it.cloudbreak.newway.action.proxy.ProxyConfigCreateIfNotExistsAction;
 import com.sequenceiq.it.cloudbreak.newway.actor.Actor;
+import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.PurgeGarbageService;
@@ -73,9 +72,6 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractIntegrationTest.class);
 
-    @Value("${integrationtest.cleanup.cleanupBeforeStart:false}")
-    private boolean cleanupBeforeStart;
-
     @Inject
     private RandomNameCreator nameGenerator;
 
@@ -90,7 +86,6 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
     public void beforeTest(Method method, Object[] params) {
         MDC.put("testlabel", method.getDeclaringClass().getSimpleName() + '.' + method.getName());
         collectTestCaseDescription(method, params);
-
     }
 
     private TestCaseDescription collectTestCaseDescription(Method method, Object[] params) {
@@ -128,9 +123,7 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
     public void createSharedObjects() {
         String testClassName = getClass().getSimpleName();
         MDC.put("testlabel", testClassName);
-        if (cleanupBeforeStart) {
-            applicationContext.getBean(PurgeGarbageService.class).purge();
-        }
+        applicationContext.getBean(PurgeGarbageService.class).purge();
     }
 
     @AfterMethod

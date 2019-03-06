@@ -81,6 +81,8 @@ public abstract class TestContext implements ApplicationContextAware {
 
     private boolean validated;
 
+    private boolean initialized;
+
     public Map<String, CloudbreakEntity> getResources() {
         return resources;
     }
@@ -225,6 +227,7 @@ public abstract class TestContext implements ApplicationContextAware {
         checkShutdown();
         Log.log(LOGGER, "init " + clss.getSimpleName());
         CloudbreakEntity bean = applicationContext.getBean(clss, this);
+        initialized = true;
         return (O) bean.valid();
     }
 
@@ -511,7 +514,7 @@ public abstract class TestContext implements ApplicationContextAware {
     }
 
     public void cleanupTestContextEntity() {
-        if (!validated) {
+        if (!validated && initialized) {
             throw new IllegalStateException(
                     "Test context should be validated! Maybe do you forgot to call .validate() end of the test? See other tests as an example.");
         }

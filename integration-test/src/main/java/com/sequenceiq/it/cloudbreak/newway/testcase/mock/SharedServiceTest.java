@@ -129,7 +129,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
         String rangerRdsName = creator.getRandomNameForResource();
         String ldapName = creator.getRandomNameForResource();
         String clusterDefinitionName = creator.getRandomNameForResource();
-        CloudStorageV4Request cloudStorage = cloudStorage();
         testContext
                 .given(HIVE, DatabaseEntity.class).valid().withType(DatabaseType.HIVE.name()).withName(hiveRdsName)
                 .when(DatabaseEntity.post())
@@ -159,7 +158,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
         String hiveRdsName = creator.getRandomNameForResource();
         String rangerRdsName = creator.getRandomNameForResource();
         String clusterDefinitionName = creator.getRandomNameForResource();
-        CloudStorageV4Request cloudStorage = cloudStorage();
         testContext
                 .given(HIVE, DatabaseEntity.class).valid().withType(DatabaseType.HIVE.name()).withName(hiveRdsName)
                 .when(DatabaseEntity.post())
@@ -186,7 +184,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
         String hiveRdsName = creator.getRandomNameForResource();
         String ldapName = creator.getRandomNameForResource();
         String clusterDefinitionName = creator.getRandomNameForResource();
-        CloudStorageV4Request cloudStorage = cloudStorage();
         testContext
                 .given(HIVE, DatabaseEntity.class).valid().withType(DatabaseType.HIVE.name()).withName(hiveRdsName)
                 .when(DatabaseEntity.post())
@@ -214,7 +211,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
         String rangerRdsName = creator.getRandomNameForResource();
         String ldapName = creator.getRandomNameForResource();
         String clusterDefinitionName = creator.getRandomNameForResource();
-        CloudStorageV4Request cloudStorage = cloudStorage();
         testContext
                 .given(RANGER, DatabaseEntity.class).valid().withType(DatabaseType.RANGER.name()).withName(rangerRdsName)
                 .when(DatabaseEntity.post())
@@ -241,7 +237,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
     public void testCreateDatalakeClusterWithoutRds(TestContext testContext) {
         String ldapName = creator.getRandomNameForResource();
         String clusterDefinitionName = creator.getRandomNameForResource();
-        CloudStorageV4Request cloudStorage = cloudStorage();
         testContext
                 .given(ClusterDefinitionTestDto.class).withName(clusterDefinitionName)
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)
@@ -264,7 +259,6 @@ public class SharedServiceTest extends AbstractIntegrationTest {
     @Test(dataProvider = TEST_CONTEXT_WITH_MOCK)
     public void testCreateDatalakeClusterWithoutRdsAndLdap(TestContext testContext) {
         String clusterDefinitionName = creator.getRandomNameForResource();
-        CloudStorageV4Request cloudStorage = cloudStorage();
         testContext
                 .given(ClusterDefinitionTestDto.class).withName(clusterDefinitionName)
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)

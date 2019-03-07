@@ -5,7 +5,9 @@ import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,7 +18,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,11 +31,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ClusterV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.AmbariV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.ambarirepository.AmbariRepositoryV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.stackrepository.StackRepositoryV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.cm.ClouderaManagerV4Request;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.cm.product.ClouderaManagerProductV4Request;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.cm.repository.ClouderaManagerRepositoryV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.gateway.GatewayV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.storage.CloudStorageV4Request;
 import com.sequenceiq.cloudbreak.cloud.model.AmbariRepo;
@@ -47,6 +54,7 @@ import com.sequenceiq.cloudbreak.domain.FileSystem;
 import com.sequenceiq.cloudbreak.domain.LdapConfig;
 import com.sequenceiq.cloudbreak.domain.ProxyConfig;
 import com.sequenceiq.cloudbreak.domain.RDSConfig;
+import com.sequenceiq.cloudbreak.domain.json.Json;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.Cluster;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.ClusterComponent;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.gateway.Gateway;
@@ -317,5 +325,73 @@ public class ClusterV4RequestToClusterConverterTest {
 
         Exception exception = assertThrows(BadRequestException.class, () -> underTest.convert(request));
         assertEquals("Cannot determine cluster manager. More than one provided", exception.getMessage());
+    }
+
+    @Test
+    public void testConvertClouderaManagerRequestWithNullProductList() throws JsonProcessingException {
+        ClusterV4Request request = new ClusterV4Request();
+        ClouderaManagerV4Request cm = new ClouderaManagerV4Request();
+
+        ClouderaManagerRepositoryV4Request repository = new ClouderaManagerRepositoryV4Request();
+        repository.setBaseUrl("base.url");
+        repository.setVersion("1.0");
+        repository.setGpgKeyUrl("gpg.key.url");
+        cm.setRepository(repository);
+        request.setCm(cm);
+
+        Cluster cluster = underTest.convert(request);
+
+        assertFalse(cluster.getComponents().isEmpty());
+        assertEquals(1, cluster.getComponents().size());
+
+        ClusterComponent component = cluster.getComponents().iterator().next();
+        assertEquals(ComponentType.CM_REPO_DETAILS, component.getComponentType());
+
+        Json expectedRepoJson = new Json(repository);
+        assertEquals(expectedRepoJson, component.getAttributes());
+    }
+
+    @Test
+    public void testConvertClouderaManagerRequestWithNullRepo() throws JsonProcessingException {
+        ClusterV4Request request = new ClusterV4Request();
+        ClouderaManagerV4Request cm = new ClouderaManagerV4Request();
+
+        ClouderaManagerProductV4Request cdp = new ClouderaManagerProductV4Request();
+        cdp.setName("cdp");
+        cdp.setParcel("cdp.parcel");
+        cdp.setVersion("cdp.version");
+
+        ClouderaManagerProductV4Request cdf = new ClouderaManagerProductV4Request();
+        cdf.setName("cdf");
+        cdf.setParcel("cdf.parcel");
+        cdf.setVersion("cdf.version");
+
+        List<ClouderaManagerProductV4Request> products = List.of(cdp, cdf);
+        cm.setProducts(products);
+        request.setCm(cm);
+
+        Cluster cluster = underTest.convert(request);
+        assertFalse(cluster.getComponents().isEmpty());
+        assertEquals(2, cluster.getComponents().size());
+
+        assertAll(cluster.getComponents()
+                .stream()
+                .map(component -> () -> assertEquals(ComponentType.CDH_PRODUCT_DETAILS, component.getComponentType())));
+
+        List<Json> cdps = cluster.getComponents()
+                .stream().map(ClusterComponent::getAttributes).filter(attr -> attr.getValue().contains("cdp")).collect(Collectors.toList());
+
+        Json cdpJson = new Json(cdp);
+        assertAll(
+                () -> assertEquals(1, cdps.size()),
+                () -> assertEquals(cdpJson, cdps.iterator().next()));
+
+        List<Json> cdfs = cluster.getComponents()
+                .stream().map(ClusterComponent::getAttributes).filter(attr -> attr.getValue().contains("cdf")).collect(Collectors.toList());
+
+        Json cdfJson = new Json(cdf);
+        assertAll(
+                () -> assertEquals(1, cdfs.size()),
+                () -> assertEquals(cdfJson, cdfs.iterator().next()));
     }
 }

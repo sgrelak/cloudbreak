@@ -2,12 +2,14 @@ package com.sequenceiq.cloudbreak.converter.v2;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,25 +18,26 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.ConversionService;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ClusterV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.AmbariV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.ambarirepository.AmbariRepositoryV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.stackrepository.StackRepositoryV4Request;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.cm.ClouderaManagerV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.gateway.GatewayV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.storage.CloudStorageV4Request;
 import com.sequenceiq.cloudbreak.cloud.model.AmbariRepo;
 import com.sequenceiq.cloudbreak.cloud.model.component.StackRepoDetails;
 import com.sequenceiq.cloudbreak.common.type.ComponentType;
+import com.sequenceiq.cloudbreak.controller.exception.BadRequestException;
 import com.sequenceiq.cloudbreak.controller.exception.NotFoundException;
 import com.sequenceiq.cloudbreak.converter.util.CloudStorageValidationUtil;
 import com.sequenceiq.cloudbreak.converter.util.GatewayConvertUtil;
@@ -54,11 +57,8 @@ import com.sequenceiq.cloudbreak.service.proxy.ProxyConfigService;
 import com.sequenceiq.cloudbreak.service.rdsconfig.RdsConfigService;
 import com.sequenceiq.cloudbreak.service.workspace.WorkspaceService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ClusterV4RequestToClusterConverterTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @InjectMocks
     private ClusterV4RequestToClusterConverter underTest;
@@ -89,7 +89,7 @@ public class ClusterV4RequestToClusterConverterTest {
 
     private Workspace workspace;
 
-    @Before
+    @BeforeEach
     public void before() {
 
         workspace = new Workspace();
@@ -99,7 +99,7 @@ public class ClusterV4RequestToClusterConverterTest {
 
         when(workspaceService.getForCurrentUser()).thenReturn(workspace);
 
-        when(cloudStorageValidationUtil.isCloudStorageConfigured(any(CloudStorageV4Request.class))).thenReturn(false);
+        when(cloudStorageValidationUtil.isCloudStorageConfigured(nullable(CloudStorageV4Request.class))).thenReturn(false);
     }
 
     @Test
@@ -174,10 +174,8 @@ public class ClusterV4RequestToClusterConverterTest {
 
         source.setDatabases(rdsConfigNames);
 
-        expectedException.expect(NotFoundException.class);
-        expectedException.expectMessage("RDS config names dont exists");
-
-        underTest.convert(source);
+        Exception exception = assertThrows(NotFoundException.class, () -> underTest.convert(source));
+        assertEquals("RDS config names dont exists", exception.getMessage());
 
         verify(rdsConfigService, times(1)).findByNamesInWorkspace(rdsConfigNames, workspace.getId());
     }
@@ -198,6 +196,8 @@ public class ClusterV4RequestToClusterConverterTest {
 
     @Test
     public void testConvertWheClusterDefinitionDoesNotExists() {
+        Mockito.reset(cloudStorageValidationUtil);
+
         String clusterDefinitionName = "bp-name";
 
         ClusterV4Request source = new ClusterV4Request();
@@ -209,10 +209,8 @@ public class ClusterV4RequestToClusterConverterTest {
 
         when(clusterDefinitionService.getByNameForWorkspaceAndLoadDefaultsIfNecessary(clusterDefinitionName, workspace)).thenReturn(null);
 
-        expectedException.expect(NotFoundException.class);
-        expectedException.expectMessage("Cluster definition does not exists by name: bp-name");
-
-        underTest.convert(source);
+        Exception exception = assertThrows(NotFoundException.class, () -> underTest.convert(source));
+        assertEquals("Cluster definition does not exists by name: bp-name", exception.getMessage());
     }
 
     @Test
@@ -309,5 +307,15 @@ public class ClusterV4RequestToClusterConverterTest {
         assertThat(actual.getGateway(), is(gateway));
 
         verify(conversionService, times(1)).convert(gatewayJson, Gateway.class);
+    }
+
+    @Test
+    public void testConvertWhenMultipleClusterManagersProvided() {
+        ClusterV4Request request = new ClusterV4Request();
+        request.setAmbari(new AmbariV4Request());
+        request.setCm(new ClouderaManagerV4Request());
+
+        Exception exception = assertThrows(BadRequestException.class, () -> underTest.convert(request));
+        assertEquals("Cannot determine cluster manager. More than one provided", exception.getMessage());
     }
 }

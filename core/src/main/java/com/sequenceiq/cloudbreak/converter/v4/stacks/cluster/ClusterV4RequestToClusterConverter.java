@@ -122,6 +122,7 @@ public class ClusterV4RequestToClusterConverter extends AbstractConversionServic
         }
         updateDatabases(source, cluster, workspace);
         convertAmbariSpecificPart(source, cluster);
+        extractClusterManagerAndHdpRepoConfig(cluster, source);
         cluster.setProxyConfig(getProxyConfig(source.getProxyName(), workspace));
         cluster.setLdapConfig(getLdap(source.getLdapName(), workspace));
         return cluster;
@@ -131,7 +132,6 @@ public class ClusterV4RequestToClusterConverter extends AbstractConversionServic
         if (source.getAmbari() != null) {
             cluster.setConfigStrategy(source.getAmbari().getConfigStrategy());
             cluster.setAmbariSecurityMasterKey(source.getAmbari().getSecurityMasterKey());
-            extractClusterManagerAndHdpRepoConfig(cluster, source);
         }
     }
 

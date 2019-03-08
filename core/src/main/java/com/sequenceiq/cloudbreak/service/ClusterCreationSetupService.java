@@ -355,7 +355,7 @@ public class ClusterCreationSetupService {
             ClusterV4Request request, Cluster cluster, Workspace workspace, Optional<Component> stackImageComponent)
             throws IOException, CloudbreakImageNotFoundException {
         Json stackRepoDetailsJson;
-        StackRepositoryV4Request ambariStackDetails = request.getAmbari().getStackRepository();
+        StackRepositoryV4Request ambariStackDetails = request.getAmbari() == null ? null : request.getAmbari().getStackRepository();
         if (!stackHdpRepoConfig.isPresent()) {
             if (ambariStackDetails != null && (stackRepoDetailsConverter.isBaseRepoRequiredFieldsExists(ambariStackDetails)
                     || stackRepoDetailsConverter.isVdfRequiredFieldsExists(ambariStackDetails))) {

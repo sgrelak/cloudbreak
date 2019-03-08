@@ -12,6 +12,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.ambari.A
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.gateway.GatewayV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.storage.CloudStorageV4Request;
 import com.sequenceiq.cloudbreak.converter.AbstractConversionServiceAwareConverter;
+import com.sequenceiq.cloudbreak.converter.v4.stacks.cli.cm.ClusterToClouderaManagerV4RequestConverter;
 import com.sequenceiq.cloudbreak.domain.RDSConfig;
 import com.sequenceiq.cloudbreak.domain.stack.cluster.Cluster;
 
@@ -22,6 +23,7 @@ public class ClusterToClusterV4RequestConverter extends AbstractConversionServic
     public ClusterV4Request convert(Cluster source) {
         ClusterV4Request clusterRequest = new ClusterV4Request();
         clusterRequest.setAmbari(getConversionService().convert(source, AmbariV4Request.class));
+        clusterRequest.setCm(ClusterToClouderaManagerV4RequestConverter.convert(source));
         clusterRequest.setClusterDefinitionName(source.getClusterDefinition().getName());
         clusterRequest.setValidateClusterDefinition(null);
         clusterRequest.setExecutorType(source.getExecutorType());

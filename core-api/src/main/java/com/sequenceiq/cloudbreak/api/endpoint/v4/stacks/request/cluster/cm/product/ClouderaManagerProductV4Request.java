@@ -48,4 +48,19 @@ public class ClouderaManagerProductV4Request implements JsonEntity {
     public void setParcel(String parcel) {
         this.parcel = parcel;
     }
+
+    public ClouderaManagerProductV4Request withName(String name) {
+        setName(name);
+        return this;
+    }
+
+    public ClouderaManagerProductV4Request withVersion(String version) {
+        setVersion(version);
+        return this;
+    }
+
+    public ClouderaManagerProductV4Request withParcel(String parcel) {
+        setParcel(parcel);
+        return this;
+    }
 }

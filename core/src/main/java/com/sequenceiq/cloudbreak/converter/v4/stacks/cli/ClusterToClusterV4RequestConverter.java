@@ -27,7 +27,7 @@ public class ClusterToClusterV4RequestConverter extends AbstractConversionServic
         clusterRequest.setClusterDefinitionName(source.getClusterDefinition().getName());
         clusterRequest.setValidateClusterDefinition(null);
         clusterRequest.setExecutorType(source.getExecutorType());
-        clusterRequest.setUserName(source.getUserName());
+        clusterRequest.setUserName("");
         clusterRequest.setPassword("");
         if (source.getFileSystem() != null) {
             clusterRequest.setCloudStorage(getConversionService().convert(source.getFileSystem(), CloudStorageV4Request.class));

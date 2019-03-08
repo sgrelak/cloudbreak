@@ -21,7 +21,6 @@ public class ClouderaManagerEntity extends AbstractCloudbreakEntity<ClouderaMana
         return this;
     }
 
-
     public ClouderaManagerEntity withClouderaManagerRepository(String key) {
         ClouderaManagerRepositoryEntity repositoryEntity = getTestContext().get(key);
         return withStackRepository(repositoryEntity);

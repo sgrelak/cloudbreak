@@ -114,7 +114,7 @@ public abstract class AbstractIntegrationTest extends AbstractTestNGSpringContex
             }
         }
         return Optional.ofNullable(testCaseDescription)
-                .filter(d -> Strings.isNullOrEmpty(d.getValue()))
+                .filter(d -> !Strings.isNullOrEmpty(d.getValue()))
                 .orElseThrow(TestCaseDescriptionMissingException::new);
     }
 

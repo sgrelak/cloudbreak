@@ -78,8 +78,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
             given = "there is an available environment with attached rds, ldap and proxy configs",
             when = "a cluster is created and deleted in the env and detach environment endpoint is called for the attached resources",
             then = "all of the three resources should be detached")
-    public void testDetachFromEnvWithDeletedCluster(TestContext testContext) {
+    public void testDetachFromEnvWithDeletedCluster(MockedTestContext testContext) {
         createEnvWithResources(testContext);
+        testContext.getModel().getAmbariMock().postSyncLdap();
+        testContext.getModel().getAmbariMock().putConfigureLdap();
         testContext.given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
                 .withCluster(setResources(testContext, testContext.get(DatabaseEntity.class).getName(),
@@ -130,8 +132,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
             given = "there is an environment with a attached shared resources and a running cluster that is using these resources",
             when = "the resource delete endpoints and environment delete endpoints are called",
             then = "non of the operations should succeed")
-    public void testCreateWlClusterDeleteFails(TestContext testContext) {
+    public void testCreateWlClusterDeleteFails(MockedTestContext testContext) {
         createEnvWithResources(testContext);
+        testContext.getModel().getAmbariMock().postSyncLdap();
+        testContext.getModel().getAmbariMock().putConfigureLdap();
         testContext.given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)
                 .withCluster(
@@ -158,8 +162,10 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
             given = "there is an environment with a attached shared resources and a running cluster that is using these resources",
             when = "the detach resources from environment endpoint is called",
             then = "the resources should not be detached from the environment")
-    public void testCreateWlClusterDetachFails(TestContext testContext) {
+    public void testCreateWlClusterDetachFails(MockedTestContext testContext) {
         createEnvWithResources(testContext);
+        testContext.getModel().getAmbariMock().postSyncLdap();
+        testContext.getModel().getAmbariMock().putConfigureLdap();
         testContext
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentEntity.class)

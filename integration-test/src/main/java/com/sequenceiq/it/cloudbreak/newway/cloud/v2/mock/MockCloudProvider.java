@@ -27,6 +27,7 @@ import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
 import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapConfigTestDto;
 
 @Component
 public class MockCloudProvider extends AbstractCloudProvider {

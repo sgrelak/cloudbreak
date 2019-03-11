@@ -10,7 +10,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.cluster.Cluster
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.kerberos.KerberosTestDto;
-import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapConfigTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapTestDto;
 
 @Prototype
 public class ClusterEntity extends AbstractCloudbreakEntity<ClusterV4Request, ClusterV4Response, ClusterEntity> {
@@ -54,7 +54,7 @@ public class ClusterEntity extends AbstractCloudbreakEntity<ClusterV4Request, Cl
     }
 
     public ClusterEntity withLdapConfig() {
-        LdapConfigTestDto ldap = getTestContext().get(LdapConfigTestDto.class);
+        LdapTestDto ldap = getTestContext().get(LdapTestDto.class);
         getRequest().setLdapName(ldap.getName());
         return this;
     }

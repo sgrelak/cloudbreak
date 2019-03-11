@@ -1,9 +1,11 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
+import javax.inject.Inject;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.sequenceiq.it.cloudbreak.newway.Stack;
+import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
@@ -12,6 +14,9 @@ import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
 import com.sequenceiq.it.cloudbreak.newway.util.ShowClusterDefinitionUtil;
 
 public class ShowClusterDefinitionTest extends AbstractIntegrationTest {
+
+    @Inject
+    private StackTestClient stackTestClient;
 
     @BeforeMethod
     public void beforeMethod(Object[] data) {
@@ -34,7 +39,7 @@ public class ShowClusterDefinitionTest extends AbstractIntegrationTest {
                 .given(StackTestDto.class)
                 .valid()
                 .withName(clusterName)
-                .when(Stack.generatedClusterDefinition())
+                .when(stackTestClient.clusterDefinitionRequestV4())
                 .then(ShowClusterDefinitionUtil::checkFutureClusterDefinition)
                 .validate();
     }
@@ -47,9 +52,9 @@ public class ShowClusterDefinitionTest extends AbstractIntegrationTest {
                 .given(StackTestDto.class)
                 .valid()
                 .withName(clusterName)
-                .when(Stack.postV4())
+                .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
-                .when(Stack.getV4())
+                .when(stackTestClient.getV4())
                 .then(ShowClusterDefinitionUtil::checkGeneratedClusterDefinition)
                 .validate();
     }

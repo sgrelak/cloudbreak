@@ -9,13 +9,10 @@ import com.sequenceiq.it.cloudbreak.newway.Assertion;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.GherkinTest;
 import com.sequenceiq.it.cloudbreak.newway.ResourceAction;
-import com.sequenceiq.it.cloudbreak.newway.action.Action;
-import com.sequenceiq.it.cloudbreak.newway.action.proxy.ProxyConfigDeleteAction;
-import com.sequenceiq.it.cloudbreak.newway.action.proxy.ProxyConfigPostAction;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.v4.ProxyV4Action;
 
-public class ProxyConfig extends ProxyConfigEntity {
+public class ProxyConfig extends ProxyTestDto {
     private static final String PROXYCONFIG = "PROXY_CONFIG";
 
     private final ProxyV4Request proxyV4Request = new ProxyV4Request();
@@ -52,7 +49,7 @@ public class ProxyConfig extends ProxyConfigEntity {
         return proxyConfig;
     }
 
-    public static ProxyConfigEntity post(TestContext testContext, ProxyConfigEntity entity, CloudbreakClient cloudbreakClient) {
+    public static ProxyTestDto post(TestContext testContext, ProxyTestDto entity, CloudbreakClient cloudbreakClient) {
         entity.setResponse(
                 cloudbreakClient.getCloudbreakClient().proxyConfigV4Endpoint().post(cloudbreakClient.getWorkspaceId(), entity.getRequest())
         );
@@ -87,7 +84,7 @@ public class ProxyConfig extends ProxyConfigEntity {
         return delete(PROXYCONFIG);
     }
 
-    public static ProxyConfigEntity delete(TestContext testContext, ProxyConfigEntity entity, CloudbreakClient cloudbreakClient) {
+    public static ProxyTestDto delete(TestContext testContext, ProxyTestDto entity, CloudbreakClient cloudbreakClient) {
         entity.setResponse(
                 cloudbreakClient.getCloudbreakClient().proxyConfigV4Endpoint().delete(cloudbreakClient.getWorkspaceId(), entity.getName())
         );
@@ -98,18 +95,10 @@ public class ProxyConfig extends ProxyConfigEntity {
         return new Assertion<>(getTestContext(GherkinTest.RESULT), check);
     }
 
-    public static ProxyConfigEntity getByName(TestContext testContext, ProxyConfigEntity entity, CloudbreakClient cloudbreakClient) {
+    public static ProxyTestDto getByName(TestContext testContext, ProxyTestDto entity, CloudbreakClient cloudbreakClient) {
         entity.setResponse(
                 cloudbreakClient.getCloudbreakClient().proxyConfigV4Endpoint().get(cloudbreakClient.getWorkspaceId(), entity.getName())
         );
         return entity;
-    }
-
-    public static Action<ProxyConfigEntity> postV4() {
-        return new ProxyConfigPostAction();
-    }
-
-    public static Action<ProxyConfigEntity> deleteV4() {
-        return new ProxyConfigDeleteAction();
     }
 }

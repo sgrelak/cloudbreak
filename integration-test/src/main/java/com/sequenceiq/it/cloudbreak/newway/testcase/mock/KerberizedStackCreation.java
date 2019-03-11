@@ -2,26 +2,34 @@ package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
 import static com.sequenceiq.it.cloudbreak.newway.assertion.kerberos.KerberosTestAssertion.validateCustomDomain;
 
+import javax.inject.Inject;
+
 import org.springframework.http.HttpMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.sequenceiq.it.cloudbreak.newway.Stack;
-import com.sequenceiq.it.cloudbreak.newway.context.Description;
-import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
-import com.sequenceiq.it.cloudbreak.newway.action.kerberos.KerberosTestAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
+import com.sequenceiq.it.cloudbreak.newway.client.KerberosTestClient;
+import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
+import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.kerberos.ActiveDirectoryKerberosDescriptorTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.kerberos.FreeIPAKerberosDescriptorTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.kerberos.KerberosTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.SaltMock;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
 
 public class KerberizedStackCreation extends AbstractIntegrationTest {
+
+    @Inject
+    private KerberosTestClient kerberosTestClient;
+
+    @Inject
+    private StackTestClient stackTestClient;
 
     @BeforeMethod
     public void beforeMethod(Object[] data) {
@@ -45,12 +53,12 @@ public class KerberizedStackCreation extends AbstractIntegrationTest {
                 .withRealm("realm.addomain.com")
                 .given(KerberosTestDto.class)
                 .withActiveDirectoryDescriptor()
-                .when(KerberosTestAction::post)
+                .when(kerberosTestClient.createV4())
                 .given(ClusterEntity.class)
                 .withKerberos()
                 .given(StackTestDto.class)
                 .withCluster()
-                .when(Stack.postV4())
+                .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
                 .then(validateCustomDomain("realm.addomain.com"))
                 .then(MockVerification.verify(HttpMethod.POST, SaltMock.SALT_ACTION_DISTRIBUTE).exactTimes(1).bodyContains(".realm.addomain.com", 5))
@@ -69,12 +77,12 @@ public class KerberizedStackCreation extends AbstractIntegrationTest {
                 .withRealm("realm.addomain.com")
                 .given(KerberosTestDto.class)
                 .withActiveDirectoryDescriptor()
-                .when(KerberosTestAction::post)
+                .when(kerberosTestClient.createV4())
                 .given(ClusterEntity.class)
                 .withKerberos()
                 .given(StackTestDto.class)
                 .withCluster()
-                .when(Stack.postV4())
+                .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
                 .then(validateCustomDomain("custom.addomain.com"))
                 .then(MockVerification.verify(HttpMethod.POST, SaltMock.SALT_ACTION_DISTRIBUTE).exactTimes(1).bodyContains(".custom.addomain.com", 5))
@@ -93,12 +101,12 @@ public class KerberizedStackCreation extends AbstractIntegrationTest {
                 .withRealm("realm.freeiparealm.com")
                 .given(KerberosTestDto.class)
                 .withFreeIPADescriptor()
-                .when(KerberosTestAction::post)
+                .when(kerberosTestClient.createV4())
                 .given(ClusterEntity.class)
                 .withKerberos()
                 .given(StackTestDto.class)
                 .withCluster()
-                .when(Stack.postV4())
+                .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
                 .then(validateCustomDomain("realm.freeiparealm.com"))
                 .then(MockVerification.verify(HttpMethod.POST, SaltMock.SALT_ACTION_DISTRIBUTE).exactTimes(1).bodyContains(".realm.freeiparealm.com", 5))
@@ -117,12 +125,12 @@ public class KerberizedStackCreation extends AbstractIntegrationTest {
                 .withRealm("realm.freeiparealm.com")
                 .given(KerberosTestDto.class)
                 .withFreeIPADescriptor()
-                .when(KerberosTestAction::post)
+                .when(kerberosTestClient.createV4())
                 .given(ClusterEntity.class)
                 .withKerberos()
                 .given(StackTestDto.class)
                 .withCluster()
-                .when(Stack.postV4())
+                .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
                 .then(validateCustomDomain("custom.freeipadomain.com"))
                 .then(MockVerification.verify(HttpMethod.POST, SaltMock.SALT_ACTION_DISTRIBUTE).exactTimes(1).bodyContains(".custom.freeipadomain.com", 5))

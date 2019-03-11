@@ -9,7 +9,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.database.responses.DatabaseV4Re
 import com.sequenceiq.it.IntegrationTestContext;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakTest;
-import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseTestDto;
 import com.sequenceiq.it.cloudbreak.newway.Entity;
 
 public class DatabaseAction {
@@ -17,7 +17,7 @@ public class DatabaseAction {
     }
 
     public static void post(IntegrationTestContext integrationTestContext, Entity entity) throws Exception {
-        DatabaseEntity rdsconfigEntity = (DatabaseEntity) entity;
+        DatabaseTestDto rdsconfigEntity = (DatabaseTestDto) entity;
         CloudbreakClient client;
         client = integrationTestContext.getContextParam(CloudbreakClient.CLOUDBREAK_CLIENT, CloudbreakClient.class);
         Long workspaceId = integrationTestContext.getContextParam(CloudbreakTest.WORKSPACE_ID, Long.class);
@@ -29,7 +29,7 @@ public class DatabaseAction {
     }
 
     public static void get(IntegrationTestContext integrationTestContext, Entity entity) throws IOException {
-        DatabaseEntity rdsconfigEntity = (DatabaseEntity) entity;
+        DatabaseTestDto rdsconfigEntity = (DatabaseTestDto) entity;
         CloudbreakClient client;
         client = integrationTestContext.getContextParam(CloudbreakClient.CLOUDBREAK_CLIENT, CloudbreakClient.class);
         Long workspaceId = integrationTestContext.getContextParam(CloudbreakTest.WORKSPACE_ID, Long.class);
@@ -41,7 +41,7 @@ public class DatabaseAction {
     }
 
     public static void getAll(IntegrationTestContext integrationTestContext, Entity entity) throws IOException {
-        DatabaseEntity rdsconfigEntity = (DatabaseEntity) entity;
+        DatabaseTestDto rdsconfigEntity = (DatabaseTestDto) entity;
         CloudbreakClient client;
         client = integrationTestContext.getContextParam(CloudbreakClient.CLOUDBREAK_CLIENT, CloudbreakClient.class);
         Long workspaceId = integrationTestContext.getContextParam(CloudbreakTest.WORKSPACE_ID, Long.class);
@@ -54,7 +54,7 @@ public class DatabaseAction {
     }
 
     public static void delete(IntegrationTestContext integrationTestContext, Entity entity) {
-        DatabaseEntity rdsconfigEntity = (DatabaseEntity) entity;
+        DatabaseTestDto rdsconfigEntity = (DatabaseTestDto) entity;
         CloudbreakClient client;
         client = integrationTestContext.getContextParam(CloudbreakClient.CLOUDBREAK_CLIENT, CloudbreakClient.class);
         Long workspaceId = integrationTestContext.getContextParam(CloudbreakTest.WORKSPACE_ID, Long.class);

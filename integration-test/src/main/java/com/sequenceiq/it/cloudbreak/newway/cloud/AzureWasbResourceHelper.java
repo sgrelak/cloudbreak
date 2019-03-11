@@ -7,7 +7,7 @@ import static com.sequenceiq.it.cloudbreak.filesystem.CloudStorageTypePathPrefix
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.storage.WasbCloudStorageV4Parameters;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.cluster.storage.CloudStorageV4Request;
 import com.sequenceiq.it.cloudbreak.newway.TestParameter;
-import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseTestDto;
 import com.sequenceiq.it.cloudbreak.parameters.RequiredInputParameters.Azure.Database.Hive;
 import com.sequenceiq.it.cloudbreak.parameters.RequiredInputParameters.Azure.Database.Ranger;
 import com.sequenceiq.it.cloudbreak.parameters.RequiredInputParameters.Azure.Storage.Wasb;
@@ -27,15 +27,15 @@ public class AzureWasbResourceHelper extends ResourceHelper<WasbCloudStorageV4Pa
     }
 
     @Override
-    public DatabaseEntity aValidHiveDatabase() {
-        var hive = DatabaseEntity.isCreated(HIVE_RDS_ENTITY_ID);
+    public DatabaseTestDto aValidHiveDatabase() {
+        var hive = DatabaseTestDto.isCreated(HIVE_RDS_ENTITY_ID);
         hive.setRequest(createRdsRequestWithProperties(Hive.CONFIG_NAME, Hive.USER_NAME_KEY, Hive.PASSWORD_KEY, Hive.CONNECTION_URL_KEY, HIVE));
         return hive;
     }
 
     @Override
-    public DatabaseEntity aValidRangerDatabase() {
-        var ranger = DatabaseEntity.isCreated(RANGER_RDS_ENTITY_ID);
+    public DatabaseTestDto aValidRangerDatabase() {
+        var ranger = DatabaseTestDto.isCreated(RANGER_RDS_ENTITY_ID);
         ranger.setRequest(createRdsRequestWithProperties(Ranger.CONFIG_NAME, Ranger.USER_NAME_KEY, Ranger.PASSWORD_KEY, Ranger.CONNECTION_URL_KEY, RANGER));
         return ranger;
     }

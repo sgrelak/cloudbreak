@@ -30,7 +30,7 @@ public class Group extends DynamicModel {
     private final int rootVolumeSize;
 
     public Group(String name, InstanceGroupType type, Collection<CloudInstance> instances, Security security, CloudInstance skeleton,
-            InstanceAuthentication instanceAuthentication, String loginUserName, String publicKey, int rootVolumeSize) {
+            InstanceAuthentication instanceAuthentication, String loginUserName, String publicKey, Integer rootVolumeSize) {
         this.name = name;
         this.type = type;
         this.instances = ImmutableList.copyOf(instances);
@@ -39,11 +39,14 @@ public class Group extends DynamicModel {
         this.instanceAuthentication = instanceAuthentication;
         this.publicKey = publicKey;
         this.loginUserName = loginUserName;
+        if (rootVolumeSize == null) {
+            throw new IllegalArgumentException("Root volume size should not be null!");
+        }
         this.rootVolumeSize = rootVolumeSize;
     }
 
     public Group(String name, InstanceGroupType type, Collection<CloudInstance> instances, Security security, CloudInstance skeleton,
-            Map<String, Object> parameters, InstanceAuthentication instanceAuthentication, String loginUserName, String publicKey, int rootVolumeSize) {
+            Map<String, Object> parameters, InstanceAuthentication instanceAuthentication, String loginUserName, String publicKey, Integer rootVolumeSize) {
         super(parameters);
         this.name = name;
         this.type = type;
@@ -53,6 +56,9 @@ public class Group extends DynamicModel {
         this.instanceAuthentication = instanceAuthentication;
         this.publicKey = publicKey;
         this.loginUserName = loginUserName;
+        if (rootVolumeSize == null) {
+            throw new IllegalArgumentException("Root volume size should not be null!");
+        }
         this.rootVolumeSize = rootVolumeSize;
     }
 

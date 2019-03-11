@@ -53,7 +53,6 @@ import com.sequenceiq.cloudbreak.domain.stack.instance.InstanceMetaData;
 import com.sequenceiq.cloudbreak.repository.SecurityRuleRepository;
 import com.sequenceiq.cloudbreak.service.ComponentConfigProvider;
 import com.sequenceiq.cloudbreak.service.image.ImageService;
-import com.sequenceiq.cloudbreak.service.stack.DefaultRootVolumeSizeProvider;
 import com.sequenceiq.cloudbreak.template.filesystem.FileSystemConfigurationsViewProvider;
 
 public class StackToCloudStackConverterTest {
@@ -72,6 +71,8 @@ public class StackToCloudStackConverterTest {
 
     private static final String[] EMPTY_STRING = new String[0];
 
+    private static final int DEFAULT_ROOT_VOLUME_SIZE = 50;
+
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
 
@@ -86,9 +87,6 @@ public class StackToCloudStackConverterTest {
 
     @Mock
     private ComponentConfigProvider componentConfigProvider;
-
-    @Mock
-    private DefaultRootVolumeSizeProvider defaultRootVolumeSizeProvider;
 
     @Mock
     private FileSystemConfigurationsViewProvider fileSystemConfigurationsViewProvider;
@@ -165,6 +163,7 @@ public class StackToCloudStackConverterTest {
         InstanceGroup instanceGroup = mock(InstanceGroup.class);
         Template template = new Template();
         template.setVolumeCount(0);
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         instanceGroups.add(instanceGroup);
         when(instanceGroup.getTemplate()).thenReturn(template);
         when(instanceGroup.getNotDeletedInstanceMetaDataSet()).thenReturn(Collections.emptySet());
@@ -182,6 +181,7 @@ public class StackToCloudStackConverterTest {
         InstanceGroup instanceGroup = mock(InstanceGroup.class);
         Template template = new Template();
         template.setVolumeCount(0);
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         instanceGroups.add(instanceGroup);
 
         InstanceMetaData metaData = new InstanceMetaData();
@@ -212,6 +212,7 @@ public class StackToCloudStackConverterTest {
         InstanceGroup instanceGroup = mock(InstanceGroup.class);
         Template template = new Template();
         template.setVolumeCount(0);
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         instanceGroups.add(instanceGroup);
         Set<InstanceMetaData> notDeletedMetas = new LinkedHashSet<>();
         notDeletedMetas.add(new InstanceMetaData());
@@ -236,6 +237,7 @@ public class StackToCloudStackConverterTest {
         String groupName = TEST_NAME;
         Template template = new Template();
         template.setVolumeCount(0);
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         instanceGroups.add(instanceGroup);
         when(instanceGroup.getNodeCount()).thenReturn(2);
         when(instanceGroup.getGroupName()).thenReturn(groupName);
@@ -257,6 +259,7 @@ public class StackToCloudStackConverterTest {
         InstanceGroup instanceGroup = mock(InstanceGroup.class);
         Template template = new Template();
         template.setVolumeCount(0);
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         instanceGroups.add(instanceGroup);
         when(instanceGroup.getNodeCount()).thenReturn(0);
         when(instanceGroup.getTemplate()).thenReturn(template);
@@ -275,6 +278,7 @@ public class StackToCloudStackConverterTest {
         InstanceGroup instanceGroup = mock(InstanceGroup.class);
         instanceGroups.add(instanceGroup);
         Template template = new Template();
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         template.setVolumeCount(0);
         when(instanceGroup.getTemplate()).thenReturn(template);
         when(instanceGroup.getAttributes()).thenReturn(null);
@@ -295,6 +299,7 @@ public class StackToCloudStackConverterTest {
         instanceGroups.add(instanceGroup);
         Template template = new Template();
         template.setVolumeCount(0);
+        template.setRootVolumeSize(DEFAULT_ROOT_VOLUME_SIZE);
         Map<String, Object> expected = createMap("");
         when(instanceGroup.getTemplate()).thenReturn(template);
         when(instanceGroup.getAttributes()).thenReturn(attributes);
@@ -309,24 +314,22 @@ public class StackToCloudStackConverterTest {
     }
 
     @Test
-    public void testConvertWhenRootVolumeSizeIsNullThenDefaultRootVolumeSizeProviderShouldGiveIt() {
+    public void testConvertWhenRootVolumeSizeIsNullThenItIsAndInvalidArgumentToInstantiateGroup() {
         Set<InstanceGroup> instanceGroups = new LinkedHashSet<>();
         InstanceGroup instanceGroup = mock(InstanceGroup.class);
         instanceGroups.add(instanceGroup);
         Template template = mock(Template.class);
         String platform = "platform";
-        int expected = Integer.MAX_VALUE;
         when(template.getVolumeCount()).thenReturn(0);
         when(instanceGroup.getTemplate()).thenReturn(template);
         when(stack.getInstanceGroupsAsList()).thenReturn(new ArrayList<>(instanceGroups));
         when(template.getRootVolumeSize()).thenReturn(null);
         when(template.cloudPlatform()).thenReturn(platform);
-        when(defaultRootVolumeSizeProvider.getForPlatform(platform)).thenReturn(expected);
 
-        CloudStack result = underTest.convert(stack);
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Root volume size should not be null!");
 
-        assertEquals(1L, result.getGroups().size());
-        assertEquals(expected, result.getGroups().get(0).getRootVolumeSize());
+        underTest.convert(stack);
     }
 
     @Test
@@ -345,7 +348,6 @@ public class StackToCloudStackConverterTest {
 
         assertEquals(1L, result.getGroups().size());
         assertEquals(expected, result.getGroups().get(0).getRootVolumeSize());
-        verify(defaultRootVolumeSizeProvider, times(0)).getForPlatform(any(String.class));
     }
 
     @Test

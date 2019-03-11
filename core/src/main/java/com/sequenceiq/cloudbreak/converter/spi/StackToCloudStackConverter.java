@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,7 +52,6 @@ import com.sequenceiq.cloudbreak.domain.stack.instance.InstanceMetaData;
 import com.sequenceiq.cloudbreak.repository.SecurityRuleRepository;
 import com.sequenceiq.cloudbreak.service.ComponentConfigProvider;
 import com.sequenceiq.cloudbreak.service.image.ImageService;
-import com.sequenceiq.cloudbreak.service.stack.DefaultRootVolumeSizeProvider;
 
 @Component
 public class StackToCloudStackConverter {
@@ -68,9 +66,6 @@ public class StackToCloudStackConverter {
 
     @Inject
     private ComponentConfigProvider componentConfigProvider;
-
-    @Inject
-    private DefaultRootVolumeSizeProvider defaultRootVolumeSizeProvider;
 
     @Inject
     private InstanceMetadataToImageIdConverter instanceMetadataToImageIdConverter;
@@ -204,9 +199,6 @@ public class StackToCloudStackConverter {
                 Map<String, Object> fields = attributes == null ? Collections.emptyMap() : attributes.getMap();
 
                 Integer rootVolumeSize = instanceGroup.getTemplate().getRootVolumeSize();
-                if (Objects.isNull(rootVolumeSize)) {
-                    rootVolumeSize = defaultRootVolumeSizeProvider.getForPlatform(instanceGroup.getTemplate().cloudPlatform());
-                }
 
                 groups.add(
                         new Group(instanceGroup.getGroupName(),

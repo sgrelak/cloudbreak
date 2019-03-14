@@ -18,6 +18,7 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.RepoConfigValida
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.SecurityRulesV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.StackMatrixV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.SubscriptionV4Response;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.TrustedProxyPublicKeyResponse;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.VersionCheckV4Result;
 import com.sequenceiq.cloudbreak.doc.ContentType;
 import com.sequenceiq.cloudbreak.doc.ControllerDescription;
@@ -91,4 +92,8 @@ public interface UtilV4Endpoint {
             nickname = "postNotificationTest")
     void postNotificationTest();
 
+    @GET
+    @Path("trusted_proxy_public_key")
+    @Produces(MediaType.APPLICATION_JSON)
+    TrustedProxyPublicKeyResponse getTrustedProxyPublicKey();
 }

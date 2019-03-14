@@ -22,12 +22,10 @@ public class CumulusYarnCredentialV4Parameters extends MappableBase {
     @ApiModelProperty(required = true)
     private String ambariPassword;
 
-    @NotNull
-    @ApiModelProperty(required = true)
+    private boolean proxied;
+
     private String ambariUrl;
 
-    @NotNull
-    @ApiModelProperty(required = true)
     private String ambariUser;
 
     public String getAmbariPassword() {
@@ -54,12 +52,21 @@ public class CumulusYarnCredentialV4Parameters extends MappableBase {
         this.ambariUser = ambariUser;
     }
 
+    public boolean isProxied() {
+        return proxied;
+    }
+
+    public void setProxied(boolean proxied) {
+        this.proxied = proxied;
+    }
+
     @Override
     public Map<String, Object> asMap() {
         Map<String, Object> map = super.asMap();
         map.put("cumulusAmbariPassword", ambariPassword);
         map.put("cumulusAmbariUrl", ambariUrl);
         map.put("cumulusAmbariUser", ambariUser);
+        map.put("cumulusIsProxied", proxied);
         return map;
     }
 
@@ -74,6 +81,7 @@ public class CumulusYarnCredentialV4Parameters extends MappableBase {
         ambariPassword = getParameterOrNull(parameters, "ambariPassword");
         ambariUrl = getParameterOrNull(parameters, "ambariUrl");
         ambariUser = getParameterOrNull(parameters, "ambariUser");
+        proxied = getBoolean(parameters, "proxied");
     }
 
 }

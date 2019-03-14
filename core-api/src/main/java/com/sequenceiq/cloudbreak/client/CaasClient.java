@@ -64,6 +64,15 @@ public class CaasClient {
         }
     }
 
+    public String getTrustedProxyPublicKey(String tenant) {
+        try (Response response = getCaasWebTarget().path("/oidc/trusted-proxy/keys")
+                .queryParam("tenant", tenant)
+                .queryParam("format", "pem")
+                .request().get()) {
+            return response.readEntity(String.class);
+        }
+    }
+
     public String getAccessToken(TokenRequest refreshToken) {
         try (Response response = getCaasWebTarget().path("/oidc/token").request().post(entity(refreshToken, MediaType.APPLICATION_JSON_TYPE))) {
             return response.readEntity(TokenResponse.class).getAccessToken();

@@ -18,8 +18,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.SecurityRulesV4R
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.StackMatrixV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.SubscriptionV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.SupportedExternalDatabaseServiceEntryV4Response;
+import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.TrustedProxyPublicKeyResponse;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.VersionCheckV4Result;
 import com.sequenceiq.cloudbreak.api.util.ConverterUtil;
+import com.sequenceiq.cloudbreak.client.CaasClient;
 import com.sequenceiq.cloudbreak.common.model.user.CloudbreakUser;
 import com.sequenceiq.cloudbreak.domain.Subscription;
 import com.sequenceiq.cloudbreak.notification.NotificationSender;
@@ -62,6 +64,9 @@ public class UtilV4Controller extends NotificationController implements UtilV4En
 
     @Inject
     private NotificationSender notificationSender;
+
+    @Inject
+    private CaasClient caasClient;
 
     @Value("${info.app.version:}")
     private String cbVersion;
@@ -118,5 +123,12 @@ public class UtilV4Controller extends NotificationController implements UtilV4En
     public void postNotificationTest() {
         CloudbreakUser cloudbreakUser = restRequestThreadLocalService.getCloudbreakUser();
         notificationSender.sendTestNotification(cloudbreakUser.getUserId());
+    }
+
+    @Override
+    public TrustedProxyPublicKeyResponse getTrustedProxyPublicKey() {
+        CloudbreakUser cloudbreakUser = restRequestThreadLocalService.getCloudbreakUser();
+        String publicKey = caasClient.getTrustedProxyPublicKey(cloudbreakUser.getTenant());
+        return new TrustedProxyPublicKeyResponse(publicKey);
     }
 }

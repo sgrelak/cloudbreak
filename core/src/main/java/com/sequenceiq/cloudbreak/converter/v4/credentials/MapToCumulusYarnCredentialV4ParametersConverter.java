@@ -17,6 +17,7 @@ public class MapToCumulusYarnCredentialV4ParametersConverter extends
         parameters.setAmbariPassword((String) source.get("cumulusAmbariPassword"));
         parameters.setAmbariUrl((String) source.get("cumulusAmbariUrl"));
         parameters.setAmbariUser((String) source.get("cumulusAmbariUser"));
+        parameters.setProxied((Boolean) source.get("cumulusIsProxied"));
         return parameters;
     }
 

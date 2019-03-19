@@ -19,12 +19,12 @@ import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.AbstractCloudProvider;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceTemplateV4Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.NetworkV2Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.PlacementSettingsEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackAuthenticationEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
-import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceTemplateDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.NetworkV2Dto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.PlacementSettingsDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackAuthenticationDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackDtoBase;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.VolumeDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
 
@@ -76,7 +76,7 @@ public class MockCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public StackV4EntityBase stack(StackV4EntityBase stack) {
+    public StackDtoBase stack(StackDtoBase stack) {
         return stack.withMock(stackParameters());
     }
 
@@ -134,8 +134,8 @@ public class MockCloudProvider extends AbstractCloudProvider {
         return parameters;
     }
 
-    public NetworkV2Entity existingSubnet(TestContext testContext) {
-        var network = testContext.given(NetworkV2Entity.class);
+    public NetworkV2Dto existingSubnet(TestContext testContext) {
+        var network = testContext.given(NetworkV2Dto.class);
         network.getRequest().setMock((MockNetworkV4Parameters) subnetProperties());
         return network;
     }
@@ -154,12 +154,12 @@ public class MockCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public InstanceTemplateV4Entity template(InstanceTemplateV4Entity template) {
+    public InstanceTemplateDto template(InstanceTemplateDto template) {
         return template.withInstanceType("large");
     }
 
     @Override
-    public VolumeV4Entity attachedVolume(VolumeV4Entity volume) {
+    public VolumeDto attachedVolume(VolumeDto volume) {
         return volume
                 .withCount(1)
                 .withSize(100)
@@ -167,7 +167,7 @@ public class MockCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public NetworkV2Entity network(NetworkV2Entity network) {
+    public NetworkV2Dto network(NetworkV2Dto network) {
         return network.withSubnetCIDR(getSubnetCIDR());
     }
 
@@ -184,20 +184,20 @@ public class MockCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public PlacementSettingsEntity placement(PlacementSettingsEntity placement) {
+    public PlacementSettingsDto placement(PlacementSettingsDto placement) {
         return placement.withRegion(region())
                 .withAvailabilityZone(availabilityZone());
     }
 
     @Override
-    public StackAuthenticationEntity stackAuthentication(StackAuthenticationEntity stackAuthenticationEntity) {
+    public StackAuthenticationDto stackAuthentication(StackAuthenticationDto stackAuthenticationDto) {
         String publicKeyId = getTestParameter().getWithDefault(MockParameters.DEFAULT_PUBLIC_KEY_ID, "publicKeyId");
-        stackAuthenticationEntity.withPublicKeyId(publicKeyId);
-        return stackAuthenticationEntity;
+        stackAuthenticationDto.withPublicKeyId(publicKeyId);
+        return stackAuthenticationDto;
     }
 
     @Override
-    public Integer gatewayPort(StackV4EntityBase stackEntity) {
+    public Integer gatewayPort(StackDtoBase stackEntity) {
         MockedTestContext mockedTestContext = (MockedTestContext) stackEntity.getTestContext();
         return mockedTestContext.getSparkServer().getPort();
     }

@@ -11,10 +11,10 @@ import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class ImageCatalogTestDto extends AbstractCloudbreakEntity<ImageCatalogV4Request, ImageCatalogV4Response, ImageCatalogTestDto>
+public class ImageCatalogTestDto extends AbstractCloudbreakDto<ImageCatalogV4Request, ImageCatalogV4Response, ImageCatalogTestDto>
         implements Purgable<ImageCatalogV4Response> {
 
     public static final String IMAGE_CATALOG = "IMAGE_CATALOG";

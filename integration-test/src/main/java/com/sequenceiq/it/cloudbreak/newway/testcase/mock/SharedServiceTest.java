@@ -39,9 +39,9 @@ import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceGroupEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.AmbariDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.ClusterEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceGroupDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.clusterdefinition.ClusterDefinitionTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapTestDto;
@@ -113,11 +113,11 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .withTag(of(SHARED_SERVICE_TAG), of(true))
                 .withClusterDefinition(VALID_DL_BP)
                 .when(clusterDefinitionTestClient.createV4())
-                .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(MASTER.name(), InstanceGroupDto.class).valid().withHostGroup(MASTER).withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withLdapConfigName(ldapName)
                 .withCloudStorage(cloudStorage())
                 .given(StackTestDto.class)
@@ -157,7 +157,7 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .given(ClusterEntity.class)
                 .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withLdapConfigName(ldapName)
                 .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
@@ -181,11 +181,11 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .given(ClusterDefinitionTestDto.class).withName(clusterDefinitionName)
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)
                 .when(clusterDefinitionTestClient.createV4())
-                .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(MASTER.name(), InstanceGroupDto.class).valid().withHostGroup(MASTER).withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withRdsConfigNames(createSetOfNotNulls(hiveRdsName, rangerRdsName))
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())
@@ -209,11 +209,11 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .when(clusterDefinitionTestClient.createV4())
                 .given(LdapTestDto.class).withName(ldapName)
                 .when(ldapTestClient.createV4())
-                .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(MASTER.name(), InstanceGroupDto.class).valid().withHostGroup(MASTER).withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withRdsConfigNames(createSetOfNotNulls(hiveRdsName))
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withLdapConfigName(ldapName)
                 .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
@@ -238,11 +238,11 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .when(clusterDefinitionTestClient.createV4())
                 .given(LdapTestDto.class).withName(ldapName)
                 .when(ldapTestClient.createV4())
-                .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(MASTER.name(), InstanceGroupDto.class).valid().withHostGroup(MASTER).withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withRdsConfigNames(createSetOfNotNulls(rangerRdsName))
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withLdapConfigName(ldapName)
                 .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
@@ -264,10 +264,10 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .when(clusterDefinitionTestClient.createV4())
                 .given(LdapTestDto.class).withName(ldapName)
                 .when(ldapTestClient.createV4())
-                .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(MASTER.name(), InstanceGroupDto.class).valid().withHostGroup(MASTER).withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withLdapConfigName(ldapName)
                 .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
@@ -289,10 +289,10 @@ public class SharedServiceTest extends AbstractIntegrationTest {
                 .given(ClusterDefinitionTestDto.class).withName(clusterDefinitionName)
                 .withTag(of(SHARED_SERVICE_TAG), of(true)).withClusterDefinition(VALID_DL_BP)
                 .when(clusterDefinitionTestClient.createV4())
-                .given(MASTER.name(), InstanceGroupEntity.class).valid().withHostGroup(MASTER).withNodeCount(1)
+                .given(MASTER.name(), InstanceGroupDto.class).valid().withHostGroup(MASTER).withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .withCloudStorage(cloudStorage())
                 .init(StackTestDto.class)
                 .withInstanceGroups(MASTER.name())

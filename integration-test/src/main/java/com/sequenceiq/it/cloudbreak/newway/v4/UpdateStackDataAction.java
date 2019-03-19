@@ -10,16 +10,16 @@ import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.action.Action;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackRepositoryEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackRepositoryDto;
 
-public class UpdateStackDataAction implements Action<StackRepositoryEntity> {
+public class UpdateStackDataAction implements Action<StackRepositoryDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UpdateStackDataAction.class);
 
     private UpdateClusterV4Request request = new UpdateClusterV4Request();
 
     @Override
-    public StackRepositoryEntity action(TestContext testContext, StackRepositoryEntity entity, CloudbreakClient client) throws Exception {
+    public StackRepositoryDto action(TestContext testContext, StackRepositoryDto entity, CloudbreakClient client) throws Exception {
         StackTestDto stackTestDto = testContext.get(StackTestDto.class);
         request.setStackRepository(entity.getRequest());
 

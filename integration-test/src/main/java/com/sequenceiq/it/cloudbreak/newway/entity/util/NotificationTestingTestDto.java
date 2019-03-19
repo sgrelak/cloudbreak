@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class NotificationTestingTestDto extends AbstractCloudbreakEntity<Object, Object, NotificationTestingTestDto> {
+public class NotificationTestingTestDto extends AbstractCloudbreakDto<Object, Object, NotificationTestingTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationTestingTestDto.class);
 

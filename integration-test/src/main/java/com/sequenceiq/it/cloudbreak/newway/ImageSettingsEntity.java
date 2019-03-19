@@ -7,10 +7,10 @@ import javax.ws.rs.core.Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.request.image.ImageSettingsV4Request;
 import com.sequenceiq.it.IntegrationTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class ImageSettingsEntity extends AbstractCloudbreakEntity<ImageSettingsV4Request, Response, ImageSettingsEntity> {
+public class ImageSettingsEntity extends AbstractCloudbreakDto<ImageSettingsV4Request, Response, ImageSettingsEntity> {
 
     public static final String IMAGESETTINGS_REQUEST = "IMAGESETTINGS_REQUEST";
 

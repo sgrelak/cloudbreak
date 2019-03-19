@@ -1,6 +1,10 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
 import static com.sequenceiq.cloudbreak.api.endpoint.v4.clustertemplate.ClusterTemplateV4Type.SPARK;
+import static com.sequenceiq.it.cloudbreak.newway.assertion.clustertemplate.ClusterTemplateTestAssertion.isValidResponse;
+import static com.sequenceiq.it.cloudbreak.newway.assertion.clustertemplate.ClusterTemplateTestAssertion.stackTemplateValid;
+import static com.sequenceiq.it.cloudbreak.newway.assertion.clustertemplate.ClusterTemplateTestAssertion.stackTemplateWithPropertiesValid;
+import static com.sequenceiq.it.cloudbreak.newway.assertion.clustertemplate.ClusterTemplateTestAssertion.typeEqualsTo;
 import static com.sequenceiq.it.cloudbreak.newway.cloud.v2.mock.MockCloudProvider.LONDON;
 import static com.sequenceiq.it.cloudbreak.newway.cloud.v2.mock.MockCloudProvider.VALID_REGION;
 import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.force;
@@ -17,10 +21,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.sequenceiq.it.cloudbreak.newway.action.v4.database.DatabaseCreateIfNotExistsAction;
-import com.sequenceiq.it.cloudbreak.newway.assertion.CheckClusterTemplateGetResponse;
-import com.sequenceiq.it.cloudbreak.newway.assertion.CheckClusterTemplateType;
-import com.sequenceiq.it.cloudbreak.newway.assertion.CheckStackTemplateAfterClusterTemplateCreation;
-import com.sequenceiq.it.cloudbreak.newway.assertion.CheckStackTemplateAfterClusterTemplateCreationWithProperties;
 import com.sequenceiq.it.cloudbreak.newway.client.ClusterTemplateTestClient;
 import com.sequenceiq.it.cloudbreak.newway.client.EnvironmentTestClient;
 import com.sequenceiq.it.cloudbreak.newway.client.LdapTestClient;
@@ -30,9 +30,9 @@ import com.sequenceiq.it.cloudbreak.newway.cloud.v2.mock.MockCloudProvider;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.EnvironmentSettingsV4Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.PlacementSettingsEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackTemplateEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentSettingsDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.PlacementSettingsDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTemplateEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.clustertemplate.ClusterTemplateTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
@@ -92,8 +92,8 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withStackTemplate(stackTemplate)
                 .when(clusterTemplateTestClient.createV4(), key(generatedKey))
                 .when(clusterTemplateTestClient.getV4(), key(generatedKey))
-                .then(new CheckClusterTemplateGetResponse(), key(generatedKey))
-                .then(new CheckStackTemplateAfterClusterTemplateCreation(), key(generatedKey))
+                .then(isValidResponse(), key(generatedKey))
+                .then(stackTemplateValid(), key(generatedKey))
                 .when(clusterTemplateTestClient.deleteV4(), key(generatedKey))
                 .validate();
     }
@@ -122,7 +122,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .capture(ClusterTemplateTestDto::count, key(generatedKey))
                 .when(clusterTemplateTestClient.createV4(), key(generatedKey))
                 .when(clusterTemplateTestClient.listV4(), key(generatedKey))
-                .then(new CheckClusterTemplateType(SPARK), key(generatedKey))
+                .then(typeEqualsTo(SPARK), key(generatedKey))
                 .validate();
     }
 
@@ -183,7 +183,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
         String generatedKey = getNameGenerator().getRandomNameForResource();
         String stackTemplate = getNameGenerator().getRandomNameForResource();
 
-        testContext.given(EnvironmentSettingsV4Entity.class)
+        testContext.given(EnvironmentSettingsDto.class)
                 .withName(null)
                 .given(stackTemplate, StackTemplateEntity.class)
                 .withEnvironmentSettings()
@@ -228,7 +228,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withStackTemplate("stackTemplate")
                 .when(clusterTemplateTestClient.createV4())
                 .when(clusterTemplateTestClient.getV4())
-                .then(new CheckStackTemplateAfterClusterTemplateCreationWithProperties())
+                .then(stackTemplateWithPropertiesValid())
                 .when(clusterTemplateTestClient.launchCluster("stackTemplate"))
                 .await(STACK_AVAILABLE, key("stackTemplate"))
                 .when(clusterTemplateTestClient.deleteCluster("stackTemplate"), force())
@@ -310,7 +310,7 @@ public class ClusterTemplateTest extends AbstractIntegrationTest {
                 .withRegions(VALID_REGION)
                 .withLocation(LONDON)
                 .when(environmentTestClient.createV4(), key(generatedKey))
-                .given("placementSettings", PlacementSettingsEntity.class)
+                .given("placementSettings", PlacementSettingsDto.class)
                 .withRegion(MockCloudProvider.EUROPE)
                 .given("stackTemplate", StackTemplateEntity.class)
                 .withEnvironmentKey("environment")

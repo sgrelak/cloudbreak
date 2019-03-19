@@ -14,14 +14,14 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.recipes.requests.RecipeV4Type;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.recipes.responses.RecipeV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.recipes.responses.RecipeViewV4Response;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 
 @Prototype
-public class RecipeTestDto extends AbstractCloudbreakEntity<RecipeV4Request, RecipeV4Response, RecipeTestDto> implements Purgable<RecipeViewV4Response> {
+public class RecipeTestDto extends AbstractCloudbreakDto<RecipeV4Request, RecipeV4Response, RecipeTestDto> implements Purgable<RecipeViewV4Response> {
 
     public RecipeTestDto(TestContext testContext) {
         super(new RecipeV4Request(), testContext);

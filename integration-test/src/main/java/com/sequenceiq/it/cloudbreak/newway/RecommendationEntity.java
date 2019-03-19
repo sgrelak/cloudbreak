@@ -1,9 +1,9 @@
 package com.sequenceiq.it.cloudbreak.newway;
 
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.RecommendationV4Response;
 
-public class RecommendationEntity extends AbstractCloudbreakEntity<Object, RecommendationV4Response, RecommendationEntity> {
+public class RecommendationEntity extends AbstractCloudbreakDto<Object, RecommendationV4Response, RecommendationEntity> {
 
     static final String RECOMMENDATION = "RECOMMENDATION";
 

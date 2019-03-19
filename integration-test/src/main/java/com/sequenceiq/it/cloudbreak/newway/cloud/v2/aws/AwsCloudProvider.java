@@ -11,11 +11,11 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.parameters.aws.Role
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.network.AwsNetworkV4Parameters;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.stack.AwsStackV4Parameters;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.AbstractCloudProvider;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceTemplateV4Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.NetworkV2Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackAuthenticationEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
-import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceTemplateDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.NetworkV2Dto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackAuthenticationDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackDtoBase;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.VolumeDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 
 @Component
@@ -24,12 +24,12 @@ public class AwsCloudProvider extends AbstractCloudProvider {
     private static final String KEY_BASED_CREDENTIAL = "key";
 
     @Override
-    public InstanceTemplateV4Entity template(InstanceTemplateV4Entity template) {
+    public InstanceTemplateDto template(InstanceTemplateDto template) {
         return template.withInstanceType(getTestParameter().getWithDefault(AwsParameters.Instance.TYPE, "m5.2xlarge"));
     }
 
     @Override
-    public StackV4EntityBase stack(StackV4EntityBase stack) {
+    public StackDtoBase stack(StackDtoBase stack) {
         return stack.withAws(stackParameters());
     }
 
@@ -39,7 +39,7 @@ public class AwsCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public VolumeV4Entity attachedVolume(VolumeV4Entity volume) {
+    public VolumeDto attachedVolume(VolumeDto volume) {
         int attachedVolumeSize = Integer.parseInt(getTestParameter().getWithDefault(AwsParameters.Instance.VOLUME_SIZE, "100"));
         int attachedVolumeCount = Integer.parseInt(getTestParameter().getWithDefault(AwsParameters.Instance.VOLUME_COUNT, "1"));
         String attachedVolumeType = getTestParameter().getWithDefault(AwsParameters.Instance.VOLUME_TYPE, "gp2");
@@ -49,7 +49,7 @@ public class AwsCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public NetworkV2Entity network(NetworkV2Entity network) {
+    public NetworkV2Dto network(NetworkV2Dto network) {
         return network.withSubnetCIDR(getSubnetCIDR())
                 .withAws(networkParameters());
     }
@@ -105,10 +105,10 @@ public class AwsCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public StackAuthenticationEntity stackAuthentication(StackAuthenticationEntity stackAuthenticationEntity) {
+    public StackAuthenticationDto stackAuthentication(StackAuthenticationDto stackAuthenticationDto) {
         String publicKeyId = getTestParameter().getWithDefault(AwsParameters.PUBLIC_KEY_ID, "api-e2e-test");
-        stackAuthenticationEntity.withPublicKeyId(publicKeyId);
-        return stackAuthenticationEntity;
+        stackAuthenticationDto.withPublicKeyId(publicKeyId);
+        return stackAuthenticationDto;
     }
 
     @Override

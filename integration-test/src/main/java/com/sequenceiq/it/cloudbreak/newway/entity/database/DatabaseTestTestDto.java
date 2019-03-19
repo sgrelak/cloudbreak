@@ -8,10 +8,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.database.responses.DatabaseTest
 import com.sequenceiq.it.IntegrationTestContext;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class DatabaseTestTestDto extends AbstractCloudbreakEntity<DatabaseTestV4Request, DatabaseTestV4Response, DatabaseTestTestDto> {
+public class DatabaseTestTestDto extends AbstractCloudbreakDto<DatabaseTestV4Request, DatabaseTestV4Response, DatabaseTestTestDto> {
 
     public static final String DATABASE_TEST = "DATABASE_TEST";
 

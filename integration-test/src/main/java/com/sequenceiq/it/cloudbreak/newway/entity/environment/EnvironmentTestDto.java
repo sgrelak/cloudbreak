@@ -19,11 +19,11 @@ import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 
 @Prototype
-public class EnvironmentTestDto extends AbstractCloudbreakEntity<EnvironmentV4Request, DetailedEnvironmentV4Response, EnvironmentTestDto>
+public class EnvironmentTestDto extends AbstractCloudbreakDto<EnvironmentV4Request, DetailedEnvironmentV4Response, EnvironmentTestDto>
         implements Purgable<SimpleEnvironmentV4Response> {
 
     public static final String ENVIRONMENT = "ENVIRONMENT";

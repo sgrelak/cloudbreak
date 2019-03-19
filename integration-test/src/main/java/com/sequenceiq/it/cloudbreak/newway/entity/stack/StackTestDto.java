@@ -27,12 +27,10 @@ import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.RunningParameter;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.CloudbreakEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
 import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
-import com.sequenceiq.it.cloudbreak.newway.v3.StackActionV4;
 
 @Prototype
-public class StackTestDto extends StackV4EntityBase<StackTestDto> implements Purgable<StackV4Response> {
+public class StackTestDto extends StackDtoBase<StackTestDto> implements Purgable<StackV4Response> {
 
     public static final String STACK = "STACK";
 
@@ -61,14 +59,14 @@ public class StackTestDto extends StackV4EntityBase<StackTestDto> implements Pur
     }
 
     @Override
-    public StackV4EntityBase<StackTestDto> valid() {
+    public StackDtoBase<StackTestDto> valid() {
         return super.valid().withEnvironment(EnvironmentTestDto.class);
     }
 
     @Override
     public void cleanUp(TestContext context, CloudbreakClient cloudbreakClient) {
         LOGGER.info("Cleaning up resource with name: {}", getName());
-        when(StackActionV4::delete, withoutLogError());
+        when(stackTestClient.deleteV4(), withoutLogError());
         await(STACK_DELETED);
     }
 

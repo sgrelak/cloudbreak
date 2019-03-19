@@ -7,10 +7,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.connector.responses.PlatformSsh
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class PlatformSshKeysTestDto extends AbstractCloudbreakEntity<Object, PlatformSshKeysV4Response, PlatformSshKeysTestDto> {
+public class PlatformSshKeysTestDto extends AbstractCloudbreakDto<Object, PlatformSshKeysV4Response, PlatformSshKeysTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformSshKeysTestDto.class);
 

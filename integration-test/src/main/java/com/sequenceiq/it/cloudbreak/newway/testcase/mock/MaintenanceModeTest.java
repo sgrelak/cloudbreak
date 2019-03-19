@@ -13,10 +13,9 @@ import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackRepositoryEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackRepositoryDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
-import com.sequenceiq.it.cloudbreak.newway.v4.MaintenanceModePostAction;
 import com.sequenceiq.it.cloudbreak.newway.v4.UpdateStackDataAction;
 
 public class MaintenanceModeTest extends AbstractIntegrationTest {
@@ -47,15 +46,15 @@ public class MaintenanceModeTest extends AbstractIntegrationTest {
                 .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
                 .given(StackTestDto.class)
-                .when(MaintenanceModePostAction.enable())
+                .when(stackTestClient.maintenanceModeEnableV4())
                 .await(CLUSTER_MAINTENANCE_MODE)
                 .given(StackTestDto.class)
-                .when(stackTestClient.changeImage())
+                .when(stackTestClient.changeImageV4())
                 .await(CLUSTER_MAINTENANCE_MODE)
                 .when(stackTestClient.syncV4())
                 .await(CLUSTER_MAINTENANCE_MODE)
 
-                .given(StackRepositoryEntity.class)
+                .given(StackRepositoryDto.class)
                 .withOsType("RHEL")
                 .withUtilsBaseURL("http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.7.5.0")
                 .withUtilsRepoId("HDP-2.7.5")
@@ -65,9 +64,9 @@ public class MaintenanceModeTest extends AbstractIntegrationTest {
                 .when(new UpdateStackDataAction())
 
                 .given(StackTestDto.class)
-                .when(MaintenanceModePostAction.validate())
+                .when(stackTestClient.maintenanceModeValidateV4())
                 .await(CLUSTER_MAINTENANCE_MODE)
-                .when(MaintenanceModePostAction.disable())
+                .when(stackTestClient.maintenanceModeDisableV4())
                 .await(STACK_AVAILABLE)
                 .validate();
     }

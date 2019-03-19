@@ -13,11 +13,11 @@ import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackTemplateEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTemplateEntity;
 
 @Prototype
-public class ClusterTemplateTestDto extends AbstractCloudbreakEntity<ClusterTemplateV4Request, ClusterTemplateV4Response, ClusterTemplateTestDto>
+public class ClusterTemplateTestDto extends AbstractCloudbreakDto<ClusterTemplateV4Request, ClusterTemplateV4Response, ClusterTemplateTestDto>
         implements Purgable<ClusterTemplateV4Response> {
 
     public ClusterTemplateTestDto(TestContext testContext) {

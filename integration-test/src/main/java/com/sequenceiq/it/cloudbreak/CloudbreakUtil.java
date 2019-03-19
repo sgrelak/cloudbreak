@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.testng.Assert;
 
 import com.sequenceiq.ambari.client.AmbariClient;
@@ -33,7 +32,6 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.instancegroup.I
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.response.instancegroup.instancemetadata.InstanceMetaDataV4Response;
 import com.sequenceiq.cloudbreak.client.CloudbreakClient;
 import com.sequenceiq.cloudbreak.client.RestClientUtil;
-import com.sequenceiq.it.IntegrationTestContext;
 import com.sequenceiq.periscope.api.endpoint.v1.HistoryEndpoint;
 import com.sequenceiq.periscope.api.model.AutoscaleClusterHistoryResponse;
 import com.sequenceiq.periscope.client.AutoscaleClient;
@@ -192,27 +190,6 @@ public class CloudbreakUtil {
         } catch (Exception ignored) {
             return false;
         }
-    }
-
-    public static String getAmbariIp(StackV4Endpoint stackV4Endpoint, Long workspaceId, String stackName, IntegrationTestContext itContext) {
-        String ambariIp = itContext.getContextParam(CloudbreakITContextConstants.AMBARI_IP_ID);
-        if (StringUtils.isEmpty(ambariIp)) {
-            StackV4Response stackResponse = stackV4Endpoint.get(workspaceId, stackName, new HashSet<>());
-            ambariIp = stackResponse.getCluster().getServerIp();
-            Assert.assertNotNull(ambariIp, "The Ambari IP is not available!");
-            itContext.putContextParam(CloudbreakITContextConstants.AMBARI_IP_ID, ambariIp);
-        }
-        return ambariIp;
-    }
-
-    public static String getAmbariIp(StackV4Response stackResponse, IntegrationTestContext itContext) {
-        String ambariIp = itContext.getContextParam(CloudbreakITContextConstants.AMBARI_IP_ID);
-        if (StringUtils.isEmpty(ambariIp)) {
-            ambariIp = stackResponse.getCluster().getServerIp();
-            Assert.assertNotNull(ambariIp, "The Ambari IP is not available!");
-            itContext.putContextParam(CloudbreakITContextConstants.AMBARI_IP_ID, ambariIp);
-        }
-        return ambariIp;
     }
 
     private static WaitResult waitForStatuses(CloudbreakClient cloudbreakClient, Long workspaceId, String stackName, Map<String, String> desiredStatuses) {

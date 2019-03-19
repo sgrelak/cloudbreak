@@ -4,6 +4,9 @@ import org.springframework.stereotype.Service;
 
 import com.sequenceiq.it.cloudbreak.newway.action.Action;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.ChangeImageAction;
+import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.MaintenanceModeDisableAction;
+import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.MaintenanceModeEnableAction;
+import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.MaintenanceModeValidateAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.StackClusterDefinitionRequestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.StackCreateAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.StackDeleteAction;
@@ -74,8 +77,19 @@ public class StackTestClient {
         return new StackDeleteInstanceAction();
     }
 
-    public Action<StackTestDto> changeImage() {
+    public Action<StackTestDto> changeImageV4() {
         return new ChangeImageAction();
     }
 
+    public Action<StackTestDto> maintenanceModeEnableV4() {
+        return new MaintenanceModeEnableAction();
+    }
+
+    public Action<StackTestDto> maintenanceModeDisableV4() {
+        return new MaintenanceModeDisableAction();
+    }
+
+    public Action<StackTestDto> maintenanceModeValidateV4() {
+        return new MaintenanceModeValidateAction();
+    }
 }

@@ -17,9 +17,9 @@ import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.AmbariRepositoryV4Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.AmbariDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.AmbariRepositoryDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.ClusterEntity;
 import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.mock.model.AmbariMock;
@@ -53,8 +53,8 @@ public class LdapClusterTest extends AbstractIntegrationTest {
         testContext.getModel().getAmbariMock().putConfigureLdap();
         testContext.given(LdapTestDto.class)
                 .when(ldapTestClient.createV4())
-                .given(AmbariRepositoryV4Entity.class)
-                .given(AmbariEntity.class)
+                .given(AmbariRepositoryDto.class)
+                .given(AmbariDto.class)
                 .withAmbariRepoDetails()
                 .given(ClusterEntity.class)
                 .withLdapConfig()
@@ -83,8 +83,8 @@ public class LdapClusterTest extends AbstractIntegrationTest {
 
         testContext.given(LdapTestDto.class).withName(ldapName)
                 .when(ldapTestClient.createV4())
-                .given(AmbariRepositoryV4Entity.class)
-                .given(AmbariEntity.class)
+                .given(AmbariRepositoryDto.class)
+                .given(AmbariDto.class)
                 .withAmbariRepoDetails()
                 .given(ClusterEntity.class)
                 .withLdapConfig()

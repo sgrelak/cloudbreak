@@ -8,10 +8,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.RepoConfigValida
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class RepoConfigValidationTestDto extends AbstractCloudbreakEntity<RepoConfigValidationV4Request, RepoConfigValidationV4Response,
+public class RepoConfigValidationTestDto extends AbstractCloudbreakDto<RepoConfigValidationV4Request, RepoConfigValidationV4Response,
         RepoConfigValidationTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RepoConfigValidationTestDto.class);

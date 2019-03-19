@@ -8,10 +8,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.SubscriptionV4Re
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class SubscriptionTestDto extends AbstractCloudbreakEntity<SubscriptionV4Request, SubscriptionV4Response, SubscriptionTestDto> {
+public class SubscriptionTestDto extends AbstractCloudbreakDto<SubscriptionV4Request, SubscriptionV4Response, SubscriptionTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionTestDto.class);
 

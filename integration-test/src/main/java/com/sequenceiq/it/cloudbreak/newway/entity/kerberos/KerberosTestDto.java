@@ -4,13 +4,13 @@ import javax.ws.rs.WebApplicationException;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.kerberos.requests.KerberosV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.kerberos.responses.KerberosV4Response;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 
 @Prototype
-public class KerberosTestDto extends AbstractCloudbreakEntity<KerberosV4Request, KerberosV4Response, KerberosTestDto> {
+public class KerberosTestDto extends AbstractCloudbreakDto<KerberosV4Request, KerberosV4Response, KerberosTestDto> {
 
     public static final String DEFAULT_MASTERKEY = "masterkey";
 

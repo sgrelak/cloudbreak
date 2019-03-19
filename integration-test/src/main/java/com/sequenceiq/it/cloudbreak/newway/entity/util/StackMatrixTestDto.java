@@ -7,10 +7,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.StackMatrixV4Res
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class StackMatrixTestDto extends AbstractCloudbreakEntity<Object, StackMatrixV4Response, StackMatrixTestDto> {
+public class StackMatrixTestDto extends AbstractCloudbreakDto<Object, StackMatrixV4Response, StackMatrixTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StackMatrixTestDto.class);
 

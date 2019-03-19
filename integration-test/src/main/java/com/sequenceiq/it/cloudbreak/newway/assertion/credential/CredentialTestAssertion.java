@@ -13,7 +13,7 @@ public class CredentialTestAssertion {
 
     }
 
-    public static AssertionV2<CredentialTestDto> validateModifcation(String modifiedDescription) {
+    public static AssertionV2<CredentialTestDto> validateModification(String modifiedDescription) {
         return (testContext, entity, cloudbreakClient) -> {
             Set<CredentialV4Response> collect = entity.getResponses()
                     .stream()

@@ -6,10 +6,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.audits.responses.AuditEventV4Re
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class AuditTestDto extends AbstractCloudbreakEntity<Object, AuditEventV4Response, AuditTestDto> {
+public class AuditTestDto extends AbstractCloudbreakDto<Object, AuditEventV4Response, AuditTestDto> {
 
     private javax.ws.rs.core.Response zipResponse;
 

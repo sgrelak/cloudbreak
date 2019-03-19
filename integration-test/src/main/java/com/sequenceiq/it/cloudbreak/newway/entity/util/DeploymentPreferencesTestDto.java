@@ -7,10 +7,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.DeploymentPrefer
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class DeploymentPreferencesTestDto extends AbstractCloudbreakEntity<Object, DeploymentPreferencesV4Response, DeploymentPreferencesTestDto> {
+public class DeploymentPreferencesTestDto extends AbstractCloudbreakDto<Object, DeploymentPreferencesV4Response, DeploymentPreferencesTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeploymentPreferencesTestDto.class);
 

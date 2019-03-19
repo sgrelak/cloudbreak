@@ -4,10 +4,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.connector.responses.PlatformDis
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class PlatformDiskTestDto extends AbstractCloudbreakEntity<Object, PlatformDisksV4Response, PlatformDiskTestDto> {
+public class PlatformDiskTestDto extends AbstractCloudbreakDto<Object, PlatformDisksV4Response, PlatformDiskTestDto> {
 
     protected PlatformDiskTestDto(TestContext testContext) {
         super(null, testContext);

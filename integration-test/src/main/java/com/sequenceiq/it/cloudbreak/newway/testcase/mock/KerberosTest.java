@@ -33,9 +33,9 @@ import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestCaseDescription;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceGroupEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.AmbariDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.ClusterEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceGroupDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.clusterdefinition.ClusterDefinitionTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.kerberos.KerberosTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
@@ -88,13 +88,13 @@ public class KerberosTest extends AbstractIntegrationTest {
                 .withRequest(request)
                 .withName(request.getName())
                 .when(kerberosTestClient.createV4())
-                .given("master", InstanceGroupEntity.class)
+                .given("master", InstanceGroupDto.class)
                 .withHostGroup(MASTER)
                 .withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withKerberos(request.getName())
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withInstanceGroups("master")
                 .when(stackTestClient.createV4())
@@ -116,13 +116,13 @@ public class KerberosTest extends AbstractIntegrationTest {
                 .withName(clusterDefinitionName)
                 .withClusterDefinition(CLUSTER_DEFINITION_TEXT)
                 .when(clusterDefinitionTestClient.createV4())
-                .given("master", InstanceGroupEntity.class)
+                .given("master", InstanceGroupDto.class)
                 .withHostGroup(MASTER)
                 .withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withKerberos(null)
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withInstanceGroups("master")
                 .when(stackTestClient.createV4())
@@ -149,13 +149,13 @@ public class KerberosTest extends AbstractIntegrationTest {
                 .withRequest(request)
                 .withName(request.getName())
                 .when(kerberosTestClient.createV4())
-                .given("master", InstanceGroupEntity.class)
+                .given("master", InstanceGroupDto.class)
                 .withHostGroup(MASTER)
                 .withNodeCount(1)
                 .given(ClusterEntity.class)
                 .withKerberos("")
                 .withClusterDefinitionName(clusterDefinitionName)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withInstanceGroups("master")
                 .when(stackTestClient.createV4(), key("badRequest"))

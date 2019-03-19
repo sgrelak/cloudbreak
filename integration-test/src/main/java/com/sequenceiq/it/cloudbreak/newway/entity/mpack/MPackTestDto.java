@@ -10,10 +10,10 @@ import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class MPackTestDto extends AbstractCloudbreakEntity<ManagementPackV4Request, ManagementPackV4Response, MPackTestDto>
+public class MPackTestDto extends AbstractCloudbreakDto<ManagementPackV4Request, ManagementPackV4Response, MPackTestDto>
         implements Purgable<ManagementPackV4Response> {
 
     public MPackTestDto(TestContext testContext) {

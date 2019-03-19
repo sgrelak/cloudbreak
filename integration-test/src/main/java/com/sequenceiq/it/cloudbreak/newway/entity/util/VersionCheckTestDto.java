@@ -7,10 +7,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.VersionCheckV4Re
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class VersionCheckTestDto extends AbstractCloudbreakEntity<Object, VersionCheckV4Result, VersionCheckTestDto> {
+public class VersionCheckTestDto extends AbstractCloudbreakDto<Object, VersionCheckV4Result, VersionCheckTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VersionCheckTestDto.class);
 

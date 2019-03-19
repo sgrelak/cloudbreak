@@ -12,10 +12,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.clusterdefinition.responses.Clu
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class ClusterDefinitionTestDto extends AbstractCloudbreakEntity<ClusterDefinitionV4Request, ClusterDefinitionV4Response, ClusterDefinitionTestDto> {
+public class ClusterDefinitionTestDto extends AbstractCloudbreakDto<ClusterDefinitionV4Request, ClusterDefinitionV4Response, ClusterDefinitionTestDto> {
     public static final String CLUSTER_DEFINITION = "CLUSTER_DEFINITION";
 
     private Collection<ClusterDefinitionV4ViewResponse> viewResponses;

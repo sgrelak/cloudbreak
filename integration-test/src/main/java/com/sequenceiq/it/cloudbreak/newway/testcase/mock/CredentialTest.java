@@ -118,7 +118,7 @@ public class CredentialTest extends AbstractIntegrationTest {
                 .withDescription(modifiedDescription)
                 .when(credentialTestClient.modifyV4())
                 .when(credentialTestClient.listV4())
-                .then(CredentialTestAssertion.validateModifcation(modifiedDescription))
+                .then(CredentialTestAssertion.validateModification(modifiedDescription))
                 .validate();
     }
 

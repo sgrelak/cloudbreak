@@ -30,10 +30,10 @@ import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AmbariEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.AmbariDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.CloudbreakEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.ClusterEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.EnvironmentSettingsV4Entity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.ClusterEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentSettingsDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
@@ -103,7 +103,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
                 .withLdapConfigName(testContext.get(LdapTestDto.class).getName())
                 .withProxyConfigName(testContext.get(ProxyTestDto.class).getName())
                 .withClusterDefinitionName(CD_NAME)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentTestDto.class)
                 .when(stackTestClient.createV4())
@@ -189,7 +189,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
         testContext
                 .given(ClusterEntity.class)
                 .withClusterDefinitionName(CD_NAME)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentTestDto.class)
                 .withCluster(
@@ -249,13 +249,13 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
                 .given(ClusterEntity.class)
                 .withDatabase(testContext.get(DatabaseTestDto.class).getName())
                 .withClusterDefinitionName(CD_NAME)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
-                .given(EnvironmentSettingsV4Entity.class)
+                .given(EnvironmentSettingsDto.class)
                 .given(ClusterEntity.class)
                 .withDatabase(testContext.get(DatabaseTestDto.class).getName())
                 .withClusterDefinitionName(CD_NAME)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentTestDto.class)
                 .when(stackTestClient.createV4())
@@ -286,7 +286,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
                 .given(ClusterEntity.class)
                 .withDatabase(testContext.get(DatabaseTestDto.class).getName())
                 .withClusterDefinitionName(CD_NAME)
-                .withAmbari(testContext.given(AmbariEntity.class))
+                .withAmbari(testContext.given(AmbariDto.class))
                 .given(StackTestDto.class)
                 .withEnvironment(EnvironmentTestDto.class)
                 .withCluster(
@@ -375,7 +375,7 @@ public class EnvironmentClusterTest extends AbstractIntegrationTest {
         testContext
                 .given(EnvironmentTestDto.class)
                 .when(environmentTestClient.createV4())
-                .given("invalidEnvironmentSettingsRequest", EnvironmentSettingsV4Entity.class)
+                .given("invalidEnvironmentSettingsRequest", EnvironmentSettingsDto.class)
                 .withName(null)
                 .withCredentialName(null)
                 .given(StackTestDto.class)

@@ -10,7 +10,7 @@ import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.action.Action;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.clustertemplate.ClusterTemplateTestDto;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackTemplateEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTemplateEntity;
 
 public class LaunchClusterFromClusterTemplateAction implements Action<ClusterTemplateTestDto> {
 

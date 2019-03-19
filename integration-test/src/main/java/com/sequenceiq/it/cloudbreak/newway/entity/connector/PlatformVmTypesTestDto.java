@@ -7,10 +7,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.connector.responses.PlatformVmt
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class PlatformVmTypesTestDto extends AbstractCloudbreakEntity<Object, PlatformVmtypesV4Response, PlatformVmTypesTestDto> {
+public class PlatformVmTypesTestDto extends AbstractCloudbreakDto<Object, PlatformVmtypesV4Response, PlatformVmTypesTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformVmTypesTestDto.class);
 

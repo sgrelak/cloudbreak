@@ -7,10 +7,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.util.responses.CloudStorageSupp
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class CloudStorageMatrixTestDto extends AbstractCloudbreakEntity<Object, CloudStorageSupportedV4Response, CloudStorageMatrixTestDto> {
+public class CloudStorageMatrixTestDto extends AbstractCloudbreakDto<Object, CloudStorageSupportedV4Response, CloudStorageMatrixTestDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CloudStorageMatrixTestDto.class);
 

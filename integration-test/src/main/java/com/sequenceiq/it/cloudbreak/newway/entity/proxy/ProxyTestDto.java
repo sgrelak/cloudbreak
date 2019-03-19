@@ -4,13 +4,13 @@ import javax.ws.rs.WebApplicationException;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.proxies.requests.ProxyV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.proxies.responses.ProxyV4Response;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 
 @Prototype
-public class ProxyTestDto extends AbstractCloudbreakEntity<ProxyV4Request, ProxyV4Response, ProxyTestDto> {
+public class ProxyTestDto extends AbstractCloudbreakDto<ProxyV4Request, ProxyV4Response, ProxyTestDto> {
     public static final String PROXY_CONFIG = "PROXY_CONFIG";
 
     ProxyTestDto(String newId) {

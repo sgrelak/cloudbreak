@@ -15,14 +15,13 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
-import com.sequenceiq.it.cloudbreak.newway.action.stack.StackTestAction;
 import com.sequenceiq.it.cloudbreak.newway.action.v4.stack.StackScalePostAction;
 import com.sequenceiq.it.cloudbreak.newway.assertion.MockVerification;
 import com.sequenceiq.it.cloudbreak.newway.client.RecipeTestClient;
 import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceGroupEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceGroupDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.recipe.RecipeTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackTestDto;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
@@ -77,11 +76,11 @@ public class YarnSmokeTest extends AbstractIntegrationTest {
             description = "A valid YARN cluster should be able to stopped and then started")
     public void testWhenCreatedYARNClusterStoppedStarted(MockedTestContext testContext) {
         testContext.given(StackTestDto.class)
-                .when(StackTestAction::create)
+                .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
-                .when(StackTestAction::stop)
+                .when(stackTestClient.stopV4())
                 .await(STACK_STOPPED)
-                .when(StackTestAction::start)
+                .when(stackTestClient.startV4())
                 .await(STACK_AVAILABLE)
                 .validate();
     }
@@ -96,7 +95,7 @@ public class YarnSmokeTest extends AbstractIntegrationTest {
                 .withRecipeType(POST_AMBARI_START)
                 .withRecipeType(PRE_TERMINATION)
                 .when(recipeTestClient.createV4())
-                .given(INSTANCE_GROUP_ID, InstanceGroupEntity.class)
+                .given(INSTANCE_GROUP_ID, InstanceGroupDto.class)
                 .withHostGroup(WORKER)
                 .withNodeCount(NODE_COUNT)
                 .given(StackTestDto.class)

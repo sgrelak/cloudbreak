@@ -12,11 +12,11 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.network.G
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.stack.GcpStackV4Parameters;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.AbstractCloudProvider;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.CommonCloudParameters;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceTemplateV4Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.NetworkV2Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackAuthenticationEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
-import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceTemplateDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.NetworkV2Dto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackAuthenticationDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackDtoBase;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.VolumeDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 
 @Component
@@ -38,12 +38,12 @@ public class GcpCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public InstanceTemplateV4Entity template(InstanceTemplateV4Entity template) {
+    public InstanceTemplateDto template(InstanceTemplateDto template) {
         return template.withInstanceType(getTestParameter().getWithDefault(GcpParameters.Instance.TYPE, "n1-standard-8"));
     }
 
     @Override
-    public VolumeV4Entity attachedVolume(VolumeV4Entity volume) {
+    public VolumeDto attachedVolume(VolumeDto volume) {
         int attachedVolumeSize = Integer.parseInt(getTestParameter().getWithDefault(GcpParameters.Instance.VOLUME_SIZE, "100"));
         int attachedVolumeCount = Integer.parseInt(getTestParameter().getWithDefault(GcpParameters.Instance.VOLUME_COUNT, "1"));
         String attachedVolumeType = getTestParameter().getWithDefault(GcpParameters.Instance.VOLUME_TYPE, "pd-standard");
@@ -53,7 +53,7 @@ public class GcpCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public NetworkV2Entity network(NetworkV2Entity network) {
+    public NetworkV2Dto network(NetworkV2Dto network) {
         GcpNetworkV4Parameters gcpNetworkV4Parameters = new GcpNetworkV4Parameters();
         gcpNetworkV4Parameters.setNoFirewallRules(false);
         gcpNetworkV4Parameters.setNoPublicIp(false);
@@ -62,7 +62,7 @@ public class GcpCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public StackV4EntityBase stack(StackV4EntityBase stack) {
+    public StackDtoBase stack(StackDtoBase stack) {
         return stack.withGcp(stackParameters());
     }
 
@@ -98,9 +98,9 @@ public class GcpCloudProvider extends AbstractCloudProvider {
     }
 
     @Override
-    public StackAuthenticationEntity stackAuthentication(StackAuthenticationEntity stackAuthenticationEntity) {
+    public StackAuthenticationDto stackAuthentication(StackAuthenticationDto stackAuthenticationDto) {
         String sshPublicKey = getTestParameter().getWithDefault(CommonCloudParameters.SSH_PUBLIC_KEY, CommonCloudParameters.DEFAULT_SSH_PUBLIC_KEY);
-        return stackAuthenticationEntity.withPublicKey(sshPublicKey);
+        return stackAuthenticationDto.withPublicKey(sshPublicKey);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase.mock;
 
+import static com.sequenceiq.it.cloudbreak.newway.assertion.environment.EnvironmentTestAssertion.isCredentialAttached;
 import static com.sequenceiq.it.cloudbreak.newway.context.RunningParameter.key;
 
 import java.util.Collection;
@@ -22,15 +23,14 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.ldaps.responses.LdapV4Response;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.proxies.responses.ProxyV4Response;
 import com.sequenceiq.it.cloudbreak.exception.TestFailException;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.client.EnvironmentTestClient;
-import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
-import com.sequenceiq.it.cloudbreak.newway.assertion.CheckEnvironmentCredential;
 import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
+import com.sequenceiq.it.cloudbreak.newway.client.EnvironmentTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
 import com.sequenceiq.it.cloudbreak.newway.context.MockedTestContext;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.database.DatabaseTestDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.ldap.LdapTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.proxy.ProxyTestDto;
 import com.sequenceiq.it.cloudbreak.newway.testcase.AbstractIntegrationTest;
@@ -618,7 +618,7 @@ public class EnvironmentTest extends AbstractIntegrationTest {
                 .given(EnvironmentTestDto.class)
                 .withCredentialName(cred1)
                 .when(environmentTestClient.changeCredential())
-                .then(new CheckEnvironmentCredential(cred1))
+                .then(isCredentialAttached(cred1))
                 .validate();
     }
 
@@ -638,7 +638,7 @@ public class EnvironmentTest extends AbstractIntegrationTest {
                 .withCredentialName(null)
                 .withCredential(cred1)
                 .when(environmentTestClient.changeCredential())
-                .then(new CheckEnvironmentCredential(cred1))
+                .then(isCredentialAttached(cred1))
                 .validate();
     }
 

@@ -3,7 +3,6 @@ package com.sequenceiq.it.cloudbreak.newway.entity.kubernetes;
 import static com.sequenceiq.it.cloudbreak.newway.util.ResponseUtil.getErrorMessage;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,19 +13,15 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.kubernetes.requests.KubernetesV
 import com.sequenceiq.cloudbreak.api.endpoint.v4.kubernetes.responses.KubernetesV4Response;
 import com.sequenceiq.it.IntegrationTestContext;
 import com.sequenceiq.it.cloudbreak.exception.ProxyMethodInvocationException;
-import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
-import com.sequenceiq.it.cloudbreak.newway.Assertion;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
-import com.sequenceiq.it.cloudbreak.newway.GherkinTest;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
-import com.sequenceiq.it.cloudbreak.newway.ResourceAction;
+import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.v4.KubernetesAction;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class KubernetesTestDto extends AbstractCloudbreakEntity<KubernetesV4Request, KubernetesV4Response, KubernetesTestDto>
+public class KubernetesTestDto extends AbstractCloudbreakDto<KubernetesV4Request, KubernetesV4Response, KubernetesTestDto>
         implements Purgable<KubernetesV4Response> {
 
     public static final String KERBEROS = "KERBEROS";
@@ -108,47 +103,12 @@ public class KubernetesTestDto extends AbstractCloudbreakEntity<KubernetesV4Requ
         return 500;
     }
 
-    private static Function<IntegrationTestContext, KubernetesTestDto> getTestContext(String key) {
-        return testContext -> testContext.getContextParam(key, KubernetesTestDto.class);
-    }
-
     static Function<IntegrationTestContext, KubernetesTestDto> getNew() {
         return testContext -> new KubernetesTestDto();
     }
 
     public static KubernetesTestDto request() {
         return new KubernetesTestDto();
-    }
-
-    public static KubernetesTestDto isCreated(String id) {
-        var kubernetesEntity = new KubernetesTestDto();
-        kubernetesEntity.setCreationStrategy(KubernetesAction::createInGiven);
-        return kubernetesEntity;
-    }
-
-    public static ResourceAction getAll() {
-        return new ResourceAction(getNew(), KubernetesAction::getAll);
-    }
-
-    public static ResourceAction delete(String key) {
-        return new ResourceAction(getTestContext(key), KubernetesAction::delete);
-    }
-
-    public static ResourceAction delete() {
-        return delete(KERBEROS);
-    }
-
-    public static KubernetesTestDto delete(TestContext testContext, KubernetesTestDto entity,
-        CloudbreakClient cloudbreakClient) {
-        entity.setResponse(
-                cloudbreakClient.getCloudbreakClient().kubernetesV4Endpoint()
-                        .delete(cloudbreakClient.getWorkspaceId(), entity.getName())
-        );
-        return entity;
-    }
-
-    public static Assertion<KubernetesTestDto> assertThis(BiConsumer<KubernetesTestDto, IntegrationTestContext> check) {
-        return new Assertion<>(getTestContext(GherkinTest.RESULT), check);
     }
 
 }

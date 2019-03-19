@@ -1,5 +1,11 @@
 package com.sequenceiq.it.cloudbreak.newway.entity.credential;
 
+import static com.sequenceiq.it.cloudbreak.newway.util.ResponseUtil.getErrorMessage;
+
+import java.util.Collection;
+
+import javax.inject.Inject;
+
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.parameters.aws.AwsCredentialV4Parameters;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.parameters.azure.AzureCredentialV4Parameters;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.parameters.cumulus.CumulusYarnCredentialV4Parameters;
@@ -10,23 +16,22 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.parameters.yarn.Yar
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.requests.CredentialV4Request;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.credentials.responses.CredentialV4Response;
 import com.sequenceiq.it.cloudbreak.exception.ProxyMethodInvocationException;
-import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
+import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
+import com.sequenceiq.it.cloudbreak.newway.client.CredentialTestClient;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.v4.CredentialV4Action;
-
-import java.util.Collection;
-
-import static com.sequenceiq.it.cloudbreak.newway.util.ResponseUtil.getErrorMessage;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class CredentialTestDto extends AbstractCloudbreakEntity<CredentialV4Request, CredentialV4Response, CredentialTestDto>
+public class CredentialTestDto extends AbstractCloudbreakDto<CredentialV4Request, CredentialV4Response, CredentialTestDto>
         implements Purgable<CredentialV4Response> {
 
     public static final String CREDENTIAL = "CREDENTIAL";
+
+    @Inject
+    private CredentialTestClient credentialTestClient;
 
     public CredentialTestDto(TestContext testContext) {
         super(new CredentialV4Request(), testContext);
@@ -96,7 +101,7 @@ public class CredentialTestDto extends AbstractCloudbreakEntity<CredentialV4Requ
     @Override
     public void cleanUp(TestContext context, CloudbreakClient cloudbreakClient) {
         LOGGER.info("Cleaning up resource with name: {}", getName());
-        CredentialV4Action.deleteV2(context, this, cloudbreakClient);
+        credentialTestClient.deleteV4();
     }
 
     @Override

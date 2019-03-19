@@ -4,10 +4,10 @@ import com.sequenceiq.cloudbreak.api.endpoint.v4.connector.responses.TagSpecific
 import com.sequenceiq.it.cloudbreak.newway.CloudbreakClient;
 import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class TagSpecificationsTestDto extends AbstractCloudbreakEntity<Object, TagSpecificationsV4Response, TagSpecificationsTestDto> {
+public class TagSpecificationsTestDto extends AbstractCloudbreakDto<Object, TagSpecificationsV4Response, TagSpecificationsTestDto> {
 
     protected TagSpecificationsTestDto(TestContext testContext) {
         super(null, testContext);

@@ -20,10 +20,10 @@ import com.sequenceiq.it.cloudbreak.newway.Prototype;
 import com.sequenceiq.it.cloudbreak.newway.RandomNameCreator;
 import com.sequenceiq.it.cloudbreak.newway.context.Purgable;
 import com.sequenceiq.it.cloudbreak.newway.context.TestContext;
-import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakEntity;
+import com.sequenceiq.it.cloudbreak.newway.entity.AbstractCloudbreakDto;
 
 @Prototype
-public class DatabaseTestDto extends AbstractCloudbreakEntity<DatabaseV4Request, DatabaseV4Response, DatabaseTestDto> implements Purgable<DatabaseV4Response> {
+public class DatabaseTestDto extends AbstractCloudbreakDto<DatabaseV4Request, DatabaseV4Response, DatabaseTestDto> implements Purgable<DatabaseV4Response> {
 
     public static final String DATABASE = "DATABASE";
 

@@ -7,8 +7,8 @@ import javax.inject.Inject;
 import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
 import com.sequenceiq.it.cloudbreak.newway.ImageSettingsEntity;
 import com.sequenceiq.it.cloudbreak.newway.TestParameter;
-import com.sequenceiq.it.cloudbreak.newway.entity.PlacementSettingsEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.PlacementSettingsDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackDtoBase;
 import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
 
 public abstract class AbstractCloudProvider implements CloudProvider {
@@ -42,7 +42,7 @@ public abstract class AbstractCloudProvider implements CloudProvider {
     }
 
     @Override
-    public PlacementSettingsEntity placement(PlacementSettingsEntity placement) {
+    public PlacementSettingsDto placement(PlacementSettingsDto placement) {
         return placement.withRegion(region())
                 .withAvailabilityZone(availabilityZone());
     }
@@ -54,7 +54,7 @@ public abstract class AbstractCloudProvider implements CloudProvider {
     }
 
     @Override
-    public Integer gatewayPort(StackV4EntityBase stackEntity) {
+    public Integer gatewayPort(StackDtoBase stackEntity) {
         String gatewayPort = getTestParameter().getWithDefault(CommonCloudParameters.GATEWAY_PORT, null);
         if (gatewayPort == null) {
             return null;

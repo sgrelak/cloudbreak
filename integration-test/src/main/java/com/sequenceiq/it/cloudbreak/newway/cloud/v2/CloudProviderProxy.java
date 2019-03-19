@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.mappable.CloudPlatform;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.stacks.base.parameter.stack.StackV4ParameterBase;
 import com.sequenceiq.it.cloudbreak.newway.ImageSettingsEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.InstanceTemplateV4Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.NetworkV2Entity;
-import com.sequenceiq.it.cloudbreak.newway.entity.PlacementSettingsEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackAuthenticationEntity;
-import com.sequenceiq.it.cloudbreak.newway.entity.StackV4EntityBase;
-import com.sequenceiq.it.cloudbreak.newway.entity.VolumeV4Entity;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.InstanceTemplateDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.NetworkV2Dto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.PlacementSettingsDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackAuthenticationDto;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.StackDtoBase;
+import com.sequenceiq.it.cloudbreak.newway.entity.stack.VolumeDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.credential.CredentialTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.environment.EnvironmentTestDto;
 import com.sequenceiq.it.cloudbreak.newway.entity.imagecatalog.ImageCatalogTestDto;
@@ -73,22 +73,22 @@ public class CloudProviderProxy implements CloudProvider {
     }
 
     @Override
-    public InstanceTemplateV4Entity template(InstanceTemplateV4Entity template) {
+    public InstanceTemplateDto template(InstanceTemplateDto template) {
         return delegate.template(template);
     }
 
     @Override
-    public StackV4EntityBase stack(StackV4EntityBase stack) {
+    public StackDtoBase stack(StackDtoBase stack) {
         return delegate.stack(stack);
     }
 
     @Override
-    public VolumeV4Entity attachedVolume(VolumeV4Entity volume) {
+    public VolumeDto attachedVolume(VolumeDto volume) {
         return delegate.attachedVolume(volume);
     }
 
     @Override
-    public NetworkV2Entity network(NetworkV2Entity network) {
+    public NetworkV2Dto network(NetworkV2Dto network) {
         return delegate.network(network);
     }
 
@@ -113,17 +113,17 @@ public class CloudProviderProxy implements CloudProvider {
     }
 
     @Override
-    public PlacementSettingsEntity placement(PlacementSettingsEntity placement) {
+    public PlacementSettingsDto placement(PlacementSettingsDto placement) {
         return delegate.placement(placement);
     }
 
     @Override
-    public StackAuthenticationEntity stackAuthentication(StackAuthenticationEntity stackAuthenticationEntity) {
-        return delegate.stackAuthentication(stackAuthenticationEntity);
+    public StackAuthenticationDto stackAuthentication(StackAuthenticationDto stackAuthenticationDto) {
+        return delegate.stackAuthentication(stackAuthenticationDto);
     }
 
     @Override
-    public Integer gatewayPort(StackV4EntityBase stackEntity) {
+    public Integer gatewayPort(StackDtoBase stackEntity) {
         return delegate.gatewayPort(stackEntity);
     }
 

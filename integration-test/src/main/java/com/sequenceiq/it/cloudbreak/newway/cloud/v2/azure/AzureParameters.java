@@ -42,4 +42,21 @@ public class AzureParameters {
 
         public static final String TENANT_ID = PREFIX + "tenantId";
     }
+
+    public static class CloudStorage {
+
+        private static final String PREFIX = AzureParameters.PREFIX + "storage.";
+
+        public static class Account {
+
+            private static final String PREFIX = AzureParameters.CloudStorage.PREFIX + "account.";
+
+            public static final String STORAGE_ACCOUNT_KEY = PREFIX + "key";
+
+            public static final String STORAGE_ACCOUNT_NAME = PREFIX + "name";
+
+        }
+
+    }
+
 }

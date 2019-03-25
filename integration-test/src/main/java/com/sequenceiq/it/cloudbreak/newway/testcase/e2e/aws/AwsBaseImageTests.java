@@ -1,8 +1,5 @@
 package com.sequenceiq.it.cloudbreak.newway.testcase.e2e.aws;
 
-import static org.hamcrest.Matchers.equalToIgnoringCase;
-import static org.junit.Assert.assertThat;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +13,6 @@ import org.testng.annotations.Test;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.common.mappable.CloudPlatform;
 import com.sequenceiq.it.cloudbreak.newway.client.StackTestClient;
 import com.sequenceiq.it.cloudbreak.newway.cloud.InstanceCountParameter;
-import com.sequenceiq.it.cloudbreak.newway.cloud.v2.CommonCloudParameters;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.aws.AwsProperties;
 import com.sequenceiq.it.cloudbreak.newway.cloud.v2.aws.AwsProperties.Baseimage;
 import com.sequenceiq.it.cloudbreak.newway.context.Description;
@@ -59,7 +55,7 @@ public class AwsBaseImageTests extends AbstractE2ETest {
             String clusterDefinition,
             @Description TestCaseDescription testCaseDescription) {
 
-        checkCloudPlatform();
+        checkCloudPlatform(CloudPlatform.AWS);
 
         if (EDW_CLUSTER_DEFINITION.equalsIgnoreCase(clusterDefinition)) {
             getTestParameter().put(InstanceCountParameter.WORKER_INSTANCE_COUNT.getName(), "3");
@@ -76,15 +72,6 @@ public class AwsBaseImageTests extends AbstractE2ETest {
                 .when(stackTestClient.createV4())
                 .await(STACK_AVAILABLE)
                 .validate();
-    }
-
-    private void checkCloudPlatform() {
-        String cloudProvider = getTestParameter().getRequired(CommonCloudParameters.CLOUD_PROVIDER);
-        assertThat(
-                String.format("The only supported cloud provider for this test is [%s]. Actual cloud provider is [%s].",
-                        CloudPlatform.AWS.name(), cloudProvider),
-                cloudProvider, equalToIgnoringCase(CloudPlatform.AWS.name()));
-
     }
 
     @AfterMethod(alwaysRun = true)

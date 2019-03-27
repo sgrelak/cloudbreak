@@ -1,0 +1,77 @@
+{
+  "services": [
+    {
+      "name": "OOZIE",
+      "displayName": "Oozie",
+      "components": [
+        {
+          "name": "OOZIE_CLIENT",
+          "groups": ["compute", "worker"]
+        },
+        {
+          "name": "OOZIE_SERVER",
+          "groups": ["master"]
+        }
+      ],
+      "dependencies": [
+        "HDFS"
+      ]
+    },
+    {
+      "name": "HDFS",
+      "displayName": "Hdfs"
+    },
+    {
+      "name": "HIVE",
+      "displayName": "Hive"
+    },
+    {
+      "name": "ZOOKEEPER",
+      "displayName": "ZooKeeper"
+    },
+    {
+      "name": "HBASE",
+      "displayName": "HBase"
+    },
+    {
+      "name": "YARN",
+      "displayName": "Yarn"
+    },
+    {
+      "name": "SPARK_ON_YARN",
+      "displayName": "Spark On Yarn"
+    },
+    {
+      "name": "ISILON",
+      "displayName": "Isilon"
+    },
+    {
+      "name": "IMPALA",
+      "displayName": "Impala"
+    },
+    {
+      "name": "KAFKA",
+      "displayName": "Kafka"
+    },
+    {
+      "name": "FLUME",
+      "displayName": "Flume"
+    },
+    {
+      "name": "SENTRY",
+      "displayName": "Sentry"
+    },
+    {
+      "name": "SPARK",
+      "displayName": "Spark"
+    },
+    {
+      "name": "SOLR",
+      "displayName": "Solr"
+    },
+    {
+      "name": "SQOOP",
+      "displayName": "Sqoop"
+    }
+  ]
+}

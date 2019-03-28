@@ -25,13 +25,10 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sequenceiq.cloudbreak.cloud.model.catalog.CloudbreakImageCatalogV2;
-import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.ServiceConfig;
+import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.dependencies.ServiceConfig;
+import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.dependencies.ServiceDependecies;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.versionmatrix.ServiceList;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.StackVersion;
-import com.sequenceiq.cloudbreak.domain.json.Json;
-
-import net.sf.json.JSON;
 
 @Service
 public class ClusterTemplateGeneratorConfigurationResolver implements ResourceLoaderAware {
@@ -46,7 +43,7 @@ public class ClusterTemplateGeneratorConfigurationResolver implements ResourceLo
 
     private ResourceLoader resourceLoader;
 
-    private Map<StackVersion, ServiceList> cdhConfigurationsMap = new HashMap<>();
+    private Map<StackVersion, Set<String>> cdhConfigurationsMap = new HashMap<>();
 
     private Set<ServiceConfig> serviceInformations = new HashSet<>();
 
@@ -59,7 +56,7 @@ public class ClusterTemplateGeneratorConfigurationResolver implements ResourceLo
     }
 
 
-    public Map<StackVersion, ServiceList> cdhConfigurations() {
+    public Map<StackVersion, Set<String>> cdhConfigurations() {
         return cdhConfigurationsMap;
     }
 
@@ -67,14 +64,21 @@ public class ClusterTemplateGeneratorConfigurationResolver implements ResourceLo
         return serviceInformations;
     }
 
-    private Set<ServiceConfig> readServiceDefinitions() throws IOException {
+    private Set<ServiceConfig> readServiceDefinitions() {
+        Set<ServiceConfig> serviceConfigs = new HashSet<>();
         String content = readFileFromClasspathQuietly(serviceDefinitionConfigurationPath);
-        ServiceList serviceList = MAPPER.readValue(content, ServiceList.class);
-        return serviceList
+        try {
+            ServiceDependecies serviceDependecies = MAPPER.readValue(content, ServiceDependecies.class);
+            serviceConfigs = serviceDependecies.getServices();
+        } catch (IOException ex) {
+            String message = String.format("Could not read files from the definiated folder which was: %s", cdhConfigurationsPath);
+            LOGGER.error(message, ex);
+        }
+        return serviceConfigs;
     }
 
-    private Map<StackVersion, ServiceList> readAllFilesFromParameterDir() {
-        Map<StackVersion, ServiceList> collectedFiles = new HashMap<>();
+    private Map<StackVersion, Set<String>> readAllFilesFromParameterDir() {
+        Map<StackVersion, Set<String>> collectedFiles = new HashMap<>();
         try {
             List<Resource> files = getFiles(cdhConfigurationsPath);
             for (Resource serviceEntry : files) {
@@ -82,12 +86,15 @@ public class ClusterTemplateGeneratorConfigurationResolver implements ResourceLo
                 String cdhVersion = serviceAndPath[1].split("/")[1].replace(".json", "");
                 String insideFolder = String.format("%s%s", cdhConfigurationsPath, serviceAndPath[1]);
                 LOGGER.debug("The the entry url is: {} file url is : {} for version: {}", serviceEntry, insideFolder, cdhVersion);
+                String content = readFileFromClasspathQuietly(insideFolder);
+                ServiceList serviceList = MAPPER.readValue(content, ServiceList.class);
                 StackVersion stackVersion = new StackVersion();
-                ServiceList serviceList = new ServiceList();
-                collectedFiles.put(stackVersion, serviceList);
+                stackVersion.setStackType(serviceList.getStackType());
+                stackVersion.setVersion(serviceList.getVersion());
+                collectedFiles.put(stackVersion, serviceList.getServices());
             }
         } catch (IOException ex) {
-            String message = String.format("Could not read files from the definiated folder which was: %s", dir);
+            String message = String.format("Could not read files from the definiated folder which was: %s", cdhConfigurationsPath);
             LOGGER.error(message, ex);
         }
         return collectedFiles;

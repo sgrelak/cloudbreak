@@ -25,16 +25,16 @@ public class ClusterTemplateGeneratorService {
     @Inject
     private GeneratedClusterTemplateService generatedClusterTemplateService;
 
-    public GeneratedClusterTemplate generateTemplateByServices(Set<String> services){
-        return generatedClusterTemplateService.prepareClusterTemplate(services);
+    public GeneratedClusterTemplate generateTemplateByServices(Set<String> services, String stackType, String version){
+        return generatedClusterTemplateService.prepareClusterTemplate(services, stackType, version);
     }
 
-    public ServiceDependencyMatrix getServicesAndDependencies(Set<String> services){
-        return serviceDependencyMatrixService.collectServiceDependencyMatrix(services);
+    public ServiceDependencyMatrix getServicesAndDependencies(Set<String> services, String stackType, String version){
+        return serviceDependencyMatrixService.collectServiceDependencyMatrix(services, stackType, version);
     }
 
-    public SupportedVersions getVersionsAndSupportedServiceList(Set<String> services){
-        return supportedVersionService.collectSupportedVersions(services);
+    public SupportedVersions getVersionsAndSupportedServiceList(){
+        return supportedVersionService.collectSupportedVersions();
     }
 
 }

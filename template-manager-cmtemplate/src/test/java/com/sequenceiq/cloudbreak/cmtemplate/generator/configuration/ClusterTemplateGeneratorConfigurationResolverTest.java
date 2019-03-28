@@ -11,9 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.ServiceConfig;
-import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.versionmatrix.ServiceList;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.StackVersion;
+import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.dependencies.ServiceConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClusterTemplateGeneratorConfigurationResolverTest {
@@ -24,16 +23,16 @@ public class ClusterTemplateGeneratorConfigurationResolverTest {
     @Before
     public void setup() {
         ReflectionTestUtils.setField(underTest, "cdhConfigurationsPath", "cloudera-manager-template/cdh");
-        ReflectionTestUtils.setField(underTest, "serviceDefinitionConfigurationPath", "cloudera-manager-template/service-definition.json");
+        ReflectionTestUtils.setField(underTest, "serviceDefinitionConfigurationPath", "cloudera-manager-template/service-definitions.json");
         underTest.prepareConfigs();
     }
 
     @Test
     public void testThatAllFileIsReadableShouldVerifyThatFileCountMatch() {
-        Map<StackVersion, ServiceList> stackVersionServiceListMap = underTest.cdhConfigurations();
+        Map<StackVersion, Set<String>> stackVersionSetMap = underTest.cdhConfigurations();
         Set<ServiceConfig> serviceConfigs = underTest.serviceInformations();
 
-        Assert.assertEquals(1L, stackVersionServiceListMap.size());
-        Assert.assertEquals(27L, serviceConfigs.size());
+        Assert.assertEquals(1L, stackVersionSetMap.size());
+        Assert.assertEquals(15L, serviceConfigs.size());
     }
 }

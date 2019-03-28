@@ -9,7 +9,7 @@ import com.sequenceiq.cloudbreak.cmtemplate.generator.template.domain.GeneratedC
 @Service
 public class GeneratedClusterTemplateService {
 
-    public GeneratedClusterTemplate prepareClusterTemplate(Set<String> services) {
+    public GeneratedClusterTemplate prepareClusterTemplate(Set<String> services, String stackType, String version) {
         return new GeneratedClusterTemplate();
     }
 }

@@ -18,7 +18,6 @@ import com.cloudera.api.swagger.model.ApiClusterTemplateService;
 import com.sequenceiq.cloudbreak.cmtemplate.CmTemplateProcessor;
 import com.sequenceiq.cloudbreak.cmtemplate.CmTemplateProcessorFactory;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.ClusterTemplateGeneratorConfigurationResolver;
-import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.dependencies.ComponentConfig;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.domain.dependencies.ServiceConfig;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.template.domain.GeneratedClusterTemplate;
 import com.sequenceiq.cloudbreak.util.JsonUtil;
@@ -34,14 +33,38 @@ public class GeneratedClusterTemplateService {
 
     public GeneratedClusterTemplate prepareClusterTemplate(Set<String> services, String stackType, String version) {
 
-        CmTemplateProcessor processor = cmTemplateProcessorFactory.get("{}");
+        CmTemplateProcessor processor = initiateTemplate();
 
+        Set<ServiceConfig> serviceConfigs = collectServiceConfigs(services);
+        Map<String, Set<String>> hostServiceMap = new HashMap<>();
+
+        prepareCdhVersion(stackType, version, processor);
+        processor.setDisplayName(prepareDisplayName());
+        processor.setServices(prepareApiClusterTemplateServices(serviceConfigs, hostServiceMap));
+        processor.setHostTemplates(prepareApiClusterTemplateHostTemplates(hostServiceMap));
+
+        return new GeneratedClusterTemplate(prepareTemplate(processor));
+    }
+
+    private String prepareTemplate(CmTemplateProcessor processor) {
+        return JsonUtil.writeValueAsStringSilent(processor.getTemplate(), true);
+    }
+
+    private CmTemplateProcessor initiateTemplate() {
+        return cmTemplateProcessorFactory.get("{}");
+    }
+
+    private String prepareDisplayName() {
+        return "cloudbreak-generated-" + UUID.randomUUID().toString();
+    }
+
+    private void prepareCdhVersion(String stackType, String version, CmTemplateProcessor processor) {
         if ("CDH".equals(stackType)) {
             processor.setCdhVersion(version);
         }
-        processor.setDisplayName("cloudbreak-generated-" + UUID.randomUUID().toString());
+    }
 
-
+    private Set<ServiceConfig> collectServiceConfigs(Set<String> services) {
         Set<ServiceConfig> serviceConfigs = new HashSet<>();
         for (String service : services) {
             for (ServiceConfig serviceInformation : resolver.serviceInformations()) {
@@ -50,8 +73,10 @@ public class GeneratedClusterTemplateService {
                 }
             }
         }
+        return serviceConfigs;
+    }
 
-        Map<String, Set<String>> hostServiceMap = new HashMap<>();
+    private List<ApiClusterTemplateService> prepareApiClusterTemplateServices(Set<ServiceConfig> serviceConfigs, Map<String, Set<String>> hostServiceMap) {
         List<ApiClusterTemplateService> clusterTemplateServices = new ArrayList<>();
         for (ServiceConfig serviceConfig : serviceConfigs) {
             String serviceName = serviceConfig.getName();
@@ -63,32 +88,30 @@ public class GeneratedClusterTemplateService {
             apiClusterTemplateService.setRoleConfigGroups(new ArrayList<>());
 
             List<ApiClusterTemplateRoleConfigGroup> roleConfigGroups = new ArrayList<>();
-            for (ComponentConfig component : serviceConfig.getComponents()) {
-                for (String group : component.getGroups()) {
+            serviceConfig.getComponents().forEach(component -> {
+                component.getGroups().forEach(group -> {
                     String componentName = component.getName();
                     String hostServiceNameEnd = component.getGroups().size() == 1 ? "BASE" : group.toUpperCase();
                     String hostServiceName = String.format("%s-%s-%s", lowerCaseServiceName, component.getName().toUpperCase(), hostServiceNameEnd);
-
                     ApiClusterTemplateRoleConfigGroup apiClusterTemplateRoleConfigGroup = new ApiClusterTemplateRoleConfigGroup();
                     apiClusterTemplateRoleConfigGroup.setRoleType(componentName.toUpperCase());
                     apiClusterTemplateRoleConfigGroup.setRefName(hostServiceName);
                     apiClusterTemplateRoleConfigGroup.setBase(component.getGroups().size() == 1 ? true : false);
-
                     if (hostServiceMap.keySet().contains(group)) {
                         hostServiceMap.get(group).add(hostServiceName);
                     } else {
                         hostServiceMap.put(group, Set.of(hostServiceName));
                     }
-
                     roleConfigGroups.add(apiClusterTemplateRoleConfigGroup);
-                }
-
+                });
                 apiClusterTemplateService.getRoleConfigGroups().addAll(roleConfigGroups);
-            }
+            });
             clusterTemplateServices.add(apiClusterTemplateService);
         }
-        processor.setServices(clusterTemplateServices);
+        return clusterTemplateServices;
+    }
 
+    private List<ApiClusterTemplateHostTemplate> prepareApiClusterTemplateHostTemplates(Map<String, Set<String>> hostServiceMap) {
         List<ApiClusterTemplateHostTemplate> hostTemplates = new ArrayList<>();
         for (String key : hostServiceMap.keySet()) {
             ApiClusterTemplateHostTemplate apiClusterTemplateHostTemplate = new ApiClusterTemplateHostTemplate();
@@ -99,10 +122,6 @@ public class GeneratedClusterTemplateService {
             }
             hostTemplates.add(apiClusterTemplateHostTemplate);
         }
-        processor.setHostTemplates(hostTemplates);
-
-        GeneratedClusterTemplate generatedClusterTemplate = new GeneratedClusterTemplate();
-        generatedClusterTemplate.setTemplate(JsonUtil.writeValueAsStringSilent(processor.getTemplate(), true));
-        return generatedClusterTemplate;
+        return hostTemplates;
     }
 }

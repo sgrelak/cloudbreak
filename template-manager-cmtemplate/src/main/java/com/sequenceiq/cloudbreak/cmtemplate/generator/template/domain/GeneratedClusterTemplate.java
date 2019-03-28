@@ -4,6 +4,10 @@ public class GeneratedClusterTemplate {
 
     private String template;
 
+    public GeneratedClusterTemplate(String template) {
+        this.template = template;
+    }
+
     public String getTemplate() {
         return template;
     }

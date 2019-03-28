@@ -1,1 +1,47 @@
-{}
+{
+  "cdhVersion": "6.1",
+  "services": [
+    {
+      "refName": "oozie",
+      "serviceType": "OOZIE",
+      "roleConfigGroups": [
+        {
+          "refName": "oozie-OOZIE_CLIENT-COMPUTE",
+          "roleType": "OOZIE_CLIENT",
+          "base": false
+        },
+        {
+          "refName": "oozie-OOZIE_CLIENT-WORKER",
+          "roleType": "OOZIE_CLIENT",
+          "base": false
+        },
+        {
+          "refName": "oozie-OOZIE_SERVER-BASE",
+          "roleType": "OOZIE_SERVER",
+          "base": true
+        }
+      ]
+    }
+  ],
+  "hostTemplates": [
+    {
+      "refName": "compute",
+      "roleConfigGroupsRefNames": [
+        "oozie-OOZIE_CLIENT-COMPUTE"
+      ]
+    },
+    {
+      "refName": "worker",
+      "roleConfigGroupsRefNames": [
+        "oozie-OOZIE_CLIENT-WORKER"
+      ]
+    },
+    {
+      "refName": "master",
+      "roleConfigGroupsRefNames": [
+        "oozie-OOZIE_SERVER-BASE"
+      ]
+    }
+  ],
+  "displayName": "cloudbreak-generated-2f67d459-8e0a-414e-b16d-4d37487e921c"
+}

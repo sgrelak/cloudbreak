@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.sequenceiq.cloudbreak.cmtemplate.CmTemplateProcessorFactory;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.configuration.ClusterTemplateGeneratorConfigurationResolver;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.dependencies.ServiceDependencyMatrixService;
 import com.sequenceiq.cloudbreak.cmtemplate.generator.support.SupportedVersionService;
@@ -43,6 +44,11 @@ public class CentralTemplateGeneratorContext {
         @Bean
         public ClusterTemplateGeneratorConfigurationResolver clusterTemplateGeneratorConfigurationResolver() {
             return new ClusterTemplateGeneratorConfigurationResolver();
+        }
+
+        @Bean
+        public CmTemplateProcessorFactory cmTemplateProcessorFactory() {
+            return new CmTemplateProcessorFactory();
         }
     }
 

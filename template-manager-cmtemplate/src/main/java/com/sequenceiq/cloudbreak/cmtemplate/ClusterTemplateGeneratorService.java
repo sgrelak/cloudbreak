@@ -1,6 +1,7 @@
 package com.sequenceiq.cloudbreak.cmtemplate;
 
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -25,15 +26,16 @@ public class ClusterTemplateGeneratorService {
     @Inject
     private GeneratedClusterTemplateService generatedClusterTemplateService;
 
-    public GeneratedClusterTemplate generateTemplateByServices(Set<String> services, String stackType, String version){
-        return generatedClusterTemplateService.prepareClusterTemplate(services, stackType, version);
+    public GeneratedClusterTemplate generateTemplateByServices(Set<String> services, String stackType, String version) {
+        String generatedId = UUID.randomUUID().toString();
+        return generatedClusterTemplateService.prepareClusterTemplate(services, stackType, version, generatedId);
     }
 
-    public ServiceDependencyMatrix getServicesAndDependencies(Set<String> services, String stackType, String version){
+    public ServiceDependencyMatrix getServicesAndDependencies(Set<String> services, String stackType, String version) {
         return serviceDependencyMatrixService.collectServiceDependencyMatrix(services, stackType, version);
     }
 
-    public SupportedVersions getVersionsAndSupportedServiceList(){
+    public SupportedVersions getVersionsAndSupportedServiceList() {
         return supportedVersionService.collectSupportedVersions();
     }
 

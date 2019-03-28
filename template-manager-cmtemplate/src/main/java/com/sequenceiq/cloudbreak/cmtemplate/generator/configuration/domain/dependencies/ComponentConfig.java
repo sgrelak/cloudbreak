@@ -9,6 +9,8 @@ public class ComponentConfig {
 
     private Set<String> groups = new HashSet<>();
 
+    private boolean base;
+
     public String getName() {
         return name;
     }
@@ -23,5 +25,13 @@ public class ComponentConfig {
 
     public void setGroups(Set<String> groups) {
         this.groups = groups;
+    }
+
+    public boolean isBase() {
+        return base;
+    }
+
+    public void setBase(boolean base) {
+        this.base = base;
     }
 }

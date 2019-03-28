@@ -6,11 +6,13 @@
       "components": [
         {
           "name": "OOZIE_CLIENT",
-          "groups": ["compute", "worker"]
+          "groups": ["compute", "worker"],
+          "base": true
         },
         {
           "name": "OOZIE_SERVER",
-          "groups": ["master"]
+          "groups": ["master"],
+          "base": true
         }
       ],
       "dependencies": [

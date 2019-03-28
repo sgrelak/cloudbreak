@@ -6,14 +6,9 @@
       "serviceType": "OOZIE",
       "roleConfigGroups": [
         {
-          "refName": "oozie-OOZIE_CLIENT-COMPUTE",
+          "refName": "oozie-OOZIE_CLIENT-BASE",
           "roleType": "OOZIE_CLIENT",
-          "base": false
-        },
-        {
-          "refName": "oozie-OOZIE_CLIENT-WORKER",
-          "roleType": "OOZIE_CLIENT",
-          "base": false
+          "base": true
         },
         {
           "refName": "oozie-OOZIE_SERVER-BASE",
@@ -27,13 +22,13 @@
     {
       "refName": "compute",
       "roleConfigGroupsRefNames": [
-        "oozie-OOZIE_CLIENT-COMPUTE"
+        "oozie-OOZIE_CLIENT-BASE"
       ]
     },
     {
       "refName": "worker",
       "roleConfigGroupsRefNames": [
-        "oozie-OOZIE_CLIENT-WORKER"
+        "oozie-OOZIE_CLIENT-BASE"
       ]
     },
     {
@@ -43,5 +38,5 @@
       ]
     }
   ],
-  "displayName": "cloudbreak-generated-2f67d459-8e0a-414e-b16d-4d37487e921c"
+  "displayName": "cloudbreak-generated-uuid"
 }

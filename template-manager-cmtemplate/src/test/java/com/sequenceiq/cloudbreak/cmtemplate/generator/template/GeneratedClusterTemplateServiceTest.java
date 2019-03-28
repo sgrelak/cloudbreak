@@ -38,6 +38,9 @@ public class GeneratedClusterTemplateServiceTest extends CentralTemplateGenerato
 
     private static final String CDH_6_1 = "6.1";
 
+    private static final String UUID = "uuid";
+
+
     private ApplicationContext applicationContext;
 
     @Parameterized.Parameter
@@ -67,7 +70,7 @@ public class GeneratedClusterTemplateServiceTest extends CentralTemplateGenerato
     public void testTemplateGeneration() throws IOException, JSONException {
         TestFile outputFile = getTestFile(getFileName(TEMPLATE_GENERATOR_TEST_OUTPUTS, outputPath));
 
-        GeneratedClusterTemplate generatedClusterTemplate = generatedClusterTemplateService().prepareClusterTemplate(inputs, stackType, version);
+        GeneratedClusterTemplate generatedClusterTemplate = generatedClusterTemplateService().prepareClusterTemplate(inputs, stackType, version, UUID);
         JSONObject expected = toJSON(outputFile.getFileContent());
         JSONObject result = toJSON(generatedClusterTemplate.getTemplate());
 

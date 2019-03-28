@@ -44,4 +44,5 @@ public class ServiceConfig {
     public void setComponents(Set<ComponentConfig> components) {
         this.components = components;
     }
+
 }

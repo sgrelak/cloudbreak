@@ -39,6 +39,18 @@ public class GrpcAuthorizationClient {
         }
     }
 
+    public void checkRight(String actorCrn, String right, String resource) {
+        try (ManagedChannelWrapper channelWrapper = new ManagedChannelWrapper(
+                ManagedChannelBuilder.forAddress(umsConfig.getEndpoint(), umsConfig.getPort())
+                        .usePlaintext()
+                        .maxInboundMessageSize(DEFAULT_MAX_MESSAGE_SIZE)
+                        .build())) {
+            AuthorizationClient client = new AuthorizationClient(channelWrapper.getChannel(), actorCrn);
+            String requestId = newRequestId();
+            client.checkRight(requestId, actorCrn, right, resource);
+        }
+    }
+
     public boolean isConfigured() {
         return umsConfig.isConfigured();
     }

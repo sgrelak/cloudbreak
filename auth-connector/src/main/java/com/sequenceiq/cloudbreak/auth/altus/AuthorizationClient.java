@@ -51,9 +51,34 @@ public class AuthorizationClient {
         return newStub(requestId).hasRights(
                 AuthorizationProto.HasRightsRequest.newBuilder()
                         .setActorCrn(actorCrn)
-                        .setCheck(0, rightCheckBuilder.build())
+                        .setCheck(1, rightCheckBuilder.build())
                         .build()
-        ).getResult(0); // what is this index?
+        ).getResult(1); // what is this index?
+    }
+
+    /**
+     * Wraps a call to check right.
+     *
+     * @param requestId the request ID for the request
+     * @param actorCrn  the user CRN
+     * @param right     right to check
+     * @param resource  the resource to check if any.
+     * @return the user
+     */
+    public void checkRight(String requestId, String actorCrn, String right, String resource) {
+        checkNotNull(requestId);
+        checkNotNull(actorCrn);
+        checkNotNull(right);
+        AuthorizationProto.RightCheck.Builder rightCheckBuilder = AuthorizationProto.RightCheck.newBuilder().setRight(right);
+        if (StringUtils.isNotEmpty(resource)) {
+            rightCheckBuilder.setResource(resource);
+        }
+        newStub(requestId).checkRight(
+                AuthorizationProto.CheckRightRequest.newBuilder()
+                        .setActorCrn(actorCrn)
+                        .setCheck(rightCheckBuilder.build())
+                        .build()
+        );
     }
 
     /**

@@ -44,10 +44,16 @@ public class PermissionCheckingUtils {
 
     public void checkPermissionByWorkspaceIdForUser(Long workspaceId, WorkspaceResource resource, ResourceAction action, User user) {
         // how can I define workspace?
-        try {
+        /*try {
             if (!iamClient.hasRight(authenticatedUserService.getUserCrn(), WorkspaceRightUtils.getRight(resource, action), resource.getShortName())) {
                 throw new AccessDeniedException(format("You have no [%s] permission to %s.", action.name(), resource));
             }
+        } catch (CloudbreakException e) {
+            LOGGER.error(e.getMessage());
+            throw new AccessDeniedException(e.getMessage());
+        }*/
+        try {
+            iamClient.checkRight(authenticatedUserService.getUserCrn(), WorkspaceRightUtils.getRight(resource, action), resource.getShortName());
         } catch (CloudbreakException e) {
             LOGGER.error(e.getMessage());
             throw new AccessDeniedException(e.getMessage());
@@ -55,7 +61,7 @@ public class PermissionCheckingUtils {
     }
 
     public void checkPermissionsByTarget(Object target, User user, WorkspaceResource resource, ResourceAction action) {
-        Iterable<?> iterableTarget = targetToIterable(target);
+        /*Iterable<?> iterableTarget = targetToIterable(target);
         Set<Long> workspaceIds = collectWorkspaceIds(iterableTarget);
         if (workspaceIds.isEmpty()) {
             return;
@@ -72,7 +78,7 @@ public class PermissionCheckingUtils {
         } catch (CloudbreakException e) {
             LOGGER.error(e.getMessage());
             throw new AccessDeniedException(e.getMessage());
-        }
+        }*/
 
     }
 

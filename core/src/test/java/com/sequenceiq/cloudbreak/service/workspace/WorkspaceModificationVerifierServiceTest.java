@@ -1,10 +1,5 @@
 package com.sequenceiq.cloudbreak.service.workspace;
 
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.ALL_READ;
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.ALL_WRITE;
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.WORKSPACE_MANAGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -18,22 +13,18 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.ImmutableSet;
 import com.sequenceiq.cloudbreak.TestUtil;
-import com.sequenceiq.cloudbreak.authorization.WorkspacePermissionAuthorizer;
-import com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.Action;
+import com.sequenceiq.cloudbreak.authorization.ResourceAction;
 import com.sequenceiq.cloudbreak.controller.exception.BadRequestException;
 import com.sequenceiq.cloudbreak.controller.exception.NotFoundException;
 import com.sequenceiq.cloudbreak.domain.workspace.Tenant;
 import com.sequenceiq.cloudbreak.domain.workspace.User;
-import com.sequenceiq.cloudbreak.domain.workspace.UserWorkspacePermissions;
 import com.sequenceiq.cloudbreak.domain.workspace.Workspace;
 import com.sequenceiq.cloudbreak.service.stack.StackService;
-import com.sequenceiq.cloudbreak.service.user.UserWorkspacePermissionsService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class WorkspaceModificationVerifierServiceTest {
@@ -48,12 +39,6 @@ public class WorkspaceModificationVerifierServiceTest {
     @Mock
     private StackService stackService;
 
-    @Mock
-    private UserWorkspacePermissionsService userWorkspacePermissionsService;
-
-    @Spy
-    private WorkspacePermissionAuthorizer workspacePermissionAuthorizer = new WorkspacePermissionAuthorizer();
-
     @InjectMocks
     private WorkspaceModificationVerifierService underTest;
 
@@ -63,40 +48,30 @@ public class WorkspaceModificationVerifierServiceTest {
 
     private final Workspace testWorkspace = TestUtil.workspace(1L, WORKSPACE_NAME);
 
-    private final UserWorkspacePermissions initiatorWsPermissions = new UserWorkspacePermissions();
-
     @Before
     public void setup() {
         initiator.setTenant(testTenant);
         testTenant.setId(1L);
         testTenant.setName(TENANT_NAME);
         testWorkspace.setTenant(testTenant);
-        initiatorWsPermissions.setUser(initiator);
-        initiatorWsPermissions.setWorkspace(testWorkspace);
-        assertNotNull(workspacePermissionAuthorizer);
     }
 
     @Test
     public void testAuthorizeWorkspaceManipulationWithAccess() {
-        initiatorWsPermissions.setPermissionSet(Set.of(ALL_READ.value(), ALL_WRITE.value(), WORKSPACE_MANAGE.value()));
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(initiator, testWorkspace)).thenReturn(initiatorWsPermissions);
 
-        underTest.authorizeWorkspaceManipulation(initiator, testWorkspace, Action.MANAGE, "unauthorized");
+        underTest.authorizeWorkspaceManipulation(initiator, testWorkspace, ResourceAction.MANAGE, "unauthorized");
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testAuthorizeWorkspaceManipulationWithNoManagePermission() {
-        initiatorWsPermissions.setPermissionSet(Set.of(ALL_READ.value(), ALL_WRITE.value()));
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(initiator, testWorkspace)).thenReturn(initiatorWsPermissions);
 
-        underTest.authorizeWorkspaceManipulation(initiator, testWorkspace, Action.MANAGE, "unauthorized");
+        underTest.authorizeWorkspaceManipulation(initiator, testWorkspace, ResourceAction.MANAGE, "unauthorized");
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testAuthorizeWorkspaceManipulationWhenUserIsNotPartOfWs() {
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(initiator, testWorkspace)).thenReturn(null);
 
-        underTest.authorizeWorkspaceManipulation(initiator, testWorkspace, Action.MANAGE, "unauthorized");
+        underTest.authorizeWorkspaceManipulation(initiator, testWorkspace, ResourceAction.MANAGE, "unauthorized");
     }
 
     @Test
@@ -107,14 +82,6 @@ public class WorkspaceModificationVerifierServiceTest {
         user2.setTenant(testTenant);
         Set<User> users = Set.of(user1, user2);
 
-        UserWorkspacePermissions userWorkspacePermissions1 = TestUtil.userWorkspacePermissions(user1, testWorkspace, ALL_READ.value());
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user1, testWorkspace)).thenReturn(userWorkspacePermissions1);
-        UserWorkspacePermissions userWorkspacePermissions2 = TestUtil.userWorkspacePermissions(user2, testWorkspace, ALL_READ.value());
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user2, testWorkspace)).thenReturn(userWorkspacePermissions2);
-
-        Set<UserWorkspacePermissions> permissionsSet = underTest.validateAllUsersAreAlreadyInTheWorkspace(testWorkspace, users);
-
-        assertEquals(2L, permissionsSet.size());
     }
 
     @Test(expected = BadRequestException.class)
@@ -124,10 +91,6 @@ public class WorkspaceModificationVerifierServiceTest {
         User user2 = TestUtil.user(2L, "user2");
         user2.setTenant(testTenant);
         Set<User> users = Set.of(user1, user2);
-
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user1, testWorkspace)).thenReturn(null);
-        UserWorkspacePermissions userWorkspacePermissions2 = TestUtil.userWorkspacePermissions(user2, testWorkspace, ALL_READ.value());
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user2, testWorkspace)).thenReturn(userWorkspacePermissions2);
 
         underTest.validateAllUsersAreAlreadyInTheWorkspace(testWorkspace, users);
     }
@@ -140,9 +103,6 @@ public class WorkspaceModificationVerifierServiceTest {
         user2.setTenant(testTenant);
         Set<User> users = Set.of(user1, user2);
 
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user1, testWorkspace)).thenReturn(null);
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user2, testWorkspace)).thenReturn(null);
-
         underTest.validateUsersAreNotInTheWorkspaceYet(testWorkspace, users);
     }
 
@@ -153,10 +113,6 @@ public class WorkspaceModificationVerifierServiceTest {
         User user2 = TestUtil.user(2L, "user2");
         user2.setTenant(testTenant);
         Set<User> users = Set.of(user1, user2);
-
-        UserWorkspacePermissions userWorkspacePermissions1 = TestUtil.userWorkspacePermissions(user1, testWorkspace, ALL_READ.value());
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user1, testWorkspace)).thenReturn(userWorkspacePermissions1);
-        when(userWorkspacePermissionsService.findForUserAndWorkspace(user2, testWorkspace)).thenReturn(null);
 
         underTest.validateUsersAreNotInTheWorkspaceYet(testWorkspace, users);
     }

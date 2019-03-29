@@ -2,7 +2,6 @@ package com.sequenceiq.cloudbreak.service.user;
 
 import static com.sequenceiq.cloudbreak.api.endpoint.v4.workspace.responses.WorkspaceStatus.ACTIVE;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -120,7 +119,6 @@ public class UserService {
                     tenant = tenantRepository.save(tenant);
                 }
                 user.setTenant(tenant);
-                user.setTenantPermissionSet(Collections.emptySet());
                 user = userRepository.save(user);
 
                 //create workspace

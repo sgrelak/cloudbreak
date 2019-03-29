@@ -1,6 +1,7 @@
 package com.sequenceiq.cloudbreak.domain.workspace;
 
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
@@ -30,6 +32,9 @@ public class Workspace implements ProvisionEntity {
 
     @ManyToOne
     private Tenant tenant;
+
+    @ManyToMany
+    private Set<User> users;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -83,6 +88,14 @@ public class Workspace implements ProvisionEntity {
 
     public void setStatus(WorkspaceStatus status) {
         this.status = status;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 
     @Override

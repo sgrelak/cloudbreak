@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import com.sequenceiq.cloudbreak.aspect.workspace.WorkspaceResourceType;
 import com.sequenceiq.cloudbreak.auth.altus.GrpcAuthorizationClient;
-import com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.Action;
 import com.sequenceiq.cloudbreak.domain.workspace.User;
 import com.sequenceiq.cloudbreak.domain.workspace.Workspace;
 import com.sequenceiq.cloudbreak.domain.workspace.WorkspaceAwareResource;
@@ -43,7 +42,7 @@ public class PermissionCheckingUtils {
     @Inject
     private AuthenticatedUserService authenticatedUserService;
 
-    public void checkPermissionByWorkspaceIdForUser(Long workspaceId, WorkspaceResource resource, Action action, User user) {
+    public void checkPermissionByWorkspaceIdForUser(Long workspaceId, WorkspaceResource resource, ResourceAction action, User user) {
         // how can I define workspace?
         try {
             if (!iamClient.hasRight(authenticatedUserService.getUserCrn(), WorkspaceRightUtils.getRight(resource, action), resource.getShortName())) {
@@ -55,7 +54,7 @@ public class PermissionCheckingUtils {
         }
     }
 
-    public void checkPermissionsByTarget(Object target, User user, WorkspaceResource resource, Action action) {
+    public void checkPermissionsByTarget(Object target, User user, WorkspaceResource resource, ResourceAction action) {
         Iterable<?> iterableTarget = targetToIterable(target);
         Set<Long> workspaceIds = collectWorkspaceIds(iterableTarget);
         if (workspaceIds.isEmpty()) {
@@ -108,7 +107,7 @@ public class PermissionCheckingUtils {
         return workspaceId;
     }
 
-    Object checkPermissionsByPermissionSetAndProceed(WorkspaceResource resource, User user, Long workspaceId, Action action,
+    Object checkPermissionsByPermissionSetAndProceed(WorkspaceResource resource, User user, Long workspaceId, ResourceAction action,
             ProceedingJoinPoint proceedingJoinPoint, MethodSignature methodSignature) {
         if (workspaceId == null) {
             throw new IllegalArgumentException("workspaceId cannot be null!");

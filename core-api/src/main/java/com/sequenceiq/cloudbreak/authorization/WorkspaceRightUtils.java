@@ -6,7 +6,7 @@ public class WorkspaceRightUtils {
 
     }
 
-    public static String getRight(WorkspaceResource resource, WorkspacePermissions.Action action) {
+    public static String getRight(WorkspaceResource resource, ResourceAction action) {
         return resource.name().toLowerCase() + "/" + action.name().toLowerCase();
     }
 }

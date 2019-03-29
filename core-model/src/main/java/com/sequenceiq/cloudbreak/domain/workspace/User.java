@@ -7,12 +7,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -44,15 +43,11 @@ public class User implements ProvisionEntity {
     @Column(columnDefinition = "TEXT", name = "cloudbreak_permissions")
     private Json cloudbreakPermissions;
 
-    @Convert(converter = JsonToString.class)
-    @Column(columnDefinition = "TEXT", name = "tenant_permissions", nullable = false)
-    private Json tenantPermissions;
-
     @ManyToOne
     private Tenant tenant;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<UserWorkspacePermissions> userWorkspacePermissions;
+    @ManyToMany(mappedBy = "users")
+    private Set<Workspace> workspaces;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private UserPreferences userPreferences;
@@ -97,22 +92,6 @@ public class User implements ProvisionEntity {
         this.cloudbreakPermissions = JsonStringSetUtils.stringSetToJson(cloudbreakPermissions);
     }
 
-    public Json getTenantPermissions() {
-        return tenantPermissions;
-    }
-
-    public void setTenantPermissions(Json tenantPermissions) {
-        this.tenantPermissions = tenantPermissions;
-    }
-
-    public Set<String> getTenantPermissionSet() {
-        return JsonStringSetUtils.jsonToStringSet(tenantPermissions);
-    }
-
-    public void setTenantPermissionSet(Set<String> tenantPermissions) {
-        this.tenantPermissions = JsonStringSetUtils.stringSetToJson(tenantPermissions);
-    }
-
     public Tenant getTenant() {
         return tenant;
     }
@@ -121,20 +100,20 @@ public class User implements ProvisionEntity {
         this.tenant = tenant;
     }
 
-    public Set<UserWorkspacePermissions> getUserWorkspacePermissions() {
-        return userWorkspacePermissions;
-    }
-
-    public void setUserWorkspacePermissions(Set<UserWorkspacePermissions> userWorkspacePermissions) {
-        this.userWorkspacePermissions = userWorkspacePermissions;
-    }
-
     public UserPreferences getUserPreferences() {
         return userPreferences;
     }
 
     public void setUserPreferences(UserPreferences userPreferences) {
         this.userPreferences = userPreferences;
+    }
+
+    public Set<Workspace> getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(Set<Workspace> workspaces) {
+        this.workspaces = workspaces;
     }
 
     @Override

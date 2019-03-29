@@ -1,30 +1,21 @@
 package com.sequenceiq.cloudbreak.service.workspace;
 
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.WORKSPACE_MANAGE;
-
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.sequenceiq.cloudbreak.api.endpoint.v4.workspace.requests.ChangeWorkspaceUsersV4Request;
-import com.sequenceiq.cloudbreak.authorization.WorkspacePermissionAuthorizer;
-import com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.Action;
-import com.sequenceiq.cloudbreak.authorization.WorkspaceResource;
+import com.sequenceiq.cloudbreak.authorization.ResourceAction;
 import com.sequenceiq.cloudbreak.controller.exception.BadRequestException;
 import com.sequenceiq.cloudbreak.controller.exception.NotFoundException;
 import com.sequenceiq.cloudbreak.domain.workspace.User;
-import com.sequenceiq.cloudbreak.domain.workspace.UserWorkspacePermissions;
 import com.sequenceiq.cloudbreak.domain.workspace.Workspace;
 import com.sequenceiq.cloudbreak.service.stack.StackService;
-import com.sequenceiq.cloudbreak.service.user.UserWorkspacePermissionsService;
 
 @Service
 public class WorkspaceModificationVerifierService {
@@ -34,57 +25,16 @@ public class WorkspaceModificationVerifierService {
     @Inject
     private StackService stackService;
 
-    @Inject
-    private WorkspacePermissionAuthorizer workspacePermissionAuthorizer;
-
-    @Inject
-    private UserWorkspacePermissionsService userWorkspacePermissionsService;
-
-    public void authorizeWorkspaceManipulation(User currentUser, Workspace workspaceToManipulate, Action action, String unautorizedMessage) {
-        UserWorkspacePermissions userWorkspacePermissions = userWorkspacePermissionsService.findForUserAndWorkspace(currentUser, workspaceToManipulate);
-        if (userWorkspacePermissions == null) {
-            throw new AccessDeniedException("You have no access for this workspace.");
-        }
-        boolean hasPermission = workspacePermissionAuthorizer.hasPermission(userWorkspacePermissions.getPermissionSet(), WorkspaceResource.WORKSPACE, action);
-        if (!hasPermission) {
-            throw new AccessDeniedException(unautorizedMessage);
-        }
+    public void authorizeWorkspaceManipulation(User currentUser, Workspace workspaceToManipulate, ResourceAction action, String unautorizedMessage) {
+        // UMS
     }
 
-    public Set<UserWorkspacePermissions> validateAllUsersAreAlreadyInTheWorkspace(Workspace workspace, Set<User> users) {
-        validateAllUsersAreInTheTenant(workspace, users);
-        Set<String> usersNotInTheWorkspace = new TreeSet<>();
-
-        Set<UserWorkspacePermissions> userWorkspacePermissionsSet = users.stream()
-                .map(user -> {
-                    UserWorkspacePermissions userWorkspacePermissions = userWorkspacePermissionsService.findForUserAndWorkspace(user, workspace);
-                    if (userWorkspacePermissions == null) {
-                        usersNotInTheWorkspace.add(user.getUserId());
-                    }
-                    return userWorkspacePermissions;
-                })
-                .collect(Collectors.toSet());
-
-        if (!usersNotInTheWorkspace.isEmpty()) {
-            String usersCommaSeparated = String.join(", ", usersNotInTheWorkspace);
-            throw new BadRequestException("The following users are not in the workspace: " + usersCommaSeparated);
-        }
-
-        return userWorkspacePermissionsSet;
+    public void validateAllUsersAreAlreadyInTheWorkspace(Workspace workspace, Set<User> users) {
+        // UMS
     }
 
     public void validateUsersAreNotInTheWorkspaceYet(Workspace workspace, Set<User> users) {
-        validateAllUsersAreInTheTenant(workspace, users);
-
-        Set<String> usersInWorkspace = users.stream()
-                .filter(user -> userWorkspacePermissionsService.findForUserAndWorkspace(user, workspace) != null)
-                .map(User::getUserId)
-                .collect(Collectors.toSet());
-
-        if (!usersInWorkspace.isEmpty()) {
-            String usersCommaSeparated = String.join(", ", usersInWorkspace);
-            throw new BadRequestException("The following users are already in the workspace: " + usersCommaSeparated);
-        }
+        // UMS
     }
 
     public void validateAllUsersAreInTheTenant(Workspace workspace, Set<User> users) {
@@ -97,40 +47,15 @@ public class WorkspaceModificationVerifierService {
     }
 
     public void ensureWorkspaceManagementForUserRemoval(Workspace workspace, Set<String> userIds) {
-        Set<UserWorkspacePermissions> existingUserPermissions = userWorkspacePermissionsService.findForWorkspace(workspace);
-        Set<String> usersWithManagePermission = existingUserPermissions.stream()
-                .filter(it -> it.getPermissionSet().contains(WORKSPACE_MANAGE.value()))
-                .map(it -> it.getUser().getUserId())
-                .collect(Collectors.toSet());
-
-        usersWithManagePermission.removeAll(userIds);
-        if (usersWithManagePermission.isEmpty()) {
-            throw new BadRequestException(String.format("You cannot remove every user with '%s' permissions.", WORKSPACE_MANAGE));
-        }
+        // UMS
     }
 
     public void ensureWorkspaceManagementForUserUpdates(Workspace workspace, Set<ChangeWorkspaceUsersV4Request> userUpdates) {
-        Set<UserWorkspacePermissions> existingUserPermissions = userWorkspacePermissionsService.findForWorkspace(workspace);
-        Set<String> usersWithManagePermission = existingUserPermissions.stream()
-                .filter(it -> it.getPermissionSet().contains(WORKSPACE_MANAGE.value()))
-                .map(it -> it.getUser().getUserId())
-                .collect(Collectors.toSet());
-        Set<String> updateUserIds = userUpdates.stream().map(ChangeWorkspaceUsersV4Request::getUserId).collect(Collectors.toSet());
-
-        usersWithManagePermission.removeAll(updateUserIds);
-        if (usersWithManagePermission.isEmpty()) {
-            if (userUpdates.stream().noneMatch(userUpdate -> userUpdate.getPermissions().contains(WORKSPACE_MANAGE.value()))) {
-                throw new BadRequestException(String.format("No user with '%s' permission would remain in the workspace, "
-                        + "therefore user update cannot be executed.", WORKSPACE_MANAGE));
-            }
-        }
+        // UMS
     }
 
     public void ensureWorkspaceManagementForChangeUsers(Set<ChangeWorkspaceUsersV4Request> usersPermissions) {
-        if (usersPermissions.stream().noneMatch(userPermissions -> userPermissions.getPermissions().contains(WORKSPACE_MANAGE.value()))) {
-            throw new BadRequestException(String.format("No new user would have '%s' permission after user change operation, "
-                    + "therefore it cannot be executed.", WORKSPACE_MANAGE));
-        }
+        // UMS
     }
 
     public void verifyDefaultWorkspaceUserUpdates(User initiator, Workspace workspace, Set<User> usersToBeUpdated) {

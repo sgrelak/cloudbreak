@@ -28,12 +28,12 @@ import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.crypto.sign.MacSigner;
 import org.springframework.stereotype.Service;
 
+import com.sequenceiq.caas.model.CaasUser;
 import com.sequenceiq.caas.model.CaasUserList;
+import com.sequenceiq.caas.model.IntrospectRequest;
+import com.sequenceiq.caas.model.IntrospectResponse;
+import com.sequenceiq.caas.model.TokenResponse;
 import com.sequenceiq.caas.util.JsonUtil;
-import com.sequenceiq.cloudbreak.client.CaasUser;
-import com.sequenceiq.cloudbreak.client.IntrospectRequest;
-import com.sequenceiq.cloudbreak.client.IntrospectResponse;
-import com.sequenceiq.cloudbreak.client.TokenResponse;
 
 @Service
 public class MockCaasService {
@@ -45,6 +45,8 @@ public class MockCaasService {
     private static final String LOCATION_HEADER_KEY = "Location";
 
     private static final String JWT_COOKIE_KEY = "dps-jwt";
+
+    private static final String CDP_ACTOR_CRN = "x-cdp-actor-crn";
 
     private static final String ISS_KNOX = "KNOXSSO";
 
@@ -130,14 +132,20 @@ public class MockCaasService {
     public void auth(@Nonnull HttpServletRequest httpServletRequest, @Nonnull HttpServletResponse httpServletResponse, @Nonnull Optional<String> tenant,
             @Nonnull Optional<String> userName, String redirectUri, Boolean active) {
         String host = httpServletRequest.getHeader("Host");
-        if (!tenant.isPresent() || !userName.isPresent()) {
+        if (tenant.isEmpty() || userName.isEmpty()) {
             LOGGER.info("redirect to sign in page");
             httpServletResponse.setHeader(LOCATION_HEADER_KEY, "../caas/sign-in.html?redirect_uri=" + redirectUri);
         } else {
-            Cookie cookie = new Cookie(JWT_COOKIE_KEY, getToken(tenant.get(), userName.get(), active).getAccessToken());
-            cookie.setDomain(host.split(":")[0]);
-            cookie.setPath("/");
-            httpServletResponse.addCookie(cookie);
+            Cookie jwtCookie = new Cookie(JWT_COOKIE_KEY, getToken(tenant.get(), userName.get(), active).getAccessToken());
+            jwtCookie.setDomain("");
+            jwtCookie.setPath("/");
+            httpServletResponse.addCookie(jwtCookie);
+
+            Cookie cdpActorCrn = new Cookie(CDP_ACTOR_CRN, "crn:altus:iam:us-west-1:" + tenant.get() + ":user:" + userName.get());
+            cdpActorCrn.setDomain("");
+            cdpActorCrn.setPath("/");
+            httpServletResponse.addCookie(cdpActorCrn);
+
             httpServletResponse.setHeader(LOCATION_HEADER_KEY, redirectUri);
         }
         httpServletResponse.setStatus(SC_FOUND);

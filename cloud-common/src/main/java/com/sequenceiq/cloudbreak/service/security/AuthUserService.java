@@ -17,8 +17,6 @@ import com.sequenceiq.cloudbreak.service.AuthenticatedUserService;
 @Component
 public class AuthUserService {
 
-    private static final String CRN_HEADER = "x-cdp-actor-crn";
-
     @Inject
     private CaasClient caasClient;
 

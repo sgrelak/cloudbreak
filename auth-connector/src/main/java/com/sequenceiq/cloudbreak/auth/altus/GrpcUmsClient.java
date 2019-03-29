@@ -45,6 +45,23 @@ public class GrpcUmsClient {
         }
     }
 
+    public static void main(String[] args) {
+        try (ManagedChannelWrapper channelWrapper = new ManagedChannelWrapper(
+                ManagedChannelBuilder.forAddress("localhost", 8982)
+                        .usePlaintext()
+                        .maxInboundMessageSize(DEFAULT_MAX_MESSAGE_SIZE)
+                        .build())) {
+            String crn = "crn:altus:iam:us-west-1:cloudera:user:perdos@cloudera.com";
+            UmsClient client = new UmsClient(channelWrapper.getChannel(), crn);
+            String requestId = newRequestId();
+            LOGGER.info(format("Getting user information for %s using request ID %s", crn, requestId));
+            UserManagementProto.User user = client.getUser(requestId, crn);
+
+            LOGGER.info("User information:");
+            LOGGER.info(user.toString());
+        }
+    }
+
     public boolean isConfigured() {
         return umsConfig.isConfigured();
     }

@@ -176,7 +176,7 @@ public class AmbariClusterModificationService implements ClusterModificationServ
         }
         Set<HostMetadata> hostsInCluster = hostMetadataRepository.findHostsInCluster(stack.getCluster().getId());
         waitForAmbariHosts(stack, ambariClient, hostsInCluster);
-        waitForComponenst(stack, ambariClient, hostsInCluster);
+        waitForComponents(stack, ambariClient, hostsInCluster);
         try {
             return startHadoopServices(stack, ambariClient);
         } catch (IOException | URISyntaxException e) {
@@ -192,7 +192,7 @@ public class AmbariClusterModificationService implements ClusterModificationServ
         }
     }
 
-    private void waitForComponenst(Stack stack, AmbariClient ambariClient, Set<HostMetadata> hostsInCluster) {
+    private void waitForComponents(Stack stack, AmbariClient ambariClient, Set<HostMetadata> hostsInCluster) {
         PollingResult componentsJoinedResult = ambariPollingServiceProvider.ambariComponentJoin(stack, ambariClient, hostsInCluster);
         if (isExited(componentsJoinedResult)) {
             throw new CancellationException("Cluster was terminated while waiting for Hadoop components to join.");

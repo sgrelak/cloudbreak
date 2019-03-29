@@ -28,10 +28,10 @@ public class AmbariComponenstJoinStatusCheckerTaskTest {
     @Test
     public void checkStatusWithNoUnknownComponentState() {
         AmbariHostsCheckerContext ambariHostsCheckerContext = new AmbariHostsCheckerContext(new Stack(), ambariClient, Collections.emptySet(), 0);
-        Map<String, Map<String, String>> hostComponentStates = getHostComponentStates(Arrays.asList(
-                getComponentStates("UNHEALTHY", "HEALTHY"),
-                getComponentStates("HEALTHY", "HEALTHY"),
-                getComponentStates("UNHEALTHY", "UNHEALTHY")
+        Map<String, Map<String, String>> hostComponentStates = AmbariHostCheckerTestUtils.getHostComponentStates(Arrays.asList(
+                AmbariHostCheckerTestUtils.getComponentStates("UNHEALTHY", "HEALTHY"),
+                AmbariHostCheckerTestUtils.getComponentStates("HEALTHY", "HEALTHY"),
+                AmbariHostCheckerTestUtils.getComponentStates("UNHEALTHY", "UNHEALTHY")
         ));
         when(ambariClient.getHostComponentsStates()).thenReturn(hostComponentStates);
         boolean result = underTest.checkStatus(ambariHostsCheckerContext);
@@ -41,10 +41,10 @@ public class AmbariComponenstJoinStatusCheckerTaskTest {
     @Test
     public void checkStatusWithOneUnknownComponentState() {
         AmbariHostsCheckerContext ambariHostsCheckerContext = new AmbariHostsCheckerContext(new Stack(), ambariClient, Collections.emptySet(), 0);
-        Map<String, Map<String, String>> hostComponentStates = getHostComponentStates(Arrays.asList(
-                getComponentStates("UNHEALTHY", "HEALTHY"),
-                getComponentStates("HEALTHY", "HEALTHY", "UNKNOWN"),
-                getComponentStates("UNHEALTHY", "HEALTHY")
+        Map<String, Map<String, String>> hostComponentStates = AmbariHostCheckerTestUtils.getHostComponentStates(Arrays.asList(
+                AmbariHostCheckerTestUtils.getComponentStates("UNHEALTHY", "HEALTHY"),
+                AmbariHostCheckerTestUtils.getComponentStates("HEALTHY", "HEALTHY", "UNKNOWN"),
+                AmbariHostCheckerTestUtils.getComponentStates("UNHEALTHY", "HEALTHY")
         ));
         when(ambariClient.getHostComponentsStates()).thenReturn(hostComponentStates);
         boolean result = underTest.checkStatus(ambariHostsCheckerContext);
@@ -54,31 +54,13 @@ public class AmbariComponenstJoinStatusCheckerTaskTest {
     @Test
     public void checkStatusWithMultipleUnknownComponentStatesInDifferentHosts() {
         AmbariHostsCheckerContext ambariHostsCheckerContext = new AmbariHostsCheckerContext(new Stack(), ambariClient, Collections.emptySet(), 0);
-        Map<String, Map<String, String>> hostComponentStates = getHostComponentStates(Arrays.asList(
-                getComponentStates("UNKNOWN", "UNKNOWN"),
-                getComponentStates("HEALTHY", "HEALTHY", "UNKNOWN"),
-                getComponentStates("UNHEALTHY", "HEALTHY")
+        Map<String, Map<String, String>> hostComponentStates = AmbariHostCheckerTestUtils.getHostComponentStates(Arrays.asList(
+                AmbariHostCheckerTestUtils.getComponentStates("UNKNOWN", "UNKNOWN"),
+                AmbariHostCheckerTestUtils.getComponentStates("HEALTHY", "HEALTHY", "UNKNOWN"),
+                AmbariHostCheckerTestUtils.getComponentStates("UNHEALTHY", "HEALTHY")
         ));
         when(ambariClient.getHostComponentsStates()).thenReturn(hostComponentStates);
         boolean result = underTest.checkStatus(ambariHostsCheckerContext);
         assertFalse(result);
-    }
-
-    private Map<String, Map<String, String>> getHostComponentStates(List<Map<String, String>> componentStates) {
-        Map<String, Map<String, String>> hostComponentsStates = new HashMap<>();
-        int index = 1;
-        for (Map<String, String> componentState : componentStates) {
-            hostComponentsStates.put("host" + index++, componentState);
-        }
-        return hostComponentsStates;
-    }
-
-    private Map<String, String> getComponentStates(String... states) {
-        Map<String, String> compStates = new HashMap<>();
-        int index = 1;
-        for (String state : states) {
-            compStates.put("component" + index++, state);
-        }
-        return compStates;
     }
 }

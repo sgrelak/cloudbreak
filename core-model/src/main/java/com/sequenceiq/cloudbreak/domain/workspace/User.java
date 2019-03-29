@@ -5,8 +5,8 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,9 +19,6 @@ import javax.persistence.UniqueConstraint;
 
 import com.google.common.base.Objects;
 import com.sequenceiq.cloudbreak.domain.ProvisionEntity;
-import com.sequenceiq.cloudbreak.domain.json.Json;
-import com.sequenceiq.cloudbreak.domain.json.JsonStringSetUtils;
-import com.sequenceiq.cloudbreak.domain.json.JsonToString;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = {"tenant_id", "username"}))
@@ -39,14 +36,10 @@ public class User implements ProvisionEntity {
     @Column(name = "userid")
     private String userId;
 
-    @Convert(converter = JsonToString.class)
-    @Column(columnDefinition = "TEXT", name = "cloudbreak_permissions")
-    private Json cloudbreakPermissions;
-
     @ManyToOne
     private Tenant tenant;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     private Set<Workspace> workspaces;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -74,22 +67,6 @@ public class User implements ProvisionEntity {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public Json getCloudbreakPermissions() {
-        return cloudbreakPermissions;
-    }
-
-    public void setCloudbreakPermissions(Json cloudbreakPermissions) {
-        this.cloudbreakPermissions = cloudbreakPermissions;
-    }
-
-    public Set<String> getCloudbreakPermissionSet() {
-        return JsonStringSetUtils.jsonToStringSet(cloudbreakPermissions);
-    }
-
-    public void setCloudbreakPermissionSet(Set<String> cloudbreakPermissions) {
-        this.cloudbreakPermissions = JsonStringSetUtils.stringSetToJson(cloudbreakPermissions);
     }
 
     public Tenant getTenant() {

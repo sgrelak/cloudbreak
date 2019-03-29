@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import com.google.common.collect.Sets;
 import com.sequenceiq.cloudbreak.api.endpoint.v4.workspace.requests.ChangeWorkspaceUsersV4Request;
 import com.sequenceiq.cloudbreak.authorization.ResourceAction;
 import com.sequenceiq.cloudbreak.common.model.user.CloudbreakUser;
@@ -61,6 +63,10 @@ public class WorkspaceService {
         try {
             return transactionService.required(() -> {
                 Workspace createdWorkspace = workspaceRepository.save(workspace);
+                if (CollectionUtils.isEmpty(workspace.getUsers())) {
+                    workspace.setUsers(Sets.newHashSet());
+                }
+                workspace.getUsers().add(user);
                 // create resource role for the new workspace in UMS
                 return createdWorkspace;
             });

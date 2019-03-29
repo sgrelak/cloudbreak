@@ -13,13 +13,13 @@ import com.cloudera.thunderhead.service.usermanagement.UserManagementProto;
 import com.sequenceiq.cloudbreak.auth.altus.config.UmsConfig;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GrpcUmsClientTest {
+public class GrpcAuthenticationClientTest {
 
     @Mock
     private UmsConfig umsConfigMock;
 
     @InjectMocks
-    private GrpcUmsClient testedClass = new GrpcUmsClient();
+    private GrpcAuthenticationClient testedClass = new GrpcAuthenticationClient();
 
     @Test
     @Ignore

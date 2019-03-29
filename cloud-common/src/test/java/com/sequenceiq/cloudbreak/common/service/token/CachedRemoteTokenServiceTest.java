@@ -15,7 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
-import com.sequenceiq.cloudbreak.auth.altus.GrpcUmsClient;
+import com.sequenceiq.cloudbreak.auth.altus.GrpcAuthenticationClient;
 import com.sequenceiq.cloudbreak.client.CaasClient;
 import com.sequenceiq.cloudbreak.client.CaasUser;
 import com.sequenceiq.cloudbreak.client.IdentityClient;
@@ -37,7 +37,7 @@ public class CachedRemoteTokenServiceTest {
     private CaasClient caasClient;
 
     @Mock
-    private GrpcUmsClient umsClient;
+    private GrpcAuthenticationClient umsClient;
 
     public CachedRemoteTokenServiceTest() throws IOException {
         token = FileReaderUtils.readFileFromClasspath("sso_token.txt");

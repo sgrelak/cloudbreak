@@ -25,7 +25,7 @@ import com.cloudera.thunderhead.service.usermanagement.UserManagementProto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sequenceiq.cloudbreak.auth.altus.Crn;
-import com.sequenceiq.cloudbreak.auth.altus.GrpcUmsClient;
+import com.sequenceiq.cloudbreak.auth.altus.GrpcAuthenticationClient;
 import com.sequenceiq.cloudbreak.client.CaasClient;
 import com.sequenceiq.cloudbreak.client.CaasUser;
 import com.sequenceiq.cloudbreak.client.IdentityClient;
@@ -39,7 +39,7 @@ public class CachedRemoteTokenService implements ResourceServerTokenServices {
 
     private final IdentityClient identityClient;
 
-    private final GrpcUmsClient umsClient;
+    private final GrpcAuthenticationClient umsClient;
 
     private final CaasClient caasClient;
 
@@ -50,12 +50,12 @@ public class CachedRemoteTokenService implements ResourceServerTokenServices {
     private final JwtAccessTokenConverter jwtAccessTokenConverter;
 
     public CachedRemoteTokenService(String clientId, String clientSecret, String identityServerUrl,
-            GrpcUmsClient umsClient, CaasClient caasClient, IdentityClient identityClient) {
+            GrpcAuthenticationClient umsClient, CaasClient caasClient, IdentityClient identityClient) {
         this(clientId, clientSecret, identityServerUrl, umsClient, caasClient, null, identityClient);
     }
 
     public CachedRemoteTokenService(String clientId, String clientSecret, String identityServerUrl,
-            GrpcUmsClient umsClient, CaasClient caasClient, String jwtSignKey,
+            GrpcAuthenticationClient umsClient, CaasClient caasClient, String jwtSignKey,
             IdentityClient identityClient) {
         this.identityClient = identityClient;
         this.umsClient = umsClient;

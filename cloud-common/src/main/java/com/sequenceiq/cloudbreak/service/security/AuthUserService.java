@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 
 import com.cloudera.thunderhead.service.usermanagement.UserManagementProto;
 import com.sequenceiq.cloudbreak.auth.altus.Crn;
-import com.sequenceiq.cloudbreak.auth.altus.GrpcUmsClient;
+import com.sequenceiq.cloudbreak.auth.altus.GrpcAuthenticationClient;
 import com.sequenceiq.cloudbreak.client.CaasClient;
 import com.sequenceiq.cloudbreak.client.CaasUser;
 import com.sequenceiq.cloudbreak.common.model.user.CloudbreakUser;
 import com.sequenceiq.cloudbreak.service.AuthenticatedUserService;
+import com.sequenceiq.cloudbreak.service.CloudbreakException;
 
 @Component
 public class AuthUserService {
@@ -23,7 +24,7 @@ public class AuthUserService {
     private CaasClient caasClient;
 
     @Inject
-    private GrpcUmsClient umsClient;
+    private GrpcAuthenticationClient umsClient;
 
     public CloudbreakUser getUserWithCaasFallback(OAuth2Authentication auth) {
         CloudbreakUser user;
@@ -33,6 +34,13 @@ public class AuthUserService {
             user = createCbUserWithCaas(auth);
         }
         return user;
+    }
+
+    public String getUserCrn(OAuth2Authentication auth) throws CloudbreakException {
+        if (umsClient.isConfigured()) {
+            return ((OAuth2AuthenticationDetails) auth.getDetails()).getTokenValue();
+        }
+        throw new CloudbreakException("UMS Client is not configured, userCRN cannot be retrieved.");
     }
 
     private CloudbreakUser createCbUserWithCaas(OAuth2Authentication auth) {

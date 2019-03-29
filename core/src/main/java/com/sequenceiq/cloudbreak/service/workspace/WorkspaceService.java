@@ -1,9 +1,6 @@
 package com.sequenceiq.cloudbreak.service.workspace;
 
 import static com.sequenceiq.cloudbreak.api.endpoint.v4.workspace.responses.WorkspaceStatus.DELETED;
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.ALL_READ;
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.ALL_WRITE;
-import static com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.WORKSPACE_MANAGE;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -65,11 +62,7 @@ public class WorkspaceService {
         try {
             return transactionService.required(() -> {
                 Workspace createdWorkspace = workspaceRepository.save(workspace);
-                UserWorkspacePermissions userWorkspacePermissions = new UserWorkspacePermissions();
-                userWorkspacePermissions.setWorkspace(createdWorkspace);
-                userWorkspacePermissions.setUser(user);
-                userWorkspacePermissions.setPermissionSet(Set.of(ALL_READ.value(), ALL_WRITE.value(), WORKSPACE_MANAGE.value()));
-                userWorkspacePermissionsService.save(userWorkspacePermissions);
+                // create resource role for the new workspace in UMS
                 return createdWorkspace;
             });
         } catch (TransactionExecutionException e) {

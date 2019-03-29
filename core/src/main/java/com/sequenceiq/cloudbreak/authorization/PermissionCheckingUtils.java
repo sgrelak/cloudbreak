@@ -22,13 +22,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import com.sequenceiq.cloudbreak.aspect.workspace.WorkspaceResourceType;
-import com.sequenceiq.cloudbreak.auth.altus.GrpcIamClient;
+import com.sequenceiq.cloudbreak.auth.altus.GrpcAuthorizationClient;
 import com.sequenceiq.cloudbreak.authorization.WorkspacePermissions.Action;
 import com.sequenceiq.cloudbreak.domain.workspace.User;
 import com.sequenceiq.cloudbreak.domain.workspace.Workspace;
 import com.sequenceiq.cloudbreak.domain.workspace.WorkspaceAwareResource;
 import com.sequenceiq.cloudbreak.repository.environment.EnvironmentResourceRepository;
 import com.sequenceiq.cloudbreak.repository.workspace.WorkspaceResourceRepository;
+import com.sequenceiq.cloudbreak.service.AuthenticatedUserService;
+import com.sequenceiq.cloudbreak.service.CloudbreakException;
 
 @Component
 public class PermissionCheckingUtils {
@@ -36,13 +38,20 @@ public class PermissionCheckingUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(PermissionCheckingUtils.class);
 
     @Inject
-    private GrpcIamClient iamClient;
+    private GrpcAuthorizationClient iamClient;
+
+    @Inject
+    private AuthenticatedUserService authenticatedUserService;
 
     public void checkPermissionByWorkspaceIdForUser(Long workspaceId, WorkspaceResource resource, Action action, User user) {
         // how can I define workspace?
-        // how will I get actorCRN here?
-        if (!iamClient.hasRight(null, resource.name().toLowerCase() + "/" + action.name().toLowerCase(), resource.getShortName())) {
-            throw new AccessDeniedException(format("You have no [%s] permission to %s.", action.name(), resource));
+        try {
+            if (!iamClient.hasRight(authenticatedUserService.getUserCrn(), WorkspaceRightUtils.getRight(resource, action), resource.getShortName())) {
+                throw new AccessDeniedException(format("You have no [%s] permission to %s.", action.name(), resource));
+            }
+        } catch (CloudbreakException e) {
+            LOGGER.error(e.getMessage());
+            throw new AccessDeniedException(e.getMessage());
         }
     }
 
@@ -52,13 +61,20 @@ public class PermissionCheckingUtils {
         if (workspaceIds.isEmpty()) {
             return;
         }
-        List<Long> list = workspaceIds.stream()
-                .filter(workspaceId -> !iamClient.hasRight(null, resource.name().toLowerCase() + "/" + action.name().toLowerCase(), resource.getShortName()))
-                .collect(Collectors.toList());
-        if (list.isEmpty()) {
-            list.stream().forEach(workspaceId -> LOGGER.error(format("You have no [%s] permission to %s.", action.name(), resource.getReadableName())));
-            throw new AccessDeniedException(format("You have no [%s] permission to %s.", action.name(), resource.getReadableName()));
+        try {
+            final String userCrn = authenticatedUserService.getUserCrn();
+            List<Long> list = workspaceIds.stream()
+                    .filter(workspaceId -> !iamClient.hasRight(userCrn, WorkspaceRightUtils.getRight(resource, action), resource.getShortName()))
+                    .collect(Collectors.toList());
+            if (list.isEmpty()) {
+                list.stream().forEach(workspaceId -> LOGGER.error(format("You have no [%s] permission to %s.", action.name(), resource.getReadableName())));
+                throw new AccessDeniedException(format("You have no [%s] permission to %s.", action.name(), resource.getReadableName()));
+            }
+        } catch (CloudbreakException e) {
+            LOGGER.error(e.getMessage());
+            throw new AccessDeniedException(e.getMessage());
         }
+
     }
 
     private Iterable<?> targetToIterable(Object target) {

@@ -13,7 +13,7 @@ import io.grpc.ManagedChannel;
  * A simple wrapper to the GRPC user management service. This handles setting up
  * the appropriate context-propogatinng interceptors and hides some boilerplate.
  */
-public class UmsClient {
+public class AuthenticationClient {
 
     private final ManagedChannel channel;
 
@@ -25,7 +25,7 @@ public class UmsClient {
      * @param channel  the managed channel.
      * @param actorCrn the actor CRN.
      */
-    UmsClient(ManagedChannel channel,
+    AuthenticationClient(ManagedChannel channel,
             String actorCrn) {
         this.channel = checkNotNull(channel);
         this.actorCrn = checkNotNull(actorCrn);
